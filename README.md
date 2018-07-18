@@ -20,4 +20,4 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[ISC](LICENSE) © 2018 wolfy1339 <webmaster@wolfy1339.com>
+[MIT](LICENSE) © 2018 Hellomouse LTD, wolfy1339 <webmaster@wolfy1339.com>
