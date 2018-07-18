@@ -20,6 +20,7 @@
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
+    "irc-stream-parser": "^0.1.0",
     "probot": "^7.0.0"
   },
   "devDependencies": {
