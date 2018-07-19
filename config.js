@@ -10,8 +10,8 @@ module.exports = {
         sasl: {
             cert: null, // Path to cert for NickServ account for CertFP and sasl
             key: null, // Path to private key that goes with certificate
-            key_passphrase: null,
+            key_passphrase: null
         },
         bindhost: null
     }
-}
+};
