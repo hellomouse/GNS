@@ -6,9 +6,6 @@ module.exports = {
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module",
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true
-        }
     },
     "extends": ["eslint:recommended", "google"],
     "rules": {
