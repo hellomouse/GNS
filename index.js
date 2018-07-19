@@ -40,7 +40,6 @@ module.exports = app => {
 
     shortenUrl(payload.comment.html_url, url => {
       app.irc.privmsg(`${att} \x0F| ${payload.sender.login} ${colors[payload.action]}${payload.action}\x0F a comment - ${url}`);
-      if (payload.comment.body) app.irc.privmsg(`${colors[payload.action]}${payload.comment.body}`)
     });
   });
 
@@ -56,7 +55,7 @@ module.exports = app => {
 
 
     shortenUrl(payload.commit.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| [${colors[payload.state]}${payload.state.toUpperCase()}\x0F] | ${payload.description} - ${url}`);
+      app.irc.privmsg(`${att} \x0F| [${colors[payload.state]}${payload.state.toUpperCase()}\x0F] | ${payload.description} - ${url} | ${payload.target_url ? payload.target_url.split('?')[0] : ''}`);
     });
   });
 
