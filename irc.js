@@ -11,10 +11,10 @@ class IRC {
 
         this.app = app;
         this.socket = tls.connect(config.irc.port, config.irc.server, {
-                localaddress: config.bindhost,
-                cert: readFileSync(onfig.sasl.cert),
-                key: readFileSync(onfig.sasl.key),
-                passphrase: config.sasl.key_passphrase
+                localaddress: config.irc.bindhost,
+                cert: config.irc.sasl.cert ? readFileSync(config.irc.sasl.cert) : null,
+                key: config.irc.sasl.key ? readFileSync(config.irc.sasl.key): null,
+                passphrase: config.irc.sasl.key_passphrase
             });
         this.parser = new Parser();
         
@@ -24,7 +24,7 @@ class IRC {
           // Ping
           if (data.command === 'PING') this.write('PONG');
 
-          // Joining channels
+          // Joining channels after being authenticated
           if (data.numeric === 396) this.write(`JOIN ${config.irc.channel}`);
 
         });
