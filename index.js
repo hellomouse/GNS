@@ -8,7 +8,7 @@ module.exports = app => {
   app.on('issues.opened', async context => {
       const payload = context.payload;
 
-    app.irc.privmsg(`Issue ${payload.issue.number} opened by ${payload.user.login} on ${payload.repository.full_name}`);
+    app.irc.privmsg(`Issue #${payload.issue.number} opened by ${payload.issue.user.login} on ${payload.repository.full_name}`);
   });
 
   // For more information on building apps:
