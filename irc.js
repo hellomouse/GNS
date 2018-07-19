@@ -5,8 +5,15 @@ const { readFileSync } = require('fs');
 // Config
 const config = require('./config');
 
+/**
+ * IRC connection wrapper
+ */
 class IRC {
 
+    /**
+     *
+     * @param {object} app
+     */
     constructor(app) {
         this.app = app;
         this.socket = tls.connect(config.irc.port, config.irc.server, {
