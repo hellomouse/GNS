@@ -1,5 +1,6 @@
 const Parser = require('irc-stream-parser');
 const tls = require('tls');
+const { readFileSync } = require('fs');
 
 // Config
 const config = require('./config')
@@ -9,7 +10,12 @@ class IRC {
     constructor (app) {
 
         this.app = app;
-        this.socket = tls.connect(config.irc.port, config.irc.server);
+        this.socket = tls.connect(config.irc.port, config.irc.server, {
+                localaddress: config.bindhost,
+                cert: readFileSync(onfig.sasl.cert),
+                key: readFileSync(onfig.sasl.key),
+                passphrase: config.sasl.key_passphrase
+            });
         this.parser = new Parser();
         
         this.socket.pipe(this.parser).on('data', data => {
