@@ -29,9 +29,19 @@ class IRC {
 
     }
 
+    /**
+    * @param {String} message
+    */
     write(message) {
         this.socket.write(`${message}\r\n`)
         this.app.log(`<<< ${message}`);
+    }
+    
+    /**
+    * @param {String} text
+    */
+    privmsg(text) {
+        this.write(`PRIVMSG ${config.irc.channel} :${text}`)
     }
 
 }
