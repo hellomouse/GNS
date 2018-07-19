@@ -1,3 +1,4 @@
+/* global describe, test, beforeEach, expect, jest */
 const { Application } = require('probot');
 // Requiring our app implementation
 const myProbotApp = require('..');
