@@ -61,9 +61,29 @@ module.exports = app => {
 
   app.on('push', async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'push');
+    
+    if (!payload.commits.length) return; // We're not interested in branches 
 
     shortenUrl(payload.compare, url => {
       app.irc.privmsg(`${att} \x0F| ${payload.sender.login} pushed ${payload.commits.length} commit(s) to ${payload.ref.split('/')[2]} - ${url} - Description: \x0303${payload.head_commit.message}`);
     });
+  });
+
+  app.on('create', async context => {
+    let payload = context.payload; 
+    
+    if (payload.ref_type === 'tag') return; // We're not handling tags yet
+    let att = attFormat(payload.repository.full_name, 'branch-create');
+
+    app.irc.privmsg(`${att} \x0F| ${payload.sender.login} \x0303created\x0F branch ${payload.ref} - ${payload.repository.html_url}`);
+  });
+
+  app.on('delete', async context => {
+    let payload = context.payload; 
+    
+    if (payload.ref_type === 'tag') return; // We're not handling tags yet
+    let att = attFormat(payload.repository.full_name, 'branch-delete');
+
+    app.irc.privmsg(`${att} \x0F| ${payload.sender.login} \x0304deleted\x0F branch ${payload.ref} - ${payload.repository.html_url}`);
   });
 };
