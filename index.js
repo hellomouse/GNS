@@ -5,11 +5,17 @@
 module.exports = app => {
   app.irc = new (require('./irc'))(app);
 
-  app.on('issues.opened', async context => {
-      const payload = context.payload;
-
-    app.irc.privmsg(`Issue #${payload.issue.number} opened by ${payload.issue.user.login} on ${payload.repository.full_name}`);
+  // App events
+  app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
+      let payload = context.payload;
+      app.irc.privmsg(`!att-${payload.repository.full_name.replace('/', '-')}-issue | Issue #${payload.issue.number} ${payload.action} by ${payload.sender.login} on ${payload.repository.full_name} - ${payload.issue.html_url}`);
   });
+
+  // Travis
+  app.on('status', async context => {
+    let payload = context.payload
+    app.irc.privmsg(`!att-${payload.repository.full_name.replace('/', '-')}-status / ${payload.state === 'failure' ? '[\x0304FAILURE\x0F]' : '[\x0303SUCCESS\x0F]'} / ${payload.description} - ${payload.commit.html_url}`);
+  })
 
   // For more information on building apps:
   // https://probot.github.io/docs/
