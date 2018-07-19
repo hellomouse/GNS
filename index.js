@@ -57,12 +57,14 @@ module.exports = app => {
 
     shortenUrl(payload.commit.html_url, url => {
       app.irc.privmsg(`${att} \x0F| [${colors[payload.state]}${payload.state.toUpperCase()}\x0F] | ${payload.description} - ${url}`);
-  });
+    });
   });
 
-  // For more information on building apps:
-  // https://probot.github.io/docs/
+  app.on('push', async context => {
+    let payload = context.payload, att = attFormat(payload.repository.full_name, 'push');
 
-  // To get your app running against GitHub, see:
-  // https://probot.github.io/docs/development/
+    shortenUrl(payload.compare, url => {
+      app.irc.privmsg(`${att} \x0F| ${payload.sender.login} pushed ${payload.commits.length} commit(s) to ${payload.ref.split('/')[2]} - ${url} - Description: \x0303${payload.head_commit.message}`);
+    });
+  });
 };
