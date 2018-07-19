@@ -46,11 +46,18 @@ module.exports = app => {
 
   // Travis
   app.on('status', async context => {
-    let payload = context.payload;
+    let payload = context.payload, att = attFormat(payload.repository.full_name, 'status');
+    let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x0301' }
 
-    shortenUrl(payload.issue.html_url, url => {
-      app.irc.privmsg(`!att-${payload.repository.full_name.replace('/', '-')}-status / ${payload.state === 'failure' ? '[\x0304FAILURE\x0F]' : '[\x0303SUCCESS\x0F]'} / ${payload.description} - ${payload.commit.html_url}`);
-    });
+    if (payload.state === 'pending') {
+      if (pendingStatus.includes(payload.target_url)) return; // We don't want to send multiple pending messages to a channel - Potential spam
+      pendingStatus.push(payload.target_url); // We'll use target_url as identifier
+    } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop(payload);
+
+
+    shortenUrl(payload.commit.html_url, url => {
+      app.irc.privmsg(`${att} \x0F| [${colors[payload.state]}${payload.state.toUpperCase()}\x0F] | ${payload.description} - ${url}`);
+  });
   });
 
   // For more information on building apps:
