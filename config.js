@@ -13,5 +13,6 @@ module.exports = {
             key_passphrase: null
         },
         bindhost: null
-    }
+    },
+    attentionString: '!att-{name}-{event}' // '!att-{org}-{name}-{event}'
 };

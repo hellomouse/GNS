@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "irc-stream-parser": "^0.1.0",
-    "probot": "^7.0.0"
+    "probot": "^7.0.0",
+    "request": "^2.87.0"
   },
   "devDependencies": {
     "eslint": "^5.1.0",
