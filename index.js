@@ -69,6 +69,17 @@ module.exports = app => {
     });
   });
 
+  app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
+      let payload = context.payload, att = attFormat(payload.repository.full_name, 'pull_request');
+      let issueNumber = payload.pull_request.number, action = payload.action,
+      user = payload.sender.login, fullname = payload.repository.full_name;
+
+      shortenUrl(payload.pull_request.html_url, url => {
+        app.irc.privmsg(`${att}\x0F | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} `
+            + `\x02\x0303+${payload.pull_request.additions} \x0304-${payload.pull_request.deletions}\x0F - ${url}`);
+      });
+  });
+
   app.on('status', async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'status');
     let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }; // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
