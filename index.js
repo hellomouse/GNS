@@ -69,6 +69,18 @@ module.exports = app => {
     });
   });
 
+  app.on('issues.labeled', async context => {
+      let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue.labeled');
+      let user = antiHighlight(payload.sender.login), action = payload.action;
+      let issueNumber = payload.issue.number;
+      let issueText = payload.issue.title.substring(0, 150) + (payload.issue.title.length > 150 ? '...' : '');
+
+      shortenUrl(payload.issue.html_url, url => {
+        app.irc.privmsg(`${att} \x0F| ${user} ${action}\x0F `
+          + `issue #${issueNumber} with label ${payload.label.name} (${issueText}) - ${url}`);
+      });
+  });
+
   app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
       let payload = context.payload, att = attFormat(payload.repository.full_name, 'pull_request');
       let issueNumber = payload.pull_request.number, action = payload.action,
