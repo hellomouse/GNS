@@ -2,7 +2,11 @@
   "name": "gns",
   "version": "1.0.0",
   "description": "A Probot app",
-  "author": "wolfy1339 <webmaster@wolfy1339.com>",
+  "author": "Hellomouse LTD",
+  "contributors": [
+    "Bradley \"BWBellairs\" Bellairs <BWBellairs@outlook.com>",
+    "wolfy1339 <webmaster@wolfy1339.com>"
+  ],
   "license": "MIT",
   "repository": "https://github.com/hellomouse/GNS.git",
   "homepage": "https://github.com/hellomouse/GNS",
