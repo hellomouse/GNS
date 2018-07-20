@@ -65,7 +65,7 @@ module.exports = app => {
 
     shortenUrl(payload.comment.html_url, url => {
       app.irc.privmsg(`${att} \x0F| ${user} ${colors[payload.action]}${action}\x0F a comment on `
-					+ `issue #${issueNumber} (${issueText}) - ${url}`);
+        + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
   });
 
