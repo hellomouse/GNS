@@ -24,7 +24,7 @@ module.exports = app => {
    * @param {string} fullname - The full repository name
    * @param {string} event - Event being received from webhook
    * @return {string} Attention string
-   */
+  */
   let attFormat = (fullname, event) => {
     // [user|org]/[name]
     let org = fullname.split('/')[0]; // or user
@@ -36,6 +36,7 @@ module.exports = app => {
   app.irc = new (require('./irc'))(app);
 
   // App events
+
   app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
       let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue');
       let issueNumber = payload.issue.nuber, action = payload.action,
@@ -56,10 +57,9 @@ module.exports = app => {
     });
   });
 
-  // Travis
   app.on('status', async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'status');
-    let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x0301' };
+    let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x0301' }; // Success: Green, Pending: Cyan, Failure: Red, Error: Black
     let state = payload.state, description = payload.description, target_url = payload.target_url,
     webhookUrl = target_url ? target_url.split('?')[0] : '', color = colors[state];
 
