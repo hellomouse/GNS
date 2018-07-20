@@ -60,9 +60,11 @@ module.exports = app => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue.comment');
     let colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }; // Created: Green, Edited: Orange, Deleted: Red
     let user = antiHighlight(payload.sender.login), action = payload.action;
+	let issueNumber = payload.issue.number;
+	let issueText = payload.issue.title.substring(0, 150) + (payload.issue.title.length > 150 ? '...' : '');
 
     shortenUrl(payload.comment.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} ${colors[payload.action]}${action}\x0F a comment - ${url}`);
+      app.irc.privmsg(`${att} \x0F| ${user} ${colors[payload.action]}${action}\x0F a comment on issue #${issueNumber} (${issueText}) - ${url}`);
     });
   });
 
