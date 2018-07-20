@@ -59,7 +59,7 @@ module.exports = app => {
 
   app.on('status', async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'status');
-    let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x0301' }; // Success: Green, Pending: Cyan, Failure: Red, Error: Black
+    let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }; // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
     let state = payload.state, description = payload.description, target_url = payload.target_url,
     webhookUrl = target_url ? target_url.split('?')[0] : '', color = colors[state];
 
