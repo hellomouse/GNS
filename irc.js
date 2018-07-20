@@ -36,7 +36,7 @@ class IRC {
 
         this.write(`NICK ${config.irc.nickname}`);
         this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
-        this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
+        if (!config.irc.sasl.cert) this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
     }
 
     /**
