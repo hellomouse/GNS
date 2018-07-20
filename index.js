@@ -89,7 +89,7 @@ module.exports = app => {
       let merge;
 
       if (action === 'opened' || action === 'reopened') {
-          if (payload.pull_request.base.repo.full_name !== payload.pull_request.repo.full_name) {
+          if (payload.pull_request.base.repo.full_name !== payload.pull_request.head.repo.full_name) {
               merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.label}\x0F) `;
           } else {
              merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
