@@ -7,6 +7,15 @@ let pendingStatus = []; // contains all pending checks from travis as multiple a
 module.exports = app => {
   /**
    * @function
+   * @param {string} user
+   * @return {string} user with normal character
+   */
+  let antiHighlight = user => {
+    return user.slice(0, 1) + '\u200B' + user.slice(1);
+  };
+
+  /**
+   * @function
    * @param {string} url - Url of the string to shorten
    * @param {function} cb - Function to callback shortened url with
   */
@@ -40,7 +49,7 @@ module.exports = app => {
   app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
       let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue');
       let issueNumber = payload.issue.number, action = payload.action,
-      user = payload.sender.login, fullname = payload.repository.full_name;
+      user = antiHighlight(payload.sender.login), fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${action} by ${user} on ${fullname} - ${url}`);
@@ -50,7 +59,7 @@ module.exports = app => {
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue.comment');
     let colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }; // Created: Green, Edited: Orange, Deleted: Red
-    let user = payload.sender.login, action = payload.action;
+    let user = antiHighlight(payload.sender.login), action = payload.action;
 
     shortenUrl(payload.comment.html_url, url => {
       app.irc.privmsg(`${att} \x0F| ${user} ${colors[payload.action]}${action}\x0F a comment - ${url}`);
@@ -76,7 +85,7 @@ module.exports = app => {
 
   app.on('push', async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'push');
-    let user = payload.sender.login, numC = payload.commits.length,
+    let user = antiHighlight(payload.sender.login), numC = payload.commits.length,
     ref = payload.ref.split('/')[2], message = payload.head_commit.message;
 
     if (!payload.commits.length) return; // We're not interested in branches
@@ -90,7 +99,7 @@ module.exports = app => {
 
   app.on('create', async context => {
     let payload = context.payload;
-    let user = payload.sender.login, ref = payload.ref, html_url = payload.repository.html_url;
+    let user = antiHighlight(payload.sender.login), ref = payload.ref, html_url = payload.repository.html_url;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = attFormat(payload.repository.full_name, 'branch-create');
@@ -100,7 +109,7 @@ module.exports = app => {
 
   app.on('delete', async context => {
     let payload = context.payload;
-    let user = payload.sender.login, ref = payload.ref, html_url = payload.repository.html_url;
+    let user = antiHighlight(payload.sender.login), ref = payload.ref, html_url = payload.repository.html_url;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = attFormat(payload.repository.full_name, 'branch-delete');
