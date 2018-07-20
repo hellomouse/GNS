@@ -86,8 +86,17 @@ module.exports = app => {
       let issueNumber = payload.pull_request.number, action = payload.action,
       user = payload.sender.login, fullname = payload.repository.full_name;
 
+      let merge;
+
+      if (action === 'opened' || action === 'reopened') {
+          if (payload.pull_request.head.repo.full_name !== payload.pull_request.head.ref) {
+              merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.label}\x0F) `;
+          } else {
+             merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
+          }
+      }
       shortenUrl(payload.pull_request.html_url, url => {
-        app.irc.privmsg(`${att}\x0F | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} `
+        app.irc.privmsg(`${att}\x0F | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge || ''}`
             + `\x02\x0303+${payload.pull_request.additions} \x0304-${payload.pull_request.deletions}\x0F - ${url}`);
       });
   });
