@@ -39,8 +39,8 @@ module.exports = app => {
 
   app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
       let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue');
-      let issueNumber = payload.issue.nuber, action = payload.action,
-      user = payload.sender.login, fullname = payload.repository.fullname;
+      let issueNumber = payload.issue.number, action = payload.action,
+      user = payload.sender.login, fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${action} by ${user} on ${fullname} - ${url}`);
