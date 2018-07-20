@@ -11,7 +11,7 @@ module.exports = app => {
    * @return {string} user with normal character
    */
   let antiHighlight = user => {
-    return user.slice(0, 1) + '\u200B' + user.slice(1);
+    return `${user.slice(0, 1)}\u200B${user.slice(1)}`;
   };
 
   /**
