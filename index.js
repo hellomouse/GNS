@@ -121,14 +121,28 @@ module.exports = app => {
   app.on('push', async context => {
     let payload = context.payload, att = attFormat(payload.repository.full_name, 'push');
     let user = antiHighlight(payload.sender.login), numC = payload.commits.length,
-    ref = payload.ref.split('/')[2], message = payload.head_commit.message;
+    ref = payload.ref.split('/')[2];
 
     if (!payload.commits.length) return; // We're not interested in branches
 
     let isM = payload.commits.length === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
 
     shortenUrl(payload.compare, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} pushed ${numC} ${isM} to ${ref} - ${url} - Description: \x0303${message}`);
+      app.irc.privmsg(`${att} \x0F| ${user} pushed ${numC} ${isM} to branch ${ref} - ${url}`);
+      let count = 1;
+
+      for (let c of payload.commits) {
+          if (count !== 5) {
+              c.message = c.message.split('\n')[0];
+              let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`;
+
+              app.irc.privmsg(`${payload.repository.full_name} ${c.id.substring(0, 7)} ${c.author.name} ${message}`);
+              count++;
+          } else {
+              app.irc.privmsg(`... and ${payload.commits.length - 5} more commits.`);
+              break;
+          }
+      }
     });
   });
 
