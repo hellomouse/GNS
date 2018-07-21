@@ -128,15 +128,16 @@ module.exports = app => {
     let isM = payload.commits.length === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
 
     shortenUrl(payload.compare, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} pushed ${numC} ${isM} to branch ${ref} - ${url}`);
+      app.irc.privmsg(`${att} \x0F| \x0315${user}\x0F pushed \x02${numC}\x0F ${isM} to \x0306${ref}\x0F: ${url}`);
       let count = 1;
+      let msg_base = `\x0312${payload.repository.name}\x0F/\x06${ref}\x0F`;
 
       for (let c of payload.commits) {
           if (count !== 5) {
               c.message = c.message.split('\n')[0];
               let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`;
 
-              app.irc.privmsg(`${payload.repository.full_name} ${c.id.substring(0, 7)} ${c.author.name} ${message}`);
+              app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${c.author.name}: ${message}`);
               count++;
           } else {
               app.irc.privmsg(`... and ${payload.commits.length - 5} more commits.`);
