@@ -130,7 +130,7 @@ module.exports = app => {
     shortenUrl(payload.compare, url => {
       app.irc.privmsg(`${att} \x0F| \x0315${user}\x0F pushed \x02${numC}\x0F ${isM} to \x0306${ref}\x0F: ${url}`);
       let count = 1;
-      let msg_base = `\x0312${payload.repository.name}\x0F/\x06${ref}\x0F`;
+      let msg_base = `\x0312${payload.repository.name}\x0F/\x0306${ref}\x0F`;
 
       for (let c of payload.commits) {
           if (count !== 5) {
