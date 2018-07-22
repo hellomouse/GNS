@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "start": "PORT=5678 probot run ./index.js",
+    "start": "probot run -p 5678 ./index.js",
     "lint": "eslint . --fix",
     "test": "jest && eslint .",
     "test:watch": "jest --watch --notify --notifyMode=change --coverage"
