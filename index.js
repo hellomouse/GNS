@@ -23,7 +23,7 @@ module.exports = app => {
     // Posts to the api to create shorter url
     request.post('https://git.io/create', { form: { url } }, (err, res, body) => {
       if (err) app.error(`Shorten url failed for ${url}`);
-      cb(`git.io/${body}`);
+      cb(`https://git.io/${body}`);
     });
   };
 
