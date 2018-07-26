@@ -154,7 +154,7 @@ module.exports = app => {
               app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
               count++;
           } else {
-              app.irc.privmsg(`... and ${payload.commits.length - 5} more commits.`);
+              app.irc.privmsg(`... and ${payload.commits.length - 5} more ${isM}.`);
               break;
           }
       }
