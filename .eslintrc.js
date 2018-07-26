@@ -1,13 +1,19 @@
 module.exports = {
     "env": {
         "es6": true,
-        "node": true
+        "node": true,
+        "browser": true,
+        "jest": true
     },
     "parserOptions": {
         "ecmaVersion": 2018,
         "sourceType": "module",
     },
-    "extends": ["eslint:recommended", "google"],
+    "ecmaFeatures": {
+        "jsx": true
+    },
+    "plugins": ["react"],
+    "extends": ["eslint:recommended", "google", "plugin:react/recommended"],
     "rules": {
         "require-jsdoc": [
             "warn",
