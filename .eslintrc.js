@@ -1,111 +1,111 @@
 module.exports = {
-    "env": {
-        "es6": true,
-        "node": true,
-        "browser": true,
-        "jest": true
+    env: {
+        es6: true,
+        node: true,
+        browser: true,
+        jest: true
     },
-    "parserOptions": {
-        "ecmaVersion": 2018,
-        "sourceType": "module",
+    parserOptions: {
+        ecmaVersion: 2018,
+        sourceType: 'module'
     },
-    "ecmaFeatures": {
-        "jsx": true
+    ecmaFeatures: {
+        jsx: true
     },
-    "plugins": ["react"],
-    "extends": ["eslint:recommended", "google", "plugin:react/recommended"],
-    "rules": {
-        "require-jsdoc": [
-            "warn",
+    plugins: ['react'],
+    extends: ['eslint:recommended', 'google', 'plugin:react/recommended'],
+    rules: {
+        'require-jsdoc': [
+            'warn',
             {
-                "require": {
-                    "FunctionDeclaration": true,
-                    "MethodDefinition": true,
-                    "ClassDeclaration": true,
-                    "ArrowFunctionExpression": true,
-                    "FunctionExpression": true
+                require: {
+                    FunctionDeclaration: true,
+                    MethodDefinition: true,
+                    ClassDeclaration: true,
+                    ArrowFunctionExpression: true,
+                    FunctionExpression: true
                 }
             }
         ],
-        "comma-dangle": [
-            "error",
-            "never"
+        'comma-dangle': [
+            'error',
+            'never'
         ],
-        "padded-blocks": [
-            "error",
+        'padded-blocks': [
+            'error',
             {
-                "blocks": "never"
+                blocks: 'never'
             }
         ],
-        "arrow-parens": [
-            "error",
-            "as-needed"
+        'arrow-parens': [
+            'error',
+            'as-needed'
         ],
-        "one-var": "off",
-        "camelcase": "off",
-        "max-len": [
-            "error",
+        'one-var': 'off',
+        camelcase: 'off',
+        'max-len': [
+            'error',
             {
-                "code": 120,
-                "tabWidth": 4,
-                "ignoreComments": true,
-                "ignoreTrailingComments": true,
-                "ignoreUrls": true
+                code: 120,
+                tabWidth: 4,
+                ignoreComments: true,
+                ignoreTrailingComments: true,
+                ignoreUrls: true
             }
         ],
-        "id-match": "off", // Google sets this
-        "curly": "off", // Can't configure this enough
-        "block-spacing": [
-            "error",
-            "always"
+        'id-match': 'off', // Google sets this
+        curly: 'off', // Can't configure this enough
+        'block-spacing': [
+            'error',
+            'always'
         ],
-        "brace-style": [
-            "error",
-            "1tbs",
+        'brace-style': [
+            'error',
+            '1tbs',
             {
-                "allowSingleLine": true
+                allowSingleLine: true
             }
         ],
-        "object-curly-spacing": [
-            "error",
-            "always"
+        'object-curly-spacing': [
+            'error',
+            'always'
         ],
-        "space-unary-ops": [
-            "error",
+        'space-unary-ops': [
+            'error',
             {
-                "words": true,
-                "nonwords": false
+                words: true,
+                nonwords: false
             }
         ],
-        "padding-line-between-statements": [
-            "error",
-            { "blankLine": "always", "prev": "*", "next": "return" },
-            { "blankLine": "always", "prev": ["const", "let"], "next": "*" },
-            { "blankLine": "any", "prev": ["const", "let"], "next": ["const", "let"] }
+        'padding-line-between-statements': [
+            'error',
+            { blankLine: 'always', prev: '*', next: 'return' },
+            { blankLine: 'always', prev: ['const', 'let'], next: '*' },
+            { blankLine: 'any', prev: ['const', 'let'], next: ['const', 'let'] }
         ],
-        "eqeqeq": [
-            "warn",
-            "smart"
+        eqeqeq: [
+            'warn',
+            'smart'
         ],
-        "no-redeclare": [
-            "error",
+        'no-redeclare': [
+            'error',
             {
-                "builtinGlobals": true
+                builtinGlobals: true
             }
         ],
-        "no-shadow": "error",
-        "no-useless-return": "error",
-        "no-cond-assign": "error",
-        "block-scoped-var": "error",
-        "no-else-return": "error",
-        "no-undef-init": "error",
-        "quote-props": [
-            "error",
-            "as-needed"
+        'no-shadow': 'error',
+        'no-useless-return': 'error',
+        'no-cond-assign': 'error',
+        'block-scoped-var': 'error',
+        'no-else-return': 'error',
+        'no-undef-init': 'error',
+        'quote-props': [
+            'error',
+            'as-needed'
         ],
-        "semi": [
-            "error",
-            "always"
+        semi: [
+            'error',
+            'always'
         ]
     }
 };
