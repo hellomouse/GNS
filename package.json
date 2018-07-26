@@ -20,8 +20,8 @@
     "dev": "nodemon --exec \"npm start\"",
     "start": "probot run -p 5678 ./bot/index.js",
     "lint": "eslint . --fix",
-    "test": "jest && eslint .",
-    "test:watch": "jest --watch --notify --notifyMode=change --coverage"
+    "test": "jest bot && eslint .",
+    "test:watch": "jest bot --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
     "irc-stream-parser": "^0.1.0",
