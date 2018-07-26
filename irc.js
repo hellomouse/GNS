@@ -6,6 +6,22 @@ const { readFileSync } = require('fs');
 const config = require('./config');
 
 /**
+* Strips formatting from IRC messages
+* @param {string} msg
+* @return {string}
+*/
+function strip_formatting(msg) {
+    /* eslint-disable no-control-regex */
+    let ccodes = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
+    /* eslint-enable no-control-regex */
+
+    for (let cc of ccodes)
+        msg = msg.replace(new RegExp(cc, 'g'), '');
+
+    return msg;
+}
+
+/**
  * IRC connection wrapper
  */
 class IRC {
@@ -25,7 +41,7 @@ class IRC {
         this.parser = new Parser();
 
         this.socket.pipe(this.parser).on('data', data => {
-          this.app.log(`>>> ${data.raw}`);
+          this.app.log(`>>> ${strip_formatting(data.raw)}`);
 
           // Ping
           if (data.command === 'PING') this.write('PONG');
