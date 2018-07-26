@@ -135,8 +135,9 @@ module.exports = app => {
           if (count < 5) {
               c.message = c.message.split('\n')[0];
               let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`;
+              let author = c.author.name || '(No author name)';
 
-              app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${c.author.name}: ${message}`);
+              app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
               count++;
           } else {
               app.irc.privmsg(`... and ${payload.commits.length - 5} more commits.`);
