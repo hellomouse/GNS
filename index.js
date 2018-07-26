@@ -36,7 +36,7 @@ module.exports = app => {
   */
   let attFormat = (fullname, event) => {
     // [user|org]/[name]
-    let [org, name] = fullname.split('/')[0]; // or user
+    let [org, name] = fullname.split('/'); // or user
 
     return config.attentionString.replace('{org}', org).replace('{name}', name).replace('{event}', event);
   };
