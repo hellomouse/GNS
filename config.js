@@ -14,5 +14,6 @@ module.exports = {
         },
         bindhost: null
     },
-    attentionString: '!att-{name}-{event}' // '!att-{org}-{name}-{event}'
+    attentionString: '!att-{name}-{event}', // '!att-{org}-{name}-{event}'
+    multipleCommitsMaxLen: 4
 };
