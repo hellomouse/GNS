@@ -46,9 +46,12 @@ module.exports = app => {
   // App events
 
   app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
-      let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue');
-      let issueNumber = payload.issue.number, action = payload.action,
-      user = antiHighlight(payload.sender.login), fullname = payload.repository.full_name;
+      let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'issue'),
+        issueNumber = payload.issue.number,
+        action = payload.action,
+        user = antiHighlight(payload.sender.login),
+        fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${action} by ${user} on ${fullname} - ${url}`);
@@ -56,23 +59,27 @@ module.exports = app => {
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
-    let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue.comment');
-    let colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }; // Created: Green, Edited: Orange, Deleted: Red
-    let user = antiHighlight(payload.sender.login), action = payload.action;
-    let issueNumber = payload.issue.number;
-    let issueText = payload.issue.title.substring(0, 150) + (payload.issue.title.length > 150 ? '...' : '');
+    let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'issue.comment'),
+        colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }, // Created: Green, Edited: Orange, Deleted: Red
+        user = antiHighlight(payload.sender.login),
+        action = payload.action,
+        issueNumber = payload.issue.number,
+        issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
     shortenUrl(payload.comment.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} ${colors[payload.action]}${action}\x0F a comment on `
+      app.irc.privmsg(`${att} \x0F| ${user} ${colors[action]}${action}\x0F a comment on `
         + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
   });
 
   app.on('issues.labeled', async context => {
-      let payload = context.payload, att = attFormat(payload.repository.full_name, 'issue.labeled');
-      let user = antiHighlight(payload.sender.login), action = payload.action;
-      let issueNumber = payload.issue.number;
-      let issueText = payload.issue.title.substring(0, 150) + (payload.issue.title.length > 150 ? '...' : '');
+      let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'issue.labeled'),
+        user = antiHighlight(payload.sender.login),
+        action = payload.action,
+        issueNumber = payload.issue.number,
+        issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
       shortenUrl(payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| ${user} ${action}\x0F `
@@ -81,9 +88,12 @@ module.exports = app => {
   });
 
   app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
-      let payload = context.payload, att = attFormat(payload.repository.full_name, 'pull_request');
-      let issueNumber = payload.pull_request.number, action = payload.action,
-      user = payload.sender.login, fullname = payload.repository.full_name;
+      let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'pull_request'),
+        issueNumber = payload.pull_request.number,
+        action = payload.action,
+        user = payload.sender.login,
+        fullname = payload.repository.full_name;
 
       let merge;
 
@@ -101,10 +111,12 @@ module.exports = app => {
   });
 
   app.on('status', async context => {
-    let payload = context.payload, att = attFormat(payload.repository.full_name, 'status');
-    let colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }; // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
-    let { state, description, target_url } = payload,
-    webhookUrl = target_url ? target_url.split('?')[0] : '', color = colors[state];
+    let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'status'),
+        colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }, // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
+        { state, description, target_url } = payload,
+        webhookUrl = target_url ? target_url.split('?')[0] : '',
+        color = colors[state];
 
     if (payload.state === 'pending') {
       if (pendingStatus.includes(payload.target_url)) return; // We don't want to send multiple pending messages to a channel - Potential spam
@@ -118,9 +130,11 @@ module.exports = app => {
   });
 
   app.on('push', async context => {
-    let payload = context.payload, att = attFormat(payload.repository.full_name, 'push');
-    let user = antiHighlight(payload.sender.login), numC = payload.commits.length,
-    ref = payload.ref.split('/')[2];
+    let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'push'),
+        user = antiHighlight(payload.sender.login),
+        numC = payload.commits.length,
+        ref = payload.ref.split('/')[2];
 
     if (!payload.commits.length) return; // We're not interested in branches
 
@@ -148,8 +162,10 @@ module.exports = app => {
   });
 
   app.on('create', async context => {
-    let payload = context.payload;
-    let user = antiHighlight(payload.sender.login), ref = payload.ref, html_url = payload.repository.html_url;
+    let payload = context.payload,
+        user = antiHighlight(payload.sender.login),
+        ref = payload.ref,
+        html_url = payload.repository.html_url;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = attFormat(payload.repository.full_name, 'branch-create');
@@ -158,8 +174,10 @@ module.exports = app => {
   });
 
   app.on('delete', async context => {
-    let payload = context.payload;
-    let user = antiHighlight(payload.sender.login), ref = payload.ref, html_url = payload.repository.html_url;
+    let payload = context.payload,
+        user = antiHighlight(payload.sender.login),
+        ref = payload.ref,
+        html_url = payload.repository.html_url;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = attFormat(payload.repository.full_name, 'branch-delete');
