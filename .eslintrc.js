@@ -4,7 +4,7 @@ module.exports = {
         "node": true
     },
     "parserOptions": {
-        "ecmaVersion": 8,
+        "ecmaVersion": 2018,
         "sourceType": "module",
     },
     "extends": ["eslint:recommended", "google"],
