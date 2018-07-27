@@ -6,7 +6,9 @@ node_js:
   - "node"
 before_install:
   - npm install -g greenkeeper-lockfile
-install: npm install
+install:
+    - npm install
+    - cd dashboard && npm install
 before_script: greenkeeper-lockfile-update
 script:
     - npm test
@@ -18,3 +20,4 @@ notifications:
 cache:
   directories:
     - "node_modules"
+    - "dashboard/node_modules"
