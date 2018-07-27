@@ -141,7 +141,9 @@ module.exports = app => {
     let isM = payload.commits.length === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
 
     shortenUrl(payload.compare, url => {
-      app.irc.privmsg(`${att} \x0F| \x0315${user}\x0F pushed \x02${numC}\x0F ${isM} to \x0306${ref}\x0F: ${url}`);
+        let pushType = payload.forced ? 'force-pushed' : 'pushed';
+
+      app.irc.privmsg(`${att} \x0F| \x0315${user}\x0F ${pushType} \x02${numC}\x0F ${isM} to \x0306${ref}\x0F: ${url}`);
       let count = 1;
       let msg_base = `\x0313${payload.repository.name}\x0F/\x0306${ref}\x0F`;
 
