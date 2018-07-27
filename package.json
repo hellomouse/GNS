@@ -32,7 +32,7 @@
     "request": "^2.87.0"
   },
   "devDependencies": {
-    "eslint": "^5.1.0",
+    "eslint": "^5.2.0",
     "eslint-config-google": "^0.9.1",
     "eslint-plugin-react": "^7.10.0",
     "jest": "^23.4.1",
