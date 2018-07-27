@@ -1,5 +1,7 @@
 # gns
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/hellomouse/GNS.svg)](https://greenkeeper.io/)
+
 > A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
 
 ## Setup
