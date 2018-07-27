@@ -12,8 +12,7 @@ module.exports = {
             jsx: true
         }
     },
-    plugins: ['react'],
-    extends: ['eslint:recommended', 'google', 'plugin:react/recommended'],
+    extends: ['eslint:recommended', 'google'],
     rules: {
         'require-jsdoc': [
             'warn',
