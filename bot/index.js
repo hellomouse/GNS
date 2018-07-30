@@ -175,6 +175,17 @@ module.exports = app => {
     app.irc.privmsg(`${att} \x0F| ${user} \x0303created\x0F branch ${ref} - ${html_url}`);
   });
 
+  app.on('repository.created', async context => {
+      let payload = context.payload,
+          user = antiHighlight(payload.sender.login),
+          ref = payload.ref,
+          html_url = payload.repository.html_url,
+          createText = payload.repository.forked ? 'forked' : 'created',
+          att = attFormat(payload.repository.owner.login, 'repository-create');
+
+      app.irc.privmsg(`${att} \x0F| ${user} \x0303${createText}\x0F branch ${ref} - ${html_url}`);
+  });
+
   app.on('delete', async context => {
     let payload = context.payload,
         user = antiHighlight(payload.sender.login),
