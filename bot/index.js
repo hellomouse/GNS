@@ -38,7 +38,7 @@ module.exports = app => {
     // [user|org]/[name]
     let [org, name] = fullname.split('/'); // or user
 
-    return config.attentionString.replace('{org}', org).replace('{name}', name).replace('{event}', event);
+    return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
   };
 
   app.irc = new (require('./irc'))(app);
@@ -177,12 +177,12 @@ module.exports = app => {
   app.on('repository.created', async context => {
       let payload = context.payload,
           user = antiHighlight(payload.sender.login),
-          ref = payload.ref,
+          name = payload.repository.full_name,
           html_url = payload.repository.html_url,
           createText = payload.repository.forked ? 'forked' : 'created',
           att = attFormat(payload.repository.owner.login, 'repository-create');
 
-      app.irc.privmsg(`${att} \x0F| ${user} \x0303${createText}\x0F branch ${ref} - ${html_url}`);
+      app.irc.privmsg(`${att} \x0F| ${user} \x0303${createText}\x0F repository ${name} - ${html_url}`);
   });
 
   app.on('delete', async context => {
