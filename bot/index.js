@@ -93,9 +93,8 @@ module.exports = app => {
         issueNumber = payload.pull_request.number,
         action = payload.action,
         user = payload.sender.login,
-        fullname = payload.repository.full_name;
-
-      let merge;
+        fullname = payload.repository.full_name,
+        merge;
 
       if (action === 'opened' || action === 'reopened') {
           if (payload.pull_request.base.repo.full_name !== payload.pull_request.head.repo.full_name) {
@@ -144,14 +143,14 @@ module.exports = app => {
         let pushType = payload.forced ? 'force-pushed' : 'pushed';
 
       app.irc.privmsg(`${att} \x0F| \x0315${user}\x0F ${pushType} \x02${numC}\x0F ${isM} to \x0306${ref}\x0F: ${url}`);
-      let count = 1;
-      let msg_base = `\x0313${payload.repository.name}\x0F/\x0306${ref}\x0F`;
+      let count = 1,
+        msg_base = `\x0313${payload.repository.name}\x0F/\x0306${ref}\x0F`;
 
       for (let c of payload.commits) {
           if (count <= config.multipleCommitsMaxLen) {
               c.message = c.message.split('\n')[0];
-              let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`;
-              let author = c.author.name || '(No author name)';
+              let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
+                author = c.author.name || '(No author name)';
 
               app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
               count++;
