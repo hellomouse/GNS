@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "start": "probot run -p 5678 ./bot/index.js",
+    "start": "cd bot && probot run -p 5678 ./index.js",
     "lint": "eslint . --fix",
     "test": "jest bot && eslint .",
     "test:watch": "jest bot --watch --notify --notifyMode=change --coverage"
