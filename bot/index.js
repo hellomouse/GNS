@@ -23,7 +23,7 @@ module.exports = app => {
     // Posts to the api to create shorter url
     request.post('https://git.io/create', { form: { url } }, (err, res, body) => {
       if (err) app.error(`Shorten url failed for ${url}`);
-      cb(`https://git.io/${body}`);
+      cb(`https://git.io/${body}`); // Callback function with url
     });
   };
 
@@ -87,12 +87,34 @@ module.exports = app => {
       });
   });
 
+  app.on(['issues.assigned', 'issues.unassigned'], async context => {
+    let payload = context.payload,
+      att = attFormat(payload.repository.full_name, `issue.${payload.action}`),
+      issueNumber = payload.issue.number,
+      action = payload.action,
+      user = antiHighlight(payload.assignee.login),
+      sender = antiHighlight(payload.sender.login),
+      fullname = payload.repository.full_name,
+      color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
+      assignedText;
+
+      if (user === sender) {
+        assignedText = action === 'assigned' ? `${user} ${color}assigned\x0F themselves to` : `${user} ${color}unassigned\x0F themselves from`;
+      } else {
+        assignedText = action === 'assigned' ? `${user} was ${color}assigned\x0F by ${sender} to` : `${user} was ${color}unassigned\x0F by ${sender} from`;
+      }
+
+      shortenUrl(payload.issue.html_url, url => {
+        app.irc.privmsg(`${att} \x0F| ${assignedText} issue #${issueNumber} on ${fullname} - ${url}`);
+      });
+  });
+
   app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
       let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'pull_request'),
         issueNumber = payload.pull_request.number,
         action = payload.action,
-        user = payload.sender.login,
+        user = antiHighlight(payload.sender.login),
         fullname = payload.repository.full_name,
         merge;
 
