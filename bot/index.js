@@ -79,7 +79,7 @@ module.exports = app => {
         att = attFormat(payload.repository.full_name, 'issue.labeled'),
         user = antiHighlight(payload.sender.login),
         action = payload.action,
-        color = '\x02' + ({ labeled: '\x0303', unlabeled: '\x0304'} )[action],
+        color = '\x02' + ({ labeled: '\x0303', unlabeled: '\x0304' })[action],
         issueNumber = payload.issue.number,
         issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
