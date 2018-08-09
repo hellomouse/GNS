@@ -49,12 +49,13 @@ module.exports = app => {
       let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'issue'),
         issueNumber = payload.issue.number,
+		colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }, // Created: Green, Edited: Orange, Deleted: Red
         action = payload.action,
         user = antiHighlight(payload.sender.login),
         fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
-        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${action} by ${user} on ${fullname} - ${url}`);
+        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${colors[action]}${action}\x0F by ${user} on ${fullname} - ${url}`);
       });
   });
 
