@@ -44,10 +44,16 @@ class IRC {
           this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
 
           // Ping
-          if (data.command === 'PING') this.write('PONG');
+          if (data.command === 'PING') {
+              this.write('PONG');
+              this.app.log('Received ping');
+          }
 
           // Joining channels after being authenticated
-          if (data.numeric === 396) this.write(`JOIN ${config.irc.channel}`);
+          if (data.numeric === 396) {
+              this.write(`JOIN ${config.irc.channel}`);
+              this.app.log('Joining channels');
+          }
         });
 
         this.write(`NICK ${config.irc.nickname}`);
