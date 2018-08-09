@@ -87,25 +87,30 @@ module.exports = app => {
       });
   });
 
-  app.on(['issues.assigned', 'issues.unassigned'], async context => {
+  app.on(['issues.assigned',
+        'issues.unassigned',
+        'pull_request.assigned',
+        'pull_request.unassigned'], async context => {
     let payload = context.payload,
-      att = attFormat(payload.repository.full_name, `issue.${payload.action}`),
-      issueNumber = payload.issue.number,
+      att = attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
+      issueNumber = payload.number,
       action = payload.action,
       user = antiHighlight(payload.assignee.login),
       sender = antiHighlight(payload.sender.login),
       fullname = payload.repository.full_name,
       color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
+      event = context.event.replace('_', ' '),
       assignedText;
 
       if (user === sender) {
-        assignedText = action === 'assigned' ? `${user} ${color}assigned\x0F themselves to` : `${user} ${color}unassigned\x0F themselves from`;
+        assignedText = `${user} ${color}${action}\x0F themselves `;
+        assignedText += action === 'assigned' ? `to` : `from`;
       } else {
-        assignedText = action === 'assigned' ? `${user} was ${color}assigned\x0F by ${sender} to` : `${user} was ${color}unassigned\x0F by ${sender} from`;
+        assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
       }
 
-      shortenUrl(payload.issue.html_url, url => {
-        app.irc.privmsg(`${att} \x0F| ${assignedText} issue #${issueNumber} on ${fullname} - ${url}`);
+      shortenUrl(context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url, url => {
+        app.irc.privmsg(`${att} \x0F| ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
   });
 
