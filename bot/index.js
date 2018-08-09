@@ -49,13 +49,13 @@ module.exports = app => {
       let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'issue'),
         issueNumber = payload.issue.number,
-		colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }, // Created: Green, Edited: Orange, Deleted: Red
         action = payload.action,
+        color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
         user = antiHighlight(payload.sender.login),
         fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
-        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${colors[action]}${action}\x0F by ${user} on ${fullname} - ${url}`);
+        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
       });
   });
 
@@ -88,10 +88,8 @@ module.exports = app => {
       });
   });
 
-  app.on(['issues.assigned',
-        'issues.unassigned',
-        'pull_request.assigned',
-        'pull_request.unassigned'], async context => {
+  app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
+      async context => {
     let payload = context.payload,
       att = attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
       issueNumber = payload.number,
@@ -128,7 +126,7 @@ module.exports = app => {
           if (payload.pull_request.base.repo.full_name !== payload.pull_request.head.repo.full_name) {
               merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.label}\x0F) `;
           } else {
-             merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
+            merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
           }
       }
       shortenUrl(payload.pull_request.html_url, url => {
