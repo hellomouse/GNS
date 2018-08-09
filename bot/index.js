@@ -177,7 +177,7 @@ module.exports = app => {
           if (count <= config.multipleCommitsMaxLen) {
               c.message = c.message.split('\n')[0];
               let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
-                author = c.author.name || '(No author name)';
+                author = c.author.name || '\x02\x0304(No author name)\x0F';
 
               app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
               count++;
