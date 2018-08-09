@@ -164,6 +164,8 @@ module.exports = app => {
 
     if (!payload.commits.length) return; // We're not interested in branches
 
+    let isM = payload.commits.length === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
+
     shortenUrl(payload.compare, url => {
         let pushType = payload.forced ? 'force-pushed' : 'pushed';
 
@@ -181,8 +183,7 @@ module.exports = app => {
               count++;
           } else {
               count -= 1;
-              let isM = payload.commits.length - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
-
+              isM = payload.commits.length - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
               app.irc.privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
               break;
           }
