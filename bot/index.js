@@ -182,6 +182,7 @@ module.exports = app => {
               app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
               count++;
           } else {
+              isM = payload.commits.length - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
               app.irc.privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
               break;
           }
