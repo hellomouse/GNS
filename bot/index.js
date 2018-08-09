@@ -136,6 +136,33 @@ module.exports = app => {
       });
   });
 
+  app.on('pull_request_review', async context => {
+      let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'pull_request_review'),
+        issueNumber = payload.pull_request.number,
+        user = antiHighlight(payload.sender.login),
+        fullname = payload.repository.full_name;
+
+        shortenUrl(payload.pull_request.html_url, url => {
+          app.irc.privmsg(`${att}\x0F | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
+              + ` - ${url}`);
+        });
+  });
+
+  app.on('pull_request.review_requested', async context => {
+      let payload = context.payload,
+        att = attFormat(payload.repository.full_name, 'pull_request_review'),
+        issueNumber = payload.pull_request.number,
+        user = antiHighlight(payload.sender.login),
+        fullname = payload.repository.full_name,
+        reviewer = antiHighlight(payload.requested_reviewer.login);
+
+        shortenUrl(payload.pull_request.html_url, url => {
+          app.irc.privmsg(`${att}\x0F | ${user} has requested a review from ${reviewer} on Pull Request #${issueNumber}`
+              + ` in ${fullname} - ${url}`);
+        });
+  });
+
   app.on('status', async context => {
     let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'status'),
