@@ -62,14 +62,14 @@ module.exports = app => {
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
     let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'issue.comment'),
-        colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }, // Created: Green, Edited: Orange, Deleted: Red
-        user = antiHighlight(payload.sender.login),
         action = payload.action,
+        color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
+        user = antiHighlight(payload.sender.login),
         issueNumber = payload.issue.number,
         issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
     shortenUrl(payload.comment.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} ${colors[action]}${action}\x0F a comment on `
+      app.irc.privmsg(`${att} \x0F| ${user} ${color}${action}\x0F a comment on `
         + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
   });
