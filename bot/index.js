@@ -50,12 +50,12 @@ module.exports = app => {
         att = attFormat(payload.repository.full_name, 'issue'),
         issueNumber = payload.issue.number,
         action = payload.action,
-        color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
+        color = ({ opened: '\x0303', reopened: '\x0307', closed: '\x0304' })[action], // opened: Green, reopened: Orange, closed: Red
         user = antiHighlight(payload.sender.login),
         fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
-        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
+        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} \x0F${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
       });
   });
 
@@ -79,12 +79,13 @@ module.exports = app => {
         att = attFormat(payload.repository.full_name, 'issue.labeled'),
         user = antiHighlight(payload.sender.login),
         action = payload.action,
+        color = '\x02' + ({ labeled: '\x0303', unlabeled: '\x0304'} )[action],
         issueNumber = payload.issue.number,
         issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
       shortenUrl(payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| ${user} ${action}\x0F `
-          + `issue #${issueNumber} with label ${payload.label.name} (${issueText}) - ${url}`);
+          + `issue #${issueNumber} with label ${color}${payload.label.name}\x0F (${issueText}) - ${url}`);
       });
   });
 
