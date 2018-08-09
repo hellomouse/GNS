@@ -50,25 +50,26 @@ module.exports = app => {
         att = attFormat(payload.repository.full_name, 'issue'),
         issueNumber = payload.issue.number,
         action = payload.action,
+        color = ({ opened: '\x0303', reopened: '\x0307', closed: '\x0304' })[action], // opened: Green, reopened: Orange, closed: Red
         user = antiHighlight(payload.sender.login),
         fullname = payload.repository.full_name;
 
       shortenUrl(payload.issue.html_url, url => {
-        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${action} by ${user} on ${fullname} - ${url}`);
+        app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} \x0F${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
       });
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
     let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'issue.comment'),
-        colors = { created: '\x0303', edited: '\x0307', deleted: '\x0304' }, // Created: Green, Edited: Orange, Deleted: Red
-        user = antiHighlight(payload.sender.login),
         action = payload.action,
+        color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
+        user = antiHighlight(payload.sender.login),
         issueNumber = payload.issue.number,
         issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
     shortenUrl(payload.comment.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} ${colors[action]}${action}\x0F a comment on `
+      app.irc.privmsg(`${att} \x0F| ${user} ${color}${action}\x0F a comment on `
         + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
   });
@@ -78,19 +79,18 @@ module.exports = app => {
         att = attFormat(payload.repository.full_name, 'issue.labeled'),
         user = antiHighlight(payload.sender.login),
         action = payload.action,
+        color = '\x02' + ({ labeled: '\x0303', unlabeled: '\x0304'} )[action],
         issueNumber = payload.issue.number,
         issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
       shortenUrl(payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| ${user} ${action}\x0F `
-          + `issue #${issueNumber} with label ${payload.label.name} (${issueText}) - ${url}`);
+          + `issue #${issueNumber} with label ${color}${payload.label.name}\x0F (${issueText}) - ${url}`);
       });
   });
 
-  app.on(['issues.assigned',
-        'issues.unassigned',
-        'pull_request.assigned',
-        'pull_request.unassigned'], async context => {
+  app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
+      async context => {
     let payload = context.payload,
       att = attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
       issueNumber = payload.number,
@@ -127,7 +127,7 @@ module.exports = app => {
           if (payload.pull_request.base.repo.full_name !== payload.pull_request.head.repo.full_name) {
               merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.label}\x0F) `;
           } else {
-             merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
+            merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
           }
       }
       shortenUrl(payload.pull_request.html_url, url => {
@@ -177,7 +177,7 @@ module.exports = app => {
           if (count <= config.multipleCommitsMaxLen) {
               c.message = c.message.split('\n')[0];
               let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
-                author = c.author.name || '(No author name)';
+                author = c.author.name || '\x02\x0304(No author name)\x0F';
 
               app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
               count++;
