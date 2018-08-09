@@ -159,7 +159,7 @@ module.exports = app => {
 
         shortenUrl(payload.pull_request.html_url, url => {
           app.irc.privmsg(`${att}\x0F | ${user} has requested a review from ${reviewer} on Pull Request #${issueNumber}`
-              + ` on ${fullname} - ${url}`);
+              + ` in ${fullname} - ${url}`);
         });
   });
 
