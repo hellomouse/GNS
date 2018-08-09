@@ -41,7 +41,7 @@ class IRC {
         this.parser = new Parser();
 
         this.socket.pipe(this.parser).on('data', data => {
-          this.app.log(`>>> ${strip_formatting(data.raw)}`);
+          this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
 
           // Ping
           if (data.command === 'PING') this.write('PONG');
@@ -60,7 +60,7 @@ class IRC {
     */
     write(message) {
         this.socket.write(`${message}\r\n`);
-        this.app.log(`<<< ${message}`);
+        this.app.log.debug(`<<< ${strip_formatting(message)}`);
     }
 
     /**
