@@ -149,16 +149,17 @@ module.exports = app => {
         });
   });
 
-  app.on('pull_request.review_requested', async context => {
+  app.on(['pull_request.review_requested', 'pull_request.review_request_removed'], async context => {
       let payload = context.payload,
         att = attFormat(payload.repository.full_name, 'pull_request_review'),
         issueNumber = payload.pull_request.number,
         user = antiHighlight(payload.sender.login),
         fullname = payload.repository.full_name,
-        reviewer = antiHighlight(payload.requested_reviewer.login);
+        reviewer = antiHighlight(payload.requested_reviewer.login),
+        action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review';
 
         shortenUrl(payload.pull_request.html_url, url => {
-          app.irc.privmsg(`${att}\x0F | ${user} has requested a review from ${reviewer} on Pull Request #${issueNumber}`
+          app.irc.privmsg(`${att}\x0F | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
               + ` in ${fullname} - ${url}`);
         });
   });
