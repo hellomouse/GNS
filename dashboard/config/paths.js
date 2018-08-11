@@ -20,7 +20,7 @@ function ensureSlash(paths, needsSlash) {
     return `${paths}/`;
   }
 
-    return paths;
+  return paths;
 }
 
 const getPublicUrl = appPackageJson =>

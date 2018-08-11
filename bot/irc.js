@@ -11,14 +11,14 @@ const config = require('./config');
 * @return {string}
 */
 function strip_formatting(msg) {
-    /* eslint-disable no-control-regex */
-    let ccodes = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
-    /* eslint-enable no-control-regex */
+  /* eslint-disable no-control-regex */
+  let ccodes = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
+  /* eslint-enable no-control-regex */
 
-    for (let cc of ccodes)
-        msg = msg.replace(new RegExp(cc, 'g'), '');
+  for (let cc of ccodes)
+    msg = msg.replace(new RegExp(cc, 'g'), '');
 
-    return msg;
+  return msg;
 }
 
 /**
@@ -26,55 +26,57 @@ function strip_formatting(msg) {
  */
 class IRC {
 
-    /**
+  /**
      *
      * @param {object} app
      */
-    constructor(app) {
-        this.app = app;
-        this.socket = tls.connect(config.irc.port, config.irc.server, {
-                localaddress: config.irc.bindhost,
-                cert: config.irc.sasl.cert ? readFileSync(config.irc.sasl.cert) : null,
-                key: config.irc.sasl.key ? readFileSync(config.irc.sasl.key): null,
-                passphrase: config.irc.sasl.key_passphrase
-            });
-        this.parser = new Parser();
+  constructor(app) {
+    this.app = app;
+    this.socket = tls.connect(config.irc.port, config.irc.server, {
+      localaddress: config.irc.bindhost,
+      cert: config.irc.sasl.cert ? readFileSync(config.irc.sasl.cert) : null,
+      key: config.irc.sasl.key ? readFileSync(config.irc.sasl.key): null,
+      passphrase: config.irc.sasl.key_passphrase
+    });
+    this.parser = new Parser();
 
-        this.socket.pipe(this.parser).on('data', data => {
-          this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
+    this.socket.pipe(this.parser).on('data', data => {
+      this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
 
-          // Ping
-          if (data.command === 'PING') {
-              this.write('PONG');
-              this.app.log('Received ping');
-          }
+      // Ping
+      if (data.command === 'PING') {
+        this.write('PONG');
+        this.app.log('Received ping');
+      }
 
-          // Joining channels after being authenticated
-          if (data.numeric === 396) {
-              this.write(`JOIN ${config.irc.channel}`);
-              this.app.log('Joining channels');
-          }
-        });
+      // Joining channels after being authenticated
+      if (data.numeric === 396) {
+        this.write(`JOIN ${config.irc.channel}`);
+        this.app.log('Joining channels');
+      }
 
-        this.write(`NICK ${config.irc.nickname}`);
-        this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
-        if (!config.irc.sasl.cert) this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
-    }
+      if (data.numeric === 433) this.write(`NICK ${config.irc.nickname}_`);
+    });
 
-    /**
+    this.write(`NICK ${config.irc.nickname}`);
+    this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
+    if (!config.irc.sasl.cert) this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
+  }
+
+  /**
     * @param {String} message
     */
-    write(message) {
-        this.socket.write(`${message}\r\n`);
-        this.app.log.debug(`<<< ${strip_formatting(message)}`);
-    }
+  write(message) {
+    this.socket.write(`${message}\r\n`);
+    this.app.log.debug(`<<< ${strip_formatting(message)}`);
+  }
 
-    /**
+  /**
     * @param {String} text
     */
-    privmsg(text) {
-        this.write(`PRIVMSG ${config.irc.channel} :${text}`);
-    }
+  privmsg(text) {
+    this.write(`PRIVMSG ${config.irc.channel} :${text}`);
+  }
 
 }
 

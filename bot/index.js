@@ -10,22 +10,22 @@ module.exports = app => {
    * @param {string} user
    * @return {string} user with normal character
    */
-  let antiHighlight = user => {
+  async function antiHighlight(user) {
     return `${user.slice(0, 1)}\u200B${user.slice(1)}`;
-  };
+  }
 
   /**
    * @function
    * @param {string} url - Url of the string to shorten
    * @param {function} cb - Function to callback shortened url with
   */
-  let shortenUrl = (url, cb) => {
+  async function shortenUrl(url, cb) {
     // Posts to the api to create shorter url
     request.post('https://git.io/create', { form: { url } }, (err, res, body) => {
       if (err) app.error(`Shorten url failed for ${url}`);
       cb(`https://git.io/${body}`); // Callback function with url
     });
-  };
+  }
 
   /**
    *
@@ -34,12 +34,12 @@ module.exports = app => {
    * @param {string} event - Event being received from webhook
    * @return {string} Attention string
   */
-  let attFormat = (fullname, event) => {
+  async function attFormat(fullname, event) {
     // [user|org]/[name]
     let [org, name] = fullname.split('/'); // or user
 
     return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
-  };
+  }
 
   app.irc = new (require('./irc'))(app);
 
@@ -47,28 +47,28 @@ module.exports = app => {
 
   app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
     let payload = context.payload,
-      att = attFormat(payload.repository.full_name, 'issue'),
+      att = await attFormat(payload.repository.full_name, 'issue'),
       issueNumber = payload.issue.number,
       action = payload.action,
       color = ({ opened: '\x0303', reopened: '\x0307', closed: '\x0304' })[action], // opened: Green, reopened: Orange, closed: Red
-      user = antiHighlight(payload.sender.login),
+      user = await antiHighlight(payload.sender.login),
       fullname = payload.repository.full_name;
 
-    shortenUrl(payload.issue.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} \x0F${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
+    await shortenUrl(payload.issue.html_url, url => {
+      app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
     });
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
     let payload = context.payload,
-      att = attFormat(payload.repository.full_name, 'issue.comment'),
+      att = await attFormat(payload.repository.full_name, 'issue.comment'),
       action = payload.action,
       color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
-      user = antiHighlight(payload.sender.login),
+      user = await antiHighlight(payload.sender.login),
       issueNumber = payload.issue.number,
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
-    shortenUrl(payload.comment.html_url, url => {
+    await shortenUrl(payload.comment.html_url, url => {
       app.irc.privmsg(`${att} \x0F| ${user} ${color}${action}\x0F a comment on `
         + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
@@ -109,7 +109,7 @@ module.exports = app => {
         assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
       }
 
-      shortenUrl(context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url, url => {
+      await shortenUrl(context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url, url => {
         app.irc.privmsg(`${att} \x0F| ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
     });
@@ -178,7 +178,7 @@ module.exports = app => {
     } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop(payload);
 
 
-    shortenUrl(payload.commit.html_url, url => {
+    await shortenUrl(payload.commit.html_url, url => {
       app.irc.privmsg(`${att} \x0F| [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
     });
   });
@@ -221,35 +221,35 @@ module.exports = app => {
 
   app.on('create', async context => {
     let payload = context.payload,
-      user = antiHighlight(payload.sender.login),
+      user = await antiHighlight(payload.sender.login),
       ref = payload.ref,
       html_url = payload.repository.html_url;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
-    let att = attFormat(payload.repository.full_name, 'branch-create');
+    let att = await attFormat(payload.repository.full_name, 'branch-create');
 
     app.irc.privmsg(`${att} \x0F| ${user} \x0303created\x0F branch ${ref} - ${html_url}`);
   });
 
   app.on('repository.created', async context => {
     let payload = context.payload,
-      user = antiHighlight(payload.sender.login),
+      user = await antiHighlight(payload.sender.login),
       name = payload.repository.full_name,
       html_url = payload.repository.html_url,
       createText = payload.repository.forked ? 'forked' : 'created',
-      att = attFormat(payload.repository.owner.login, 'repository-create');
+      att = await attFormat(payload.repository.owner.login, 'repository-create');
 
     app.irc.privmsg(`${att} \x0F| ${user} \x0303${createText}\x0F repository ${name} - ${html_url}`);
   });
 
   app.on('delete', async context => {
     let payload = context.payload,
-      user = antiHighlight(payload.sender.login),
+      user = await antiHighlight(payload.sender.login),
       ref = payload.ref,
       html_url = payload.repository.html_url;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
-    let att = attFormat(payload.repository.full_name, 'branch-delete');
+    let att = await attFormat(payload.repository.full_name, 'branch-delete');
 
     app.irc.privmsg(`${att} \x0F| ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
   });
