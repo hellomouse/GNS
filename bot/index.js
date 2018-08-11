@@ -108,8 +108,9 @@ module.exports = app => {
       } else {
         assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
       }
+      let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url;
 
-      await shortenUrl(context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url, url => {
+      await shortenUrl(html_url, url => {
         app.irc.privmsg(`${att} \x0F| ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
     });
