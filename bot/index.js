@@ -254,8 +254,8 @@ module.exports = app => {
         if (payload.base_ref) {
           app.irc.privmsg(`${msg} merged ${fmt_branch(payload.base_ref)} into ${ref}: ${url}`);
         } else {
-          let before_sha = fmt_hash(payload.before),
-            after_sha = fmt_hash(payload.after);
+          let before_sha = fmt_hash(payload.before.substring(0, 7)),
+            after_sha = fmt_hash(payload.after.substring(0, 7));
 
           app.irc.privmsg(`${msg} fast-forwarded ${ref} from ${before_sha} to ${after_sha}: ${url}`);
         }
