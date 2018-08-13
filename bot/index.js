@@ -24,7 +24,7 @@ function fmt_repo(s) {
  * @return {string}   Returns formatted author name string
  */
 function fmt_name(s) {
-  return '\x0315${s}\x0F';
+  return `\x0315${s}\x0F`;
 }
 
 /**
@@ -32,7 +32,7 @@ function fmt_name(s) {
  * @return {string}   Returns formatted branch name string
  */
 function fmt_branch(s) {
-  return '\x0306${s}\x0F';
+  return `\x0306${s}\x0F`;
 }
 
 /**
@@ -40,7 +40,7 @@ function fmt_branch(s) {
  * @return {string}   Returns formatted tag name string
  */
 function fmt_tag(s) {
-  return '\x0306${s}\x0F';
+  return `\x0306${s}\x0F`;
 }
 
 /**
@@ -48,7 +48,7 @@ function fmt_tag(s) {
  * @return {string}   Returns formatted commit hash string
  */
 function fmt_hash(s) {
-  return '\x0314${s}\x0F';
+  return `\x0314${s}\x0F`;
 }
 
 module.exports = app => {
