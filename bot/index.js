@@ -250,7 +250,9 @@ module.exports = app => {
 
       url = fmt_url(url);
 
-      if (!numC) {
+      let distinct_commits = payload.commits.filter(x => { if (x.distinct) return x; });
+
+      if (numC !== 0 && distinct_commits.length === 0) {
         if (payload.base_ref) {
           app.irc.privmsg(`${msg} merged ${fmt_branch(payload.base_ref)} into ${ref}: ${url}`);
         } else {
