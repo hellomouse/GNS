@@ -55,7 +55,7 @@ module.exports = app => {
       fullname = payload.repository.full_name;
 
     await shortenUrl(payload.issue.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
+      app.irc.privmsg(`${att} | Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
     });
   });
 
@@ -69,7 +69,7 @@ module.exports = app => {
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
     await shortenUrl(payload.comment.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} ${color}${action}\x0F a comment on `
+      app.irc.privmsg(`${att} | ${user} ${color}${action}\x0F a comment on `
         + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
   });
@@ -111,7 +111,7 @@ module.exports = app => {
       let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url;
 
       await shortenUrl(html_url, url => {
-        app.irc.privmsg(`${att} \x0F| ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
+        app.irc.privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
     });
 
@@ -132,7 +132,7 @@ module.exports = app => {
       }
     }
     shortenUrl(payload.pull_request.html_url, url => {
-      app.irc.privmsg(`${att}\x0F | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge || ''}`
+        app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
             + `\x02\x0303+${payload.pull_request.additions} \x0304-${payload.pull_request.deletions}\x0F - ${url}`);
     });
   });
@@ -145,7 +145,7 @@ module.exports = app => {
       fullname = payload.repository.full_name;
 
     shortenUrl(payload.pull_request.html_url, url => {
-      app.irc.privmsg(`${att}\x0F | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
+      app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
               + ` - ${url}`);
     });
   });
@@ -160,7 +160,7 @@ module.exports = app => {
       action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review';
 
     shortenUrl(payload.pull_request.html_url, url => {
-      app.irc.privmsg(`${att}\x0F | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
+      app.irc.privmsg(`${att} | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
               + ` in ${fullname} - ${url}`);
     });
   });
@@ -180,7 +180,7 @@ module.exports = app => {
 
 
     await shortenUrl(payload.commit.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
+      app.irc.privmsg(`${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
     });
   });
 
@@ -229,7 +229,7 @@ module.exports = app => {
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = await attFormat(payload.repository.full_name, 'branch-create');
 
-    app.irc.privmsg(`${att} \x0F| ${user} \x0303created\x0F branch ${ref} - ${html_url}`);
+    app.irc.privmsg(`${att} | ${user} \x0303created\x0F branch ${ref} - ${html_url}`);
   });
 
   app.on('repository.created', async context => {
@@ -240,7 +240,7 @@ module.exports = app => {
       createText = payload.repository.forked ? 'forked' : 'created',
       att = await attFormat(payload.repository.owner.login, 'repository-create');
 
-    app.irc.privmsg(`${att} \x0F| ${user} \x0303${createText}\x0F repository ${name} - ${html_url}`);
+    app.irc.privmsg(`${att} | ${user} \x0303${createText}\x0F repository ${name} - ${html_url}`);
   });
 
   app.on('delete', async context => {
@@ -252,6 +252,6 @@ module.exports = app => {
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = await attFormat(payload.repository.full_name, 'branch-delete');
 
-    app.irc.privmsg(`${att} \x0F| ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
+    app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
   });
 };
