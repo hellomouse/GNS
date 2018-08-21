@@ -133,7 +133,7 @@ module.exports = app => {
 
     let label = labels[payload.label.name] || payload.label.name
     await shortenUrl(payload.issue.html_url, url => {
-      app.irc.privmsg(`${att} \x0F| ${user} ${color + action}\x0F `
+      app.irc.privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
     });
   });
