@@ -131,7 +131,7 @@ module.exports = app => {
       issueNumber = payload.issue.number,
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
-    let label = (labels)[payload.label.name] || payload.label.name
+    let label = labels[payload.label.name] || payload.label.name
     await shortenUrl(payload.issue.html_url, url => {
       app.irc.privmsg(`${att} \x0F| ${user} ${color + action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
