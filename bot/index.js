@@ -3,6 +3,53 @@ const config = require('./config');
 
 let pendingStatus = []; // contains all pending checks from travis as multiple are sent
 
+/**
+ * @param  {string} s The commit hash string
+ * @return {string}   Returns formatted commit hash string
+ */
+function fmt_url(s) {
+  return `\x0302\x1F${s}\x0F`;
+}
+
+/**
+ * @param  {string} s The commit hash string
+ * @return {string}   Returns formatted commit hash string
+ */
+function fmt_repo(s) {
+  return `\x0313${s}\x0F`;
+}
+
+/**
+ * @param  {string} s The author name string
+ * @return {string}   Returns formatted author name string
+ */
+function fmt_name(s) {
+  return `\x0315${s}\x0F`;
+}
+
+/**
+ * @param  {string} s The branch name string
+ * @return {string}   Returns formatted branch name string
+ */
+function fmt_branch(s) {
+  return `\x0306${s}\x0F`;
+}
+
+/**
+ * @param  {string} s The tag name string
+ * @return {string}   Returns formatted tag name string
+ */
+function fmt_tag(s) {
+  return `\x0306${s}\x0F`;
+}
+
+/**
+ * @param  {string} s The commit hash string
+ * @return {string}   Returns formatted commit hash string
+ */
+function fmt_hash(s) {
+  return `\x0314${s}\x0F`;
+}
 
 module.exports = app => {
   /**
@@ -189,32 +236,47 @@ module.exports = app => {
       att = attFormat(payload.repository.full_name, 'push'),
       user = antiHighlight(payload.sender.login),
       numC = payload.commits.length,
-      ref = payload.ref.split('/')[2];
+      ref = fmt_branch(payload.ref.split('/')[2]);
 
-    if (!payload.commits.length) return; // We're not interested in branches
+    if (payload.created || payload.deleted) return; // We already handle these in their respective event
 
-    let isM = payload.commits.length === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
+    let isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
 
     shortenUrl(payload.compare, url => {
-      let pushType = payload.forced ? 'force-pushed' : 'pushed';
+      let pushType = payload.forced ? 'force-pushed' : 'pushed',
+        count = 1,
+        msg = `${att} \x0F| \x0315${user}\x0F`,
+        repo = `${fmt_repo(payload.repository.name)}/${ref}`;
 
-      app.irc.privmsg(`${att} \x0F| \x0315${user}\x0F ${pushType} \x02${numC}\x0F ${isM} to \x0306${ref}\x0F: ${url}`);
-      let count = 1,
-        msg_base = `\x0313${payload.repository.name}\x0F/\x0306${ref}\x0F`;
+      url = fmt_url(url);
 
-      for (let c of payload.commits) {
-        if (count <= config.multipleCommitsMaxLen) {
-          c.message = c.message.split('\n')[0];
-          let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
-            author = c.author.name || '\x02\x0304(No author name)\x0F';
+      let distinct_commits = payload.commits.filter(x => { if (x.distinct) return x; });
 
-          app.irc.privmsg(`${msg_base} \x0314${c.id.substring(0, 7)}\x0F ${author}: ${message}`);
-          count++;
+      if (numC !== 0 && distinct_commits.length === 0) {
+        if (payload.base_ref) {
+          app.irc.privmsg(`${msg} merged ${fmt_branch(payload.base_ref)} into ${ref}: ${url}`);
         } else {
-          count -= 1;
-          isM = payload.commits.length - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
-          app.irc.privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
-          break;
+          let before_sha = fmt_hash(payload.before.substring(0, 7)),
+            after_sha = fmt_hash(payload.after.substring(0, 7));
+
+          app.irc.privmsg(`${msg} fast-forwarded ${ref} from ${before_sha} to ${after_sha}: ${url}`);
+        }
+      } else {
+        app.irc.privmsg(`${msg} ${pushType} \x02${numC}\x0F ${isM} to ${ref}: ${url}`);
+        for (let c of payload.commits) {
+          if (count <= config.multipleCommitsMaxLen) {
+            c.message = c.message.split('\n')[0];
+            let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
+              author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
+
+            app.irc.privmsg(`${repo} ${fmt_hash(c.id.substring(0, 7))} ${author}: ${message}`);
+            count++;
+          } else {
+            count -= 1;
+            isM = numC - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
+            app.irc.privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
+            break;
+          }
         }
       }
     });
