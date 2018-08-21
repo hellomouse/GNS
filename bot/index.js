@@ -1,4 +1,4 @@
-const request = require('request');
+const request = require('request-promise-native');
 const labels = require('./labels');
 const IRC = require('./irc');
 const web = require('./web');
@@ -79,23 +79,20 @@ module.exports = async app => {
   }
 
   /**
- * Callback function type for the shortenURL function
- * @callback URLCallback
- * @param {String} url The minified URL
- */
-
-  /**
    * @function
    * @async
    * @param {string} url - Url of the string to shorten
-   * @param {URLCallback} cb - Function to callback shortened url with
+   * @return {Promise<string>}
   */
-  async function shortenUrl(url, cb) {
+  async function shortenUrl(url) {
     // Posts to the api to create shorter url
-    request.post('https://git.io/create', { form: { url } }, (err, res, body) => {
-      if (err) app.error(`Shorten url failed for ${url}`);
-      cb(`https://git.io/${body}`); // Callback function with url
-    });
+    try {
+      const req = await request.post({ uri: 'https://git.io/create', form: { url } });
+
+      return `https://git.io/${req}`;
+    } catch (e) {
+      app.error(`Shorten url failed for ${url}: ${e.message}`);
+    }
   }
 
   /**
@@ -130,12 +127,10 @@ module.exports = async app => {
       color = ({ opened: '\x0303', reopened: '\x0307', closed: '\x0304' })[action], // opened: Green, reopened: Orange, closed: Red
       user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      url = fmt_url(await shortenUrl(payload.issue.html_url));
 
-    await shortenUrl(payload.issue.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} | Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
-    });
+    app.irc[org].privmsg(`${att} | Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
@@ -146,13 +141,11 @@ module.exports = async app => {
       user = fmt_name(await antiHighlight(payload.sender.login)),
       issueNumber = payload.issue.number,
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`,
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      url = fmt_url(await shortenUrl(payload.comment.html_url));
 
-    await shortenUrl(payload.comment.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} | ${user} ${color}${action}\x0F a comment on `
+    app.irc[org].privmsg(`${att} | ${user} ${color}${action}\x0F a comment on `
           + `issue #${issueNumber} (${issueText}) - ${url}`);
-    });
   });
 
   app.on('issues.labeled', async context => {
@@ -163,15 +156,12 @@ module.exports = async app => {
       color = `\x02${({ labeled: '\x0303', unlabeled: '\x0304' })[action]}`,
       issueNumber = payload.issue.number,
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`,
-      org = payload.repository.owner.login;
-
+      org = payload.repository.owner.login,
+      url = fmt_url(await shortenUrl(payload.issue.html_url));
     let label = labels[payload.label.name] || payload.label.name;
 
-    await shortenUrl(payload.issue.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
+    app.irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
-    });
   });
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
@@ -194,12 +184,10 @@ module.exports = async app => {
         } else {
           assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
         }
-        let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url;
+        let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url,
+          url = fmt_url(await shortenUrl(html_url));
 
-        await shortenUrl(html_url, url => {
-          url = fmt_url(url);
-          app.irc[org].privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
-        });
+        app.irc[org].privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
 
   app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
@@ -210,7 +198,8 @@ module.exports = async app => {
       user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
       merge = '',
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      url = await shortenUrl(payload.pull_request.html_url);
 
     if (action === 'opened' || action === 'reopened') {
       if (payload.pull_request.base.repo.full_name !== payload.pull_request.head.repo.full_name) {
@@ -219,11 +208,9 @@ module.exports = async app => {
         merge = `(\x0306${payload.pull_request.base.ref}...${payload.pull_request.head.ref}\x0F) `;
       }
     }
-    await shortenUrl(payload.pull_request.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
+
+    app.irc[org].privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
             + `\x02\x0303+${payload.pull_request.additions} \x0304-${payload.pull_request.deletions}\x0F - ${url}`);
-    });
   });
 
   app.on('pull_request_review', async context => {
@@ -233,13 +220,11 @@ module.exports = async app => {
       user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
       state = payload.review.state.replace('_', ' '),
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      url = fmt_url(await shortenUrl(payload.pull_request.html_url));
 
-    await shortenUrl(payload.pull_request.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} | Pull Request #${issueNumber} ${state} by ${user} on ${fullname}`
+    app.irc[org].privmsg(`${att} | Pull Request #${issueNumber} ${state} by ${user} on ${fullname}`
               + ` - ${url}`);
-    });
   });
 
   app.on(['pull_request.review_requested', 'pull_request.review_request_removed'], async context => {
@@ -250,13 +235,11 @@ module.exports = async app => {
       fullname = payload.repository.full_name,
       reviewer = fmt_name(await antiHighlight(payload.requested_reviewer.login)),
       action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review',
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      url = fmt_url(await shortenUrl(payload.pull_request.html_url));
 
-    await shortenUrl(payload.pull_request.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
+    app.irc[org].privmsg(`${att} | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
               + ` in ${fullname} - ${url}`);
-    });
   });
 
   app.on('status', async context => {
@@ -273,10 +256,9 @@ module.exports = async app => {
       pendingStatus.push(payload.target_url); // We'll use target_url as identifier
     } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop(payload);
 
-    await shortenUrl(payload.commit.html_url, url => {
-      url = fmt_url(url);
-      app.irc[org].privmsg(`${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
-    });
+    let url = await shortenUrl(payload.commit.html_url);
+
+    app.irc[org].privmsg(`${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
   });
 
   app.on('push', async context => {
@@ -325,28 +307,27 @@ module.exports = async app => {
       msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
     }
 
-    let isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
+    let isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
+      url = await shortenUrl(payload.compare);
 
-    await shortenUrl(payload.compare, url => {
-      msg.push(fmt_url(url));
-      app.irc.privmsg(msg.join(' '));
+    msg.push(fmt_url(url));
+    app.irc.privmsg(msg.join(' '));
 
-      for (let c of payload.commits) {
-        if (count <= app.irc.config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
-          c.message = c.message.split('\n')[0];
-          let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
-            author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
+    for (let c of payload.commits) {
+      if (count <= app.irc.config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
+        c.message = c.message.split('\n')[0];
+        let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
+          author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
 
-          app.irc[org].privmsg(`${repo} ${fmt_hash(c.id.substring(0, 7))} ${author}: ${message}`);
-          count++;
-        } else {
-          count -= 1;
-          isM = numC - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
-          app.irc[org].privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
-          break;
-        }
+        app.irc[org].privmsg(`${repo} ${fmt_hash(c.id.substring(0, 7))} ${author}: ${message}`);
+        count++;
+      } else {
+        count -= 1;
+        isM = numC - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
+        app.irc[org].privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
+        break;
       }
-    });
+    }
   });
 
   app.on('create', async context => {
