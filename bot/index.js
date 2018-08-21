@@ -166,7 +166,7 @@ module.exports = app => {
     let payload = context.payload,
       att = attFormat(payload.repository.full_name, 'pull_request'),
       issueNumber = payload.pull_request.number,
-      action = payload.action,
+      action = payload.action === 'closed' && payload.pull_request.merge ? 'merged' : payload.action,
       user = antiHighlight(payload.sender.login),
       fullname = payload.repository.full_name,
       merge;
