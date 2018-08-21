@@ -132,7 +132,7 @@ module.exports = app => {
       }
     }
     shortenUrl(payload.pull_request.html_url, url => {
-        app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
+      app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
             + `\x02\x0303+${payload.pull_request.additions} \x0304-${payload.pull_request.deletions}\x0F - ${url}`);
     });
   });
@@ -253,5 +253,30 @@ module.exports = app => {
     let att = await attFormat(payload.repository.full_name, 'branch-delete');
 
     app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
+  });
+
+  app.on('repository_vulnerability_alert', async context => {
+    let payload = context.payload,
+      action = payload.action,
+      att = await attFormat('', 'repository-vulnerability-' + action); // We're not given repo or org name
+
+    // Alert specific
+    let alert = payload.alert
+    let package = alert.affected_package_name,
+      extReference = alert.external_reference,
+      affectRange = alert.affected_range,
+      extID = alert.external_identifier,
+      fixedIn = alert.fixed_in;
+
+    if (payload.action === 'dimiss') {
+      let login = alert.dismisser.login;
+      let alertText = `Vulnerability  ${package} (${extReference}) was dismissed by ${login}`;
+    } else {
+      let fixed = payload.action === 'resolve' ? `Fixed (${fixedIn})` : '';
+      let alertText = `Vulnerability ${package} (${extReference}) was ${action + 'ed'}` + fixed;
+    }
+
+    app.irc.privmsg(`${att} | ${alertText} - ${extReference}`);
+
   });
 };
