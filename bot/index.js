@@ -93,7 +93,7 @@ module.exports = app => {
     async context => {
       let payload = context.payload,
         att = attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
-        issueNumber = payload.number,
+        issueNumber = payload.number || payload.issue.number,
         action = payload.action,
         user = antiHighlight(payload.assignee.login),
         sender = antiHighlight(payload.sender.login),
