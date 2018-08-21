@@ -253,7 +253,7 @@ module.exports = app => {
 
       url = fmt_url(url);
 
-      let distinct_commits = payload.commits.filter(x => { if (x.distinct) return x; });
+      let distinct_commits = payload.commits.filter(x => x.distinct);
 
       if (numC !== 0 && distinct_commits.length === 0) {
         if (payload.base_ref) {
