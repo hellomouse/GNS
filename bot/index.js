@@ -169,7 +169,7 @@ module.exports = app => {
       action = payload.action === 'closed' && payload.pull_request.merge ? 'merged' : payload.action,
       user = await antiHighlight(payload.sender.login),
       fullname = payload.repository.full_name,
-      merge;
+      merge = '';
 
     if (action === 'opened' || action === 'reopened') {
       if (payload.pull_request.base.repo.full_name !== payload.pull_request.head.repo.full_name) {
@@ -214,7 +214,7 @@ module.exports = app => {
 
   app.on('status', async context => {
     let payload = context.payload,
-      att = attFormat(payload.repository.full_name, 'status'),
+      att = await attFormat(payload.repository.full_name, 'status'),
       colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }, // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
       { state, description, target_url } = payload,
       webhookUrl = target_url ? target_url.split('?')[0] : '',
