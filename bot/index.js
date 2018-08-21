@@ -322,25 +322,24 @@ module.exports = app => {
   app.on('repository_vulnerability_alert', async context => {
     let payload = context.payload,
       action = payload.action,
-      att = await attFormat('', 'repository-vulnerability-' + action); // We're not given repo or org name
+      att = await attFormat('', `repository-vulnerability-${action}`); // We're not given repo or org name
 
     // Alert specific
-    let alert = payload.alert
-    let package = alert.affected_package_name,
-      extReference = alert.external_reference,
-      affectRange = alert.affected_range,
-      extID = alert.external_identifier,
-      fixedIn = alert.fixed_in;
+    let alert = payload.alert,
+      // eslint-disable-next-line no-unused-vars
+      { package_name, extReference, affectRange, extID, fixedIn } = alert,
+      alertText = '';
 
     if (payload.action === 'dimiss') {
       let login = alert.dismisser.login;
-      let alertText = `Vulnerability  ${package} (${extReference}) was dismissed by ${login}`;
+
+      alertText = `Vulnerability  ${package_name} (${extReference}) was dismissed by ${login}`;
     } else {
       let fixed = payload.action === 'resolve' ? `Fixed (${fixedIn})` : '';
-      let alertText = `Vulnerability ${package} (${extReference}) was ${action + 'ed'}` + fixed;
+
+      alertText = `Vulnerability ${package_name} (${extReference}) was ${action}ed ${fixed}`;
     }
 
     app.irc.privmsg(`${att} | ${alertText} - ${extReference}`);
-
   });
 };
