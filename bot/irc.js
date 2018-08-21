@@ -49,8 +49,8 @@ class IRC {
         this.app.log('Received ping');
       }
 
-      // Joining channels after being authenticated
-      if (data.numeric === 396) {
+      if (data.numeric === 396 && config.irc.joinOnIdentify || data.numeric === 1 && !config.irc.joinOnIdentify) {
+        // Joining channels after being authenticated if config option is set, if not, join after the MOTD
         this.write(`JOIN ${config.irc.channel}`);
         this.app.log('Joining channels');
       }
