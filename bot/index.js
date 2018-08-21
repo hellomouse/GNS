@@ -308,13 +308,13 @@ module.exports = app => {
   });
 
   app.on('delete', async context => {
-    let payload = context.payload,
-      user = await antiHighlight(payload.sender.login),
-      ref = payload.ref,
-      html_url = payload.repository.html_url;
+    let payload = context.payload;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
-    let att = await attFormat(payload.repository.full_name, 'branch-delete');
+    let user = await antiHighlight(payload.sender.login),
+      ref = payload.ref,
+      html_url = payload.repository.html_url,
+      att = await attFormat(payload.repository.full_name, 'branch-delete');
 
     app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
   });
