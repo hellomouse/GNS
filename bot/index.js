@@ -241,7 +241,7 @@ module.exports = app => {
       numC = payload.commits.length,
       ref = fmt_branch(payload.ref.split('/')[2]);
 
-    if (payload.created && numC > 0 || payload.deleted) return; // We already handle these in their respective event
+    if (payload.created && numC === 0 || payload.deleted) return; // We already handle these in their respective event
 
     let isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
 
