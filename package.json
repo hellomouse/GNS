@@ -26,9 +26,6 @@
   "dependencies": {
     "irc-stream-parser": "^0.1.0",
     "probot": "^7.0.0",
-    "react": "^16.4.1",
-    "react-dom": "^16.4.1",
-    "react-scripts": "^1.1.4",
     "request": "^2.87.0"
   },
   "devDependencies": {
