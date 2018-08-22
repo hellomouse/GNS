@@ -99,10 +99,11 @@ module.exports = app => {
       issueNumber = payload.issue.number,
       action = payload.action,
       color = ({ opened: '\x0303', reopened: '\x0307', closed: '\x0304' })[action], // opened: Green, reopened: Orange, closed: Red
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name;
 
     await shortenUrl(payload.issue.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} | Issue #${issueNumber} ${color}${action}\x0F by ${user} on ${fullname} - ${url}`);
     });
   });
@@ -112,11 +113,12 @@ module.exports = app => {
       att = await attFormat(payload.repository.full_name, 'issue.comment'),
       action = payload.action,
       color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       issueNumber = payload.issue.number,
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`;
 
     await shortenUrl(payload.comment.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} | ${user} ${color}${action}\x0F a comment on `
         + `issue #${issueNumber} (${issueText}) - ${url}`);
     });
@@ -125,7 +127,7 @@ module.exports = app => {
   app.on('issues.labeled', async context => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'issue.labeled'),
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       action = payload.action,
       color = `\x02${({ labeled: '\x0303', unlabeled: '\x0304' })[action]}`,
       issueNumber = payload.issue.number,
@@ -134,6 +136,7 @@ module.exports = app => {
     let label = labels[payload.label.name] || payload.label.name;
 
     await shortenUrl(payload.issue.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
     });
@@ -145,8 +148,8 @@ module.exports = app => {
         att = await attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
         issueNumber = payload.number || payload.issue.number,
         action = payload.action,
-        user = await antiHighlight(payload.assignee.login),
-        sender = await antiHighlight(payload.sender.login),
+        user = fmt_name(await antiHighlight(payload.assignee.login)),
+        sender = fmt_name(await antiHighlight(payload.sender.login)),
         fullname = payload.repository.full_name,
         color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
         event = context.event.replace('_', ' '),
@@ -161,6 +164,7 @@ module.exports = app => {
       let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url;
 
       await shortenUrl(html_url, url => {
+        url = fmt_url(url);
         app.irc.privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
     });
@@ -170,7 +174,7 @@ module.exports = app => {
       att = await attFormat(payload.repository.full_name, 'pull_request'),
       issueNumber = payload.pull_request.number,
       action = payload.action === 'closed' && payload.pull_request.merged ? 'merged' : payload.action,
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
       merge = '';
 
@@ -182,6 +186,7 @@ module.exports = app => {
       }
     }
     await shortenUrl(payload.pull_request.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
             + `\x02\x0303+${payload.pull_request.additions} \x0304-${payload.pull_request.deletions}\x0F - ${url}`);
     });
@@ -191,10 +196,11 @@ module.exports = app => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'pull_request_review'),
       issueNumber = payload.pull_request.number,
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name;
 
     await shortenUrl(payload.pull_request.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
               + ` - ${url}`);
     });
@@ -204,12 +210,13 @@ module.exports = app => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'pull_request_review'),
       issueNumber = payload.pull_request.number,
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
-      reviewer = await antiHighlight(payload.requested_reviewer.login),
+      reviewer = fmt_name(await antiHighlight(payload.requested_reviewer.login)),
       action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review';
 
     await shortenUrl(payload.pull_request.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
               + ` in ${fullname} - ${url}`);
     });
@@ -230,6 +237,7 @@ module.exports = app => {
 
 
     await shortenUrl(payload.commit.html_url, url => {
+      url = fmt_url(url);
       app.irc.privmsg(`${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
     });
   });
@@ -237,7 +245,7 @@ module.exports = app => {
   app.on('push', async context => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'push'),
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       numC = payload.commits.length,
       ref = fmt_branch(payload.ref.split('/')[2]);
 
@@ -287,9 +295,9 @@ module.exports = app => {
 
   app.on('create', async context => {
     let payload = context.payload,
-      user = await antiHighlight(payload.sender.login),
-      ref = payload.ref,
-      html_url = payload.repository.html_url;
+      user = fmt_name(await antiHighlight(payload.sender.login)),
+      ref = fmt_branch(payload.ref),
+      html_url = fmt_url(payload.repository.html_url);
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
     let att = await attFormat(payload.repository.full_name, 'branch-create');
@@ -299,9 +307,9 @@ module.exports = app => {
 
   app.on('repository.created', async context => {
     let payload = context.payload,
-      user = await antiHighlight(payload.sender.login),
+      user = fmt_name(await antiHighlight(payload.sender.login)),
       name = payload.repository.full_name,
-      html_url = payload.repository.html_url,
+      html_url = fmt_url(payload.repository.html_url),
       createText = payload.repository.forked ? 'forked' : 'created',
       att = await attFormat(payload.repository.owner.login, 'repository-create');
 
@@ -312,9 +320,9 @@ module.exports = app => {
     let payload = context.payload;
 
     if (payload.ref_type === 'tag') return; // We're not handling tags yet
-    let user = await antiHighlight(payload.sender.login),
-      ref = payload.ref,
-      html_url = payload.repository.html_url,
+    let user = fmt_name(await antiHighlight(payload.sender.login)),
+      ref = fmt_branch(payload.ref),
+      html_url = fmt_url(payload.repository.html_url),
       att = await attFormat(payload.repository.full_name, 'branch-delete');
 
     app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
