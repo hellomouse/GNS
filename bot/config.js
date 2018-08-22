@@ -12,7 +12,8 @@ module.exports = {
       key: null, // Path to private key that goes with certificate
       key_passphrase: null
     },
-    bindhost: null
+    bindhost: null,
+    requireAuth: true
   },
   attentionString: '!att-{name}-{event}', // '!att-{org}-{name}-{event}'
   multipleCommitsMaxLen: 4
