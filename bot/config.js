@@ -15,6 +15,10 @@ module.exports = {
     bindhost: null,
     requireAuth: true
   },
+  discord: {
+    token: '',
+    channel: '' // guild#channel (id) (ID's are listed upon startup)
+  },
   attentionString: '!att-{name}-{event}', // '!att-{org}-{name}-{event}'
   multipleCommitsMaxLen: 4
 };

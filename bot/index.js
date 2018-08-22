@@ -205,6 +205,8 @@ module.exports = app => {
       url = fmt_url(url);
       app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
               + ` - ${url}`);
+      app.discord.channel.send(`${att} | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
+      + ` - ${url}`) // Testing. TODO: Rich presense. Formatting in respective modules
     });
   });
 
