@@ -89,7 +89,9 @@ module.exports = app => {
     return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
   }
 
+  // Initialize services
   app.irc = new (require('./irc'))(app);
+  app.discord = new (require('./discord'))(app);
 
   // App events
 
