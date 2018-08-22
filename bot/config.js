@@ -13,7 +13,7 @@ module.exports = {
       key_passphrase: null
     },
     bindhost: null,
-    joinOnIdentify: true
+    requireAuth: true
   },
   attentionString: '!att-{name}-{event}', // '!att-{org}-{name}-{event}'
   multipleCommitsMaxLen: 4
