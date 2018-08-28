@@ -40,7 +40,10 @@ class IRC {
     });
     this.parser = new Parser();
 
-    this.socket.pipe(this.parser).on('data', data => {
+    this.socket.on('connect', () => {
+      this.write(`NICK ${config.irc.nickname}`);
+      this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
+    }).pipe(this.parser).on('data', data => {
       this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
 
       // Ping
@@ -58,8 +61,6 @@ class IRC {
       if (data.numeric === 433) this.write(`NICK ${config.irc.nickname}_`);
     });
 
-    this.write(`NICK ${config.irc.nickname}`);
-    this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
     if (!config.irc.sasl.cert) this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
   }
 
