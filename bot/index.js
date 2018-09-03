@@ -316,6 +316,15 @@ module.exports = app => {
     app.irc.privmsg(`${att} | ${user} \x0303${createText}\x0F repository ${name} - ${html_url}`);
   });
 
+  app.on('repository.deleted', async context => {
+    let payload = context.payload,
+      user = fmt_name(await antiHighlight(payload.sender.login)),
+      name = payload.repository.full_name,
+      att = await attFormat(payload.repository.owner.login, 'repository-delete');
+
+    app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F repository ${name}`);
+  });
+
   app.on('delete', async context => {
     let payload = context.payload;
 
