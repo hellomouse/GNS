@@ -66,10 +66,11 @@ class IRC extends Events {
   }
 
   /**
+    * @param {String} org The organization (or user) name
     * @param {String} text
     */
-  privmsg(text) {
-    this.write(`PRIVMSG ${config.irc.channel} :${text}`);
+  privmsg(org, text) {
+    this.write(`PRIVMSG ${config.orgs[org].irc.channel} :${text}`);
   }
 
 }
