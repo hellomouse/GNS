@@ -25,29 +25,22 @@ class Events {
       this.app.log('Received ping');
     };
 
-    this.join = () => {
-      for (let i of Object.keys(config.orgs)) {
-        if (!config.orgs[i].irc) {
-          this.write(`JOIN ${config.orgs[i].irc.channel}`);
-          this.app.log('Joining channels');
-        }
-      }
-    };
-
     this.RPL_WELCOME = (app, event) => {
       if (!config.irc.sasl.cert) {
         this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
       }
       if (!config.irc.requireAuth) {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
-        this.join();
+        this.write(`JOIN ${config.irc.channel}`);
+        this.app.log('Joining channels');
       }
     };
 
     this.on_396 = (app, event) => {
       if (config.irc.requireAuth) {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
-        this.join();
+        this.write(`JOIN ${config.irc.channel}`);
+        this.app.log('Joining channels');
       }
     };
 
