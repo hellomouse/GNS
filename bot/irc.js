@@ -1,3 +1,5 @@
+const events = require('events');
+const Events = require('./irc/events');
 const Parser = require('irc-stream-parser');
 const tls = require('tls');
 const { readFileSync } = require('fs');
@@ -24,13 +26,14 @@ function strip_formatting(msg) {
 /**
  * IRC connection wrapper
  */
-class IRC {
+class IRC extends Events {
 
   /**
      *
      * @param {object} app
      */
   constructor(app) {
+    super();
     this.app = app;
     this.socket = tls.connect(config.irc.port, config.irc.server, {
       localaddress: config.irc.bindhost,
@@ -41,27 +44,17 @@ class IRC {
     this.parser = new Parser();
 
     this.socket.on('connect', () => {
+      this.irc_events = new events.EventEmitter();
+      super.init(this);
+      this.app.log.info('Connected to IRC');
+      this.write('CAP LS');
       this.write(`NICK ${config.irc.nickname}`);
       this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
     }).pipe(this.parser).on('data', data => {
       this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
-
-      // Ping
-      if (data.command === 'PING') {
-        this.write('PONG');
-        this.app.log('Received ping');
-      }
-
-      if (data.numeric === 396 && config.irc.requireAuth || data.numeric === 1 && !config.irc.requireAuth) {
-        // Joining channels after being authenticated if config option is set, if not, join after the MOTD
-        this.write(`JOIN ${config.irc.channel}`);
-        this.app.log('Joining channels');
-      }
-
-      if (data.numeric === 433) this.write(`NICK ${config.irc.nickname}_`);
+      this.irc_events.emit(data.command, this, data);
+      this.irc_events.emit(data.numeric, this, data);
     });
-
-    if (!config.irc.sasl.cert) this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
   }
 
   /**
