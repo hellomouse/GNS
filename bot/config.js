@@ -20,5 +20,10 @@ module.exports = {
       attentionString: '!att-{name}-{event}', // '!att-{org}-{name}-{event}'
       multipleCommitsMaxLen: 4
     }
-  }
+  },
+  irc: {
+    requireAuth: true
+  },
+  attentionString: '!att-{name}-{event}', // '!att-{org}-{name}-{event}'
+  multipleCommitsMaxLen: 4
 };

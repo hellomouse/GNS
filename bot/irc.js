@@ -35,17 +35,22 @@ class IRC extends Events {
   constructor(app) {
     super();
     this.app = app;
-    this.socket = tls.connect(config.irc.port, config.irc.server, {
-      localaddress: config.irc.bindhost,
-      cert: config.irc.sasl.cert ? readFileSync(config.irc.sasl.cert) : null,
-      key: config.irc.sasl.key ? readFileSync(config.irc.sasl.key): null,
-      passphrase: config.irc.sasl.key_passphrase
-    });
+
+    for (let i of Object.keys(config.orgs)) {
+      let { server, port, bindhost, sasl } = config.orgs[i].irc;
+
+      this.socket = tls.connect(port, server, {
+        localaddress: bindhost,
+        cert: sasl.cert ? readFileSync(sasl.cert) : null,
+        key: sasl.key ? readFileSync(sasl.key): null,
+        passphrase: sasl.key_passphrase
+      });
+    }
     this.parser = new Parser();
+    this.irc_events = new events.EventEmitter();
+    super.init(this);
 
     this.socket.on('connect', () => {
-      this.irc_events = new events.EventEmitter();
-      super.init(this);
       this.app.log.info('Connected to IRC');
       this.write('CAP LS');
       this.write(`NICK ${config.irc.nickname}`);
