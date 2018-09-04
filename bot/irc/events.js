@@ -26,10 +26,8 @@ class Events {
 
     this.join = () => {
       for (let i of Object.keys(config.orgs)) {
-        if (!config.orgs[i].irc) {
-          this.write(`JOIN ${config.orgs[i].irc.channel}`);
-          this.app.log('Joining channels');
-        }
+        this.write(`JOIN ${config.orgs[i].irc.channel}`);
+        this.app.log('Joining channels');
       }
     };
 
