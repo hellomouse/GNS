@@ -49,7 +49,8 @@ class Events {
     };
 
     this.on_cap = (app, event) => {
-      if (event.args[0] === 'LS') {
+      this.write('CAP END');
+      /* if (event.args[0] === 'LS') {
         // Don't blindly assume server supports our requested caps, even though server sends a CAP NACK response
         const servcaps = event.args[1] !== '*' ? event.args[1].split(' ') : event.args[2].split(' ');
 
@@ -84,14 +85,14 @@ class Events {
             }
           }
         }
-      }
+    }*/
     };
 
     for (let i of Object.keys(this)) {
       if (i.startsWith('on_') || i.startsWith('RPL_') || i.startsWith('ERR_')) {
         let name = i.split('on_')[1] || i;
 
-        this.events.on(name.toUpperCase(), this[name]);
+        this.events.on(name.toUpperCase(), this[i]);
       }
     }
   }
