@@ -88,7 +88,7 @@ class Events {
     };
 
     for (let i of Object.keys(this)) {
-      if (i.startsWith('on_') || i.startsWith('RPL_') || i.startsWith('ERROR_')) {
+      if (i.startsWith('on_') || i.startsWith('RPL_') || i.startsWith('ERR_')) {
         let name = i.split('on_')[1] || i;
 
         this.events.on(name.toUpperCase(), this[name]);
