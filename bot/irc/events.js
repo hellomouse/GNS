@@ -96,7 +96,7 @@ class Events {
         name = i;
       }
 
-      this.events.on(name.toUpperCase(), this[i]);
+      this.events.on(name.toUpperCase(), this[name]);
     }
   }
 
