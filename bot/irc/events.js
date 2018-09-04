@@ -49,10 +49,9 @@ class Events {
     };
 
     this.on_cap = (app, event) => {
-      this.write('CAP END');
-      /* if (event.args[0] === 'LS') {
+      if (event.args[1] === 'LS') {
         // Don't blindly assume server supports our requested caps, even though server sends a CAP NACK response
-        const servcaps = event.args[1] !== '*' ? event.args[1].split(' ') : event.args[2].split(' ');
+        const servcaps = event.args[2].split(' ');
 
         for (const c of servcaps) {
           const [cap, args] = c.trim().split('=');
@@ -68,16 +67,14 @@ class Events {
           }
         }
 
-        if (event.args[1] !== '*') {
-          if (!this.availablecaps.length) {
-            this.write('CAP END');
-          } else {
-            this.write(`CAP REQ :${this.availablecaps.join(' ')}`);
-          }
+        if (!this.availablecaps.length) {
+          this.write('CAP END');
+        } else {
+          this.write(`CAP REQ :${this.availablecaps.join(' ')}`);
         }
-      } else if (event.args[0] === 'ACK') {
+      } else if (event.args[1] === 'ACK') {
         for (const cap of this.caps) { // Iterate over this.caps so we have access to classes
-          if (typeof cap !== 'string' && this.availablecaps.indexOf(cap.name) > -1) { // Check that the cap is in this.availablecaps
+          if (typeof cap !== 'string' && this.availablecaps.inludes(cap.name)) { // Check that the cap is in this.availablecaps
             if (typeof cap.run === 'function') { // Check if the cap has the `run` property
               cap.run(this.bot, this.args[cap.name]); // Run the cap with the args collected during CAP LS
             } else {
@@ -85,7 +82,7 @@ class Events {
             }
           }
         }
-    }*/
+      }
     };
 
     for (let i of Object.keys(this)) {
