@@ -88,15 +88,11 @@ class Events {
     };
 
     for (let i of Object.keys(this)) {
-      let name = '';
+      if (i.startsWith('on_') || i.startsWith('RPL_') || i.startsWith('ERROR_')) {
+        let name = i.split('on_')[1] || i;
 
-      if (i.startsWith('on_')) {
-        name = i.split('on_')[1];
-      } else if (i.startsWith('RPL_') || i.startsWith('ERROR_')) {
-        name = i;
+        this.events.on(name.toUpperCase(), this[name]);
       }
-
-      this.events.on(name.toUpperCase(), this[i]);
     }
   }
 
