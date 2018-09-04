@@ -31,7 +31,7 @@ class Events {
       }
     };
 
-    this.RPL_WELCOME = (app, event) => {
+    /* this.RPL_WELCOME = (app, event) => {
       if (!config.irc.sasl.cert) {
         this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
       }
@@ -39,7 +39,7 @@ class Events {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
         this.join();
       }
-    };
+    };*/
 
     this.on_396 = (app, event) => {
       if (config.irc.requireAuth) {
