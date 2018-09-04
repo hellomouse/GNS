@@ -59,17 +59,9 @@ class Events {
         // Don't blindly assume server supports our requested caps, even though server sends a CAP NACK response
         const servcaps = event.args[2].split(' ');
 
-        for (const c of servcaps) {
-          const [cap, args] = c.trim().split('=');
-
+        for (const cap of servcaps) {
           if (this.stringcaps.includes(cap)) {
             this.availablecaps.push(cap);
-
-            if (typeof args !== 'undefined') {
-              this.args[cap] = args.split(',');
-            } else {
-              this.args[cap] = null;
-            }
           }
         }
 
