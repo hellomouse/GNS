@@ -26,6 +26,7 @@ const env = getClientEnvironment(publicUrl);
 // It is focused on developer experience and fast rebuilds.
 // The production configuration is different and lives in a separate file.
 module.exports = {
+  mode: 'development',
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
   devtool: 'cheap-module-source-map',
@@ -73,8 +74,8 @@ module.exports = {
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
     modules: ['node_modules', paths.appNodeModules].concat(
-      // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+        // It is guaranteed to exist because we tweak it in `env.js`
+        process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -176,10 +177,17 @@ module.exports = {
                     require('postcss-flexbugs-fixes'),
                     autoprefixer({
                       browsers: [
-                        '>1%',
-                        'last 4 versions',
-                        'Firefox ESR',
-                        'not ie < 9' // React doesn't support IE8 anyway
+                        '>= 1%',
+                        'last 1 major version',
+                        'not dead',
+                        'Chrome >= 45',
+                        'Firefox >= 38',
+                        'Edge >= 12',
+                        'Explorer >= 10',
+                        'iOS >= 9',
+                        'Safari >= 9',
+                        'Android >= 4.4',
+                        'Opera >= 30'
                       ],
                       flexbox: 'no-2009'
                     })
