@@ -71,8 +71,8 @@ module.exports = {
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
-        .relative(paths.appSrc, info.absoluteResourcePath)
-        .replace(/\\/g, '/')
+          .relative(paths.appSrc, info.absoluteResourcePath)
+          .replace(/\\/g, '/')
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
@@ -80,8 +80,8 @@ module.exports = {
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebookincubator/create-react-app/issues/253
     modules: ['node_modules', paths.appNodeModules].concat(
-      // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+        // It is guaranteed to exist because we tweak it in `env.js`
+        process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -168,56 +168,53 @@ module.exports = {
           // in the main CSS file.
           {
             test: /\.css$/,
-            loader: MiniCSSExtractPlugin.extract(
-              Object.assign(
-                {
-                  fallback: {
-                    loader: require.resolve('style-loader'),
-                    options: {
-                      hmr: false
-                    }
-                  },
-                  use: [
-                    {
-                      loader: require.resolve('css-loader'),
-                      options: {
-                        importLoaders: 1,
-                        minimize: true,
-                        sourceMap: shouldUseSourceMap
-                      }
-                    },
-                    {
-                      loader: require.resolve('postcss-loader'),
-                      options: {
-                        // Necessary for external CSS imports to work
-                        // https://github.com/facebookincubator/create-react-app/issues/2677
-                        ident: 'postcss',
-                        plugins: () => [
-                          require('postcss-flexbugs-fixes'),
-                          autoprefixer({
-                            browsers: [
-                              '>= 1%',
-                              'last 1 major version',
-                              'not dead',
-                              'Chrome >= 45',
-                              'Firefox >= 38',
-                              'Edge >= 12',
-                              'Explorer >= 10',
-                              'iOS >= 9',
-                              'Safari >= 9',
-                              'Android >= 4.4',
-                              'Opera >= 30'
-                            ],
-                            flexbox: 'no-2009'
-                          })
-                        ]
-                      }
-                    }
+            use: [
+              {
+                loader: MiniCSSExtractPlugin.loader,
+                options: MiniCSSExtractPluginOptions
+              },
+              {
+                loader: require.resolve('style-loader'),
+                options: {
+                  hmr: false
+                }
+              },
+              {
+                loader: require.resolve('css-loader'),
+                options: {
+                  importLoaders: 1,
+                  minimize: true,
+                  sourceMap: shouldUseSourceMap
+                }
+              },
+              {
+                loader: require.resolve('postcss-loader'),
+                options: {
+                  // Necessary for external CSS imports to work
+                  // https://github.com/facebookincubator/create-react-app/issues/2677
+                  ident: 'postcss',
+                  plugins: () => [
+                    require('postcss-flexbugs-fixes'),
+                    autoprefixer({
+                      browsers: [
+                        '>= 1%',
+                        'last 1 major version',
+                        'not dead',
+                        'Chrome >= 45',
+                        'Firefox >= 38',
+                        'Edge >= 12',
+                        'Explorer >= 10',
+                        'iOS >= 9',
+                        'Safari >= 9',
+                        'Android >= 4.4',
+                        'Opera >= 30'
+                      ],
+                      flexbox: 'no-2009'
+                    })
                   ]
-                },
-                MiniCSSExtractPluginOptions
-              )
-            )
+                }
+              }
+            ]
             // Note: this won't work without `new MiniCSSExtractPlugin()` in `plugins`.
           },
           // "file" loader makes sure assets end up in the `build` folder.
