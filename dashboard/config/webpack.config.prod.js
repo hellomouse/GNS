@@ -51,6 +51,7 @@ const MiniCSSExtractPluginOptions = shouldUseRelativeAssetPaths
 // It compiles slowly and is focused on producing a fast and minimal bundle.
 // The development configuration is different and lives in a separate file.
 module.exports = {
+  mode: 'production',
   // Don't attempt to continue if there are any errors.
   bail: true,
   // We generate sourcemaps in production. This is slow but gives good results.
@@ -172,12 +173,6 @@ module.exports = {
               {
                 loader: MiniCSSExtractPlugin.loader,
                 options: MiniCSSExtractPluginOptions
-              },
-              {
-                loader: require.resolve('style-loader'),
-                options: {
-                  hmr: false
-                }
               },
               {
                 loader: require.resolve('css-loader'),
