@@ -197,11 +197,12 @@ module.exports = app => {
       att = await attFormat(payload.repository.full_name, 'pull_request_review'),
       issueNumber = payload.pull_request.number,
       user = fmt_name(await antiHighlight(payload.sender.login)),
-      fullname = payload.repository.full_name;
+      fullname = payload.repository.full_name,
+      state = payload.review.state.replace('_', ' ');
 
     await shortenUrl(payload.pull_request.html_url, url => {
       url = fmt_url(url);
-      app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${payload.review.state} by ${user} on ${fullname}`
+      app.irc.privmsg(`${att} | Pull Request #${issueNumber} ${state} by ${user} on ${fullname}`
               + ` - ${url}`);
     });
   });
