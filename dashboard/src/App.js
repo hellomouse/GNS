@@ -1,44 +1,30 @@
-import React, { Component } from 'react';
-import Switch from 'rc-switch';
-import 'rc-switch/assets/index.css';
-import logo from './logo.svg';
+import React from 'react';
+
+import { BrowserRouter, Route } from 'react-router-dom';
+import { Provider } from 'react-redux';
+
+import IndexPage from './pages/IndexPage';
+import RepoSettingsPage from './pages/RepoSettingsPage';
+
+import store from './store/store';
+
 import './App.css';
 
-function onChange(value) {
-  console.log(`switch checked: ${value}`);
-}
-
-class App extends Component {
-  constructor() {
-    super();
-    this.state={
-      disabled: false
-    };
-  }
-
-  toggle() {
-    this.setState({
-      disabled: !this.state.disabled
-    });
-  }
-
+/** The root application component */
+class App extends React.Component {
+  /** Renders the component
+   * @return {React.ReactElement}
+   */
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.js</code> and save to reload.
-          <Switch
-            onChange={onChange}
-            disabled={this.state.disabled}
-            checkedChildren={'开'}
-            unCheckedChildren={'关'}
-          />
-        </p>
-      </div>
+      <Provider store={store}>
+        <BrowserRouter>
+          <div>
+            <Route exact path="/" component={IndexPage} />
+            <Route exact path="/repo/:rUser/:rName" component={RepoSettingsPage} />
+          </div>
+        </BrowserRouter>
+      </Provider>
     );
   }
 }
