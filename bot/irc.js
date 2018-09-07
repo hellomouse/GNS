@@ -75,7 +75,9 @@ class IRC extends Events {
     * @param {String} text
     */
   privmsg(org, text) {
-    this.write(`PRIVMSG ${config.orgs[org].irc.channel} :${text}`);
+    let method = config.orgs[org].irc.notice ? 'NOTICE' : 'PRIVMSG';
+
+    this.write(`${method} ${config.orgs[org].irc.channel} :${text}`);
   }
 
 }
