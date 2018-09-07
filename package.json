@@ -1,7 +1,8 @@
 {
   "name": "gns",
   "version": "1.0.0",
-  "description": "A Probot app",
+  "description": "GitHub notification service for IRC",
+  "private": true,
   "author": "Hellomouse LTD",
   "contributors": [
     "Bradley \"BWBellairs\" Bellairs <BWBellairs@outlook.com>",
@@ -14,34 +15,20 @@
   "keywords": [
     "probot",
     "github",
-    "probot-app"
+    "probot-app",
+    "irc"
   ],
   "scripts": {
-    "dev": "nodemon --exec \"npm start\"",
-    "start": "cd bot && probot run -p 5678 ./index.js",
     "lint": "eslint . --fix",
-    "test": "jest bot && eslint .",
-    "test:watch": "jest bot --watch --notify --notifyMode=change --coverage"
+    "test": "eslint .",
+    "install": "cd bot && npm i && cd ../dashboard && npm i"
   },
-  "dependencies": {
-    "irc-stream-parser": "^0.1.0",
-    "probot": "^7.0.0",
-    "request": "^2.87.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@hellomouse/eslint-config-wolfy1339": "^1.0.0",
-    "eslint": "^5.2.0",
-    "eslint-plugin-react": "^7.10.0",
-    "jest": "^23.4.1",
-    "nodemon": "^1.17.2",
-    "smee-client": "^1.0.2"
-  },
-  "engines": {
-    "node": ">= 8.3.0"
-  },
-  "standard": {
-    "env": [
-      "jest"
-    ]
+    "@hellomouse/eslint-config-wolfy1339": "^1.1.0",
+    "babel-eslint": "^9.0.0",
+    "eslint": "^5.5.0",
+    "eslint-plugin-babel": "^5.2.0",
+    "eslint-plugin-react": "^7.11.1"
   }
 }
