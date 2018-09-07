@@ -14,7 +14,7 @@ import store, { storeGetRepos } from '../store/store';
 /** Provides list of available repositories */
 class RepoList extends React.Component {
   static propTypes = {
-    repos: PropTypes.object.isRequired,
+    repos: PropTypes.array.isRequired,
     gotRepos: PropTypes.bool.isRequired,
     history: PropTypes.object.isRequired
   };
@@ -46,7 +46,7 @@ class RepoList extends React.Component {
     return <div>Loading...</div>;
   }
 
-  /** Gets executed when component is mounted */
+  /** Gets executed when the component is mounted */
   componentDidMount() {
     storeGetRepos(store);
   }

@@ -1,6 +1,6 @@
 import { createStore } from 'redux';
 
-import { apiGetRepos } from './api';
+import { apiGetRepos, apiGetRepoSettings } from './api';
 
 const defaultState = {
   repos: [],
@@ -11,6 +11,8 @@ const defaultState = {
 const store = createStore((state, action) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
+  } else if (action.type === 'setRepoSettings') {
+    return { ...state, repoSettings: { ...state.repoSettings, [action.repo]: action.settings } };
   }
 
   return state;
@@ -30,6 +32,25 @@ export const storeGetRepos = passedStore => {
   passedStore.dispatch({
     type: 'setRepos',
     repos: repos
+  });
+};
+
+/** Gets settings for the given repository
+ * @param {Object} passedStore
+ * @param {String} repo
+ */
+export const storeGetRepoSettings = (passedStore, repo) => {
+  let st = passedStore.getState();
+
+  if (st.repoSettings[repo]) {
+    return;
+  }
+  let rs = apiGetRepoSettings(repo);
+
+  passedStore.dispatch({
+    type: 'setRepoSettings',
+    repo: repo,
+    settings: rs
   });
 };
 
