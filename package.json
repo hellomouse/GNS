@@ -29,7 +29,7 @@
     "request": "^2.87.0"
   },
   "devDependencies": {
-    "@hellomouse/eslint-config-wolfy1339": "^1.0.0",
+    "@hellomouse/eslint-config-wolfy1339": "^1.1.0",
     "eslint": "^5.2.0",
     "eslint-plugin-react": "^7.10.0",
     "jest": "^23.4.1",
