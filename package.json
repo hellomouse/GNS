@@ -25,7 +25,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@hellomouse/eslint-config-wolfy1339": "^1.1.0",
+    "@hellomouse/eslint-config-wolfy1339": "^1.0.0",
     "babel-eslint": "^9.0.0",
     "eslint": "^5.5.0",
     "eslint-plugin-babel": "^5.2.0",
