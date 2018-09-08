@@ -27,8 +27,8 @@ module.exports = {
                                                    // If this isn't set, any propTypes wrapped in
                                                    // a function will be skipped.
     },
-    plugins: ['react', 'babel'],
-    extends: ['plugin:react/recommended'],
+    plugins: ['react', 'babel', 'jsx-a11y'],
+    extends: ['plugin:react/recommended', '@hellomouse/eslint-config-react-app'],
     rules: {
         'no-console': 'off',
         'babel/semi': 1,
