@@ -1,5 +1,3 @@
-
-
 const path = require('path');
 const fs = require('fs');
 const url = require('url');
@@ -63,7 +61,7 @@ let checkForMonorepo = true;
 module.exports.srcPaths = [module.exports.appSrc];
 
 module.exports.useYarn = fs.existsSync(
-  path.join(module.exports.appPath, 'yarn.lock')
+    path.join(module.exports.appPath, 'yarn.lock')
 );
 
 if (checkForMonorepo) {
