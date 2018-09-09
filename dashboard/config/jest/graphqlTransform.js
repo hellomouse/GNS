@@ -1,4 +1,4 @@
-'use strict';
+
 
 const loader = require('graphql-tag/loader');
 

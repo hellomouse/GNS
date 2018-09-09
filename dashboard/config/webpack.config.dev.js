@@ -1,4 +1,4 @@
-'use strict';
+
 
 const autoprefixer = require('autoprefixer');
 const path = require('path');
@@ -128,8 +128,8 @@ module.exports = {
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebook/create-react-app/issues/253
     modules: ['node_modules'].concat(
-        // It is guaranteed to exist because we tweak it in `env.js`
-        process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+      // It is guaranteed to exist because we tweak it in `env.js`
+      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -302,12 +302,12 @@ module.exports = {
           {
             test: sassModuleRegex,
             use: getStyleLoaders(
-                {
-                  importLoaders: 2,
-                  modules: true,
-                  getLocalIdent: getCSSModuleLocalIdent
-                },
-                'sass-loader'
+              {
+                importLoaders: 2,
+                modules: true,
+                getLocalIdent: getCSSModuleLocalIdent
+              },
+              'sass-loader'
             )
           },
           // The GraphQL loader preprocesses GraphQL queries in .graphql files.
