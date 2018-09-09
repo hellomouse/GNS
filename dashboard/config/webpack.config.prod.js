@@ -13,6 +13,7 @@ const ModuleScopePlugin = require('react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('react-dev-utils/getCSSModuleLocalIdent');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
+const safeParser = require('postcss-safe-parser');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -145,7 +146,7 @@ module.exports = {
         cache: true,
         sourceMap: shouldUseSourceMap
       }),
-      new OptimizeCSSAssetsPlugin({ cssProcessorOptions: { safe: true } })
+      new OptimizeCSSAssetsPlugin({ cssProcessorOptions: { parser: safeParser } })
     ],
     // Automatically split vendor and commons
     // https://twitter.com/wSokra/status/969633336732905474
@@ -208,7 +209,7 @@ module.exports = {
               // TODO: consider separate config for production,
               // e.g. to enable no-console and no-debugger only in production.
               baseConfig: {
-                extends: [require.resolve('eslint-config-react-app')]
+                extends: [require.resolve('@hellomouse/eslint-config-react-app')]
               }
 
             },
@@ -250,7 +251,7 @@ module.exports = {
                   presets: [require.resolve('@hellomouse/babel-preset-react-app')],
                   plugins: [
                     [
-                      require.resolve('babel-plugin-named-asset-import'),
+                      require.resolve('@hellomouse/babel-plugin-named-asset-import'),
                       {
                         loaderMap: {
                           svg: {
