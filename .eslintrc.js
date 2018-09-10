@@ -16,6 +16,7 @@ module.exports = {
             2
         ],
         "object-shorthand": ["error", "always"],
-        "no-unneeded-ternary": "error"
+        "no-unneeded-ternary": "error",
+        "no-multiple-empty-lines": "error"
     },
 };

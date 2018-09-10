@@ -236,7 +236,6 @@ module.exports = app => {
       pendingStatus.push(payload.target_url); // We'll use target_url as identifier
     } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop(payload);
 
-
     await shortenUrl(payload.commit.html_url, url => {
       url = fmt_url(url);
       app.irc.privmsg(`${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
