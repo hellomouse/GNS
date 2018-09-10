@@ -143,31 +143,31 @@ module.exports = app => {
   });
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
-    async context => {
-      let payload = context.payload,
-        att = await attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
-        issueNumber = payload.number || payload.issue.number,
-        action = payload.action,
-        user = fmt_name(await antiHighlight(payload.assignee.login)),
-        sender = fmt_name(await antiHighlight(payload.sender.login)),
-        fullname = payload.repository.full_name,
-        color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
-        event = context.event.replace('_', ' '),
-        assignedText;
+      async context => {
+        let payload = context.payload,
+          att = await attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
+          issueNumber = payload.number || payload.issue.number,
+          action = payload.action,
+          user = fmt_name(await antiHighlight(payload.assignee.login)),
+          sender = fmt_name(await antiHighlight(payload.sender.login)),
+          fullname = payload.repository.full_name,
+          color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
+          event = context.event.replace('_', ' '),
+          assignedText;
 
-      if (user === sender) {
-        assignedText = `${user} ${color}${action}\x0F themselves `;
-        assignedText += action === 'assigned' ? `to` : `from`;
-      } else {
-        assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
-      }
-      let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url;
+        if (user === sender) {
+          assignedText = `${user} ${color}${action}\x0F themselves `;
+          assignedText += action === 'assigned' ? `to` : `from`;
+        } else {
+          assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
+        }
+        let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url;
 
-      await shortenUrl(html_url, url => {
-        url = fmt_url(url);
-        app.irc.privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
+        await shortenUrl(html_url, url => {
+          url = fmt_url(url);
+          app.irc.privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
+        });
       });
-    });
 
   app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
     let payload = context.payload,

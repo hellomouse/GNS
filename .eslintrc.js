@@ -11,12 +11,8 @@ module.exports = {
     },
     extends: ['eslint:recommended', '@hellomouse/eslint-config-wolfy1339'],
     rules: {
-        indent: [
-            'error',
-            2
-        ],
         "object-shorthand": ["error", "always"],
         "no-unneeded-ternary": "error",
-        "no-multiple-empty-lines": "error"
+        "no-multiple-empty-lines": ["error", { max: 1, maxEOF: 1, maxBOF: 0 }]
     },
 };
