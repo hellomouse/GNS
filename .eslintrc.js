@@ -14,6 +14,8 @@ module.exports = {
         indent: [
             'error',
             2
-        ]
-    }
+        ],
+        "object-shorthand": ["error", "always"],
+        "no-unneeded-ternary": "error"
+    },
 };
