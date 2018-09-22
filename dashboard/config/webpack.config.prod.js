@@ -2,18 +2,18 @@ const autoprefixer = require('autoprefixer');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+// const InlineChunkHtmlPlugin = require('@hellomouse/react-dev-utils/InlineChunkHtmlPlugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const safePostCssParser = require('postcss-safe-parser');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const InterpolateHtmlPlugin = require('@hellomouse/react-dev-utils/InterpolateHtmlPlugin');
 const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
-const eslintFormatter = require('@hellomouse/react-dev-utils/eslintFormatter');
 const ModuleScopePlugin = require('@hellomouse/react-dev-utils/ModuleScopePlugin');
 const getCSSModuleLocalIdent = require('@hellomouse/react-dev-utils/getCSSModuleLocalIdent');
 const paths = require('./paths');
 const getClientEnvironment = require('./env');
-const safeParser = require('postcss-safe-parser');
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -104,15 +104,15 @@ module.exports = {
     // Point sourcemap entries to original disk location (format as URL on Windows)
     devtoolModuleFilenameTemplate: info =>
       path
-        .relative(paths.appSrc, info.absoluteResourcePath)
-        .replace(/\\/g, '/')
+          .relative(paths.appSrc, info.absoluteResourcePath)
+          .replace(/\\/g, '/')
   },
   optimization: {
     minimizer: [
-      new UglifyJsPlugin({
-        uglifyOptions: {
+      new TerserPlugin({
+        terserOptions: {
           parse: {
-            // we want uglify-js to parse ecma 8 code. However, we don't want it
+            // we want terser to parse ecma 8 code. However, we don't want it
             // to apply any minfication steps that turns valid ecma 5 code
             // into invalid ecma 5 code. This is why the 'compress' and 'output'
             // sections only apply transformations that are ecma 5 safe
@@ -146,14 +146,16 @@ module.exports = {
         cache: true,
         sourceMap: shouldUseSourceMap
       }),
-      new OptimizeCSSAssetsPlugin({ cssProcessorOptions: { parser: safeParser } })
+      new OptimizeCSSAssetsPlugin({
+        cssProcessorOptions: { parser: safePostCssParser }
+      })
     ],
     // Automatically split vendor and commons
     // https://twitter.com/wSokra/status/969633336732905474
     // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
     splitChunks: {
       chunks: 'all',
-      name: 'vendors'
+      name: false
     },
     // Keep the runtime chunk seperated to enable long term caching
     // https://twitter.com/wSokra/status/969679223278505985
@@ -165,8 +167,8 @@ module.exports = {
     // if there are any conflicts. This matches Node resolution mechanism.
     // https://github.com/facebook/create-react-app/issues/253
     modules: ['node_modules'].concat(
-      // It is guaranteed to exist because we tweak it in `env.js`
-      process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
+        // It is guaranteed to exist because we tweak it in `env.js`
+        process.env.NODE_PATH.split(path.delimiter).filter(Boolean)
     ),
     // These are the reasonable defaults supported by the Node ecosystem.
     // We also include JSX as a common component filename extension to support
@@ -174,7 +176,7 @@ module.exports = {
     // https://github.com/facebook/create-react-app/issues/290
     // `web` extension prefixes have been added for better support
     // for React Native Web.
-    extensions: ['.web.js', '.mjs', '.js', '.json', '.web.jsx', '.jsx'],
+    extensions: ['.web.js', '.js', '.json', '.web.jsx', '.jsx'],
     alias: {
 
       // Support React Native Web
@@ -199,25 +201,19 @@ module.exports = {
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
       {
-        test: /\.(js|jsx|mjs)$/,
+        test: /\.(js|jsx)$/,
         enforce: 'pre',
         use: [
           {
             options: {
-              formatter: eslintFormatter,
-              eslintPath: require.resolve('eslint'),
-              // TODO: consider separate config for production,
-              // e.g. to enable no-console and no-debugger only in production.
-              baseConfig: {
-                extends: [require.resolve('@hellomouse/eslint-config-react-app')]
-              }
+              formatter: require.resolve('@hellomouse/react-dev-utils/eslintFormatter'),
+              eslintPath: require.resolve('eslint')
 
             },
             loader: require.resolve('eslint-loader')
           }
         ],
-        include: paths.srcPaths,
-        exclude: [/[/\\\\]node_modules[/\\\\]/]
+        include: paths.appSrc
       },
       {
         // "oneOf" will traverse all following loaders until one will
@@ -237,9 +233,8 @@ module.exports = {
           // Process application JS with Babel.
           // The preset includes JSX, Flow, and some ESnext features.
           {
-            test: /\.(js|jsx|mjs)$/,
-            include: paths.srcPaths,
-            exclude: [/[/\\\\]node_modules[/\\\\]/],
+            test: /\.(js|jsx)$/,
+            include: paths.appSrc,
             use: [
               // This loader parallelizes code compilation, it is optional but
               // improves compile time on larger projects
@@ -248,19 +243,22 @@ module.exports = {
                 loader: require.resolve('babel-loader'),
                 options: {
 
-                  presets: [require.resolve('@hellomouse/babel-preset-react-app')],
                   plugins: [
                     [
                       require.resolve('@hellomouse/babel-plugin-named-asset-import'),
                       {
                         loaderMap: {
                           svg: {
-                            ReactComponent: '@svgr/webpack![path]'
+                            ReactComponent:
+                              '@svgr/webpack?-prettier,-svgo![path]'
                           }
                         }
                       }
                     ]
                   ],
+                  cacheDirectory: true,
+                  // Save disk space when time isn't as important
+                  cacheCompression: true,
                   compact: true,
                   highlightCode: true
                 }
@@ -284,6 +282,9 @@ module.exports = {
                     require.resolve('@hellomouse/babel-preset-react-app/dependencies')
                   ],
                   cacheDirectory: true,
+                  // Save disk space when time isn't as important
+                  cacheCompression: true,
+
                   highlightCode: true
                 }
               }
@@ -322,11 +323,11 @@ module.exports = {
             test: sassRegex,
             exclude: sassModuleRegex,
             loader: getStyleLoaders(
-              {
-                importLoaders: 2,
-                sourceMap: shouldUseSourceMap
-              },
-              'sass-loader'
+                {
+                  importLoaders: 2,
+                  sourceMap: shouldUseSourceMap
+                },
+                'sass-loader'
             )
           },
           // Adds support for CSS Modules, but using SASS
@@ -334,13 +335,13 @@ module.exports = {
           {
             test: sassModuleRegex,
             loader: getStyleLoaders(
-              {
-                importLoaders: 2,
-                sourceMap: shouldUseSourceMap,
-                modules: true,
-                getLocalIdent: getCSSModuleLocalIdent
-              },
-              'sass-loader'
+                {
+                  importLoaders: 2,
+                  sourceMap: shouldUseSourceMap,
+                  modules: true,
+                  getLocalIdent: getCSSModuleLocalIdent
+                },
+                'sass-loader'
             )
           },
           // The GraphQL loader preprocesses GraphQL queries in .graphql files.
@@ -358,7 +359,7 @@ module.exports = {
             // it's runtime that would otherwise be processed through "file" loader.
             // Also exclude `html` and `json` extensions so they get processed
             // by webpacks internal loaders.
-            exclude: [/\.(js|jsx|mjs)$/, /\.html$/, /\.json$/],
+            exclude: [/\.(js|jsx)$/, /\.html$/, /\.json$/],
             options: {
               name: 'static/media/[name].[hash:8].[ext]'
             }
@@ -387,12 +388,15 @@ module.exports = {
         minifyURLs: true
       }
     }),
+    // Inlines the webpack runtime script. This script is too small to warrant
+    // a network request.
+    // new InlineChunkHtmlPlugin(HtmlWebpackPlugin, [/runtime~.+[.]js/]), //<--Doesn't work
     // Makes some environment variables available in index.html.
     // The public URL is available as %PUBLIC_URL% in index.html, e.g.:
     // <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico">
     // In production, it will be an empty string unless you specify "homepage"
     // in `package.json`, in which case it will be the pathname of that URL.
-    new InterpolateHtmlPlugin(env.raw),
+    new InterpolateHtmlPlugin(HtmlWebpackPlugin, env.raw),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
     // It is absolutely essential that NODE_ENV was set to production here.
@@ -433,12 +437,19 @@ module.exports = {
         console.log(message);
       },
       minify: true,
+      // For unknown URLs, fallback to the index page
+      navigateFallback: `${publicUrl }/index.html`,
+      // Ignores URLs starting from /__ (useful for Firebase):
+      // https://github.com/facebookincubator/create-react-app/issues/2237#issuecomment-302693219
+      navigateFallbackWhitelist: [/^(?!\/__).*/],
       // Don't precache sourcemaps (they're large) and build asset manifest:
-      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/]
-      // `navigateFallback` and `navigateFallbackWhitelist` are disabled by default; see
-      // https://github.com/facebook/create-react-app/blob/master/packages/react-scripts/template/README.md#service-worker-considerations
-      // navigateFallback: publicUrl + '/index.html',
-      // navigateFallbackWhitelist: [/^(?!\/__).*/],
+      staticFileGlobsIgnorePatterns: [/\.map$/, /asset-manifest\.json$/],
+      // Disabling skipWaiting ensures better compatibility with web apps that
+      // use deferred or lazy-loading, at the expense of "keeping around" the
+      // previously cached version of your web app until all open instances have
+      // been closed.
+      // See https://developers.google.com/web/fundamentals/primers/service-workers/lifecycle#skip_the_waiting_phase
+      skipWaiting: false
     }),
     // Moment.js is an extremely popular library that bundles large locale files
     // by default due to how Webpack interprets its code. This is a practical

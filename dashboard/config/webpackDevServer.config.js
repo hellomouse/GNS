@@ -1,4 +1,5 @@
 const errorOverlayMiddleware = require('@hellomouse/react-dev-utils/errorOverlayMiddleware');
+const evalSourceMapMiddleware = require('@hellomouse/react-dev-utils/evalSourceMapMiddleware');
 const noopServiceWorkerMiddleware = require('@hellomouse/react-dev-utils/noopServiceWorkerMiddleware');
 const ignoredFiles = require('@hellomouse/react-dev-utils/ignoredFiles');
 const config = require('./webpack.config.dev');
@@ -7,7 +8,7 @@ const paths = require('./paths');
 const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
 const host = process.env.HOST || '0.0.0.0';
 
-module.exports = function (proxy, allowedHost) {
+module.exports = function(proxy, allowedHost) {
   return {
     // WebpackDevServer 2.4.3 introduced a security fix that prevents remote
     // websites from potentially accessing local content through DNS rebinding:
@@ -79,7 +80,10 @@ module.exports = function (proxy, allowedHost) {
     },
     public: allowedHost,
     proxy,
-    before(app) {
+    before(app, server) {
+      // This lets us fetch source contents from webpack for the error overlay
+      app.use(evalSourceMapMiddleware(server));
+
       // This lets us open files from the runtime error overlay.
       app.use(errorOverlayMiddleware());
       // This service worker file is effectively a 'no-op' that will reset any
