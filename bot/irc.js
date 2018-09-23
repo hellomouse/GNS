@@ -3,6 +3,7 @@ const Events = require('./irc/events');
 const Parser = require('irc-stream-parser');
 const tls = require('tls');
 const { readFileSync } = require('fs');
+const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 
 // Config
 const config = require('./config');
@@ -29,9 +30,8 @@ function strip_formatting(msg) {
 class IRC extends Events {
 
   /**
-     *
-     * @param {object} app
-     */
+  * @param {Application} app
+  */
   constructor(app) {
     super();
     this.app = app;
@@ -63,21 +63,21 @@ class IRC extends Events {
   }
 
   /**
-    * @param {String} message
-    */
+  * @param {string} message
+  */
   write(message) {
     this.socket.write(`${message}\r\n`);
     this.app.log.debug(`<<< ${strip_formatting(message)}`);
   }
 
   /**
-    * @param {String} org The organization (or user) name
-    * @param {String} text
+    * @param {string} org The organization (or user) name
+    * @param {string} text The text to send to the server
     */
   privmsg(org, text) {
     let method = config.orgs[org].irc.notice ? 'NOTICE' : 'PRIVMSG';
 
-    this.write(`${method} ${config.orgs[org].irc.channel} :${text}`);
+    this.write(org, `${method} ${config.orgs[org].irc.channel} :${text}`);
   }
 
 }

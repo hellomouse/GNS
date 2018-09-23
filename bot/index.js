@@ -1,6 +1,8 @@
 const request = require('request');
 const config = require('./config');
 const labels = require('./labels');
+const IRC = require('./irc');
+const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 
 let pendingStatus = []; // contains all pending checks from travis as multiple are sent
 
@@ -40,7 +42,7 @@ function fmt_branch(s) {
  * @param  {string} s The tag name string
  * @return {string}   Returns formatted tag name string
  */
-function fmt_tag(s) {
+function fmt_tag(s) { // eslint-disable-line no-unused-vars
   return `\x0306${s}\x0F`;
 }
 
@@ -52,9 +54,14 @@ function fmt_hash(s) {
   return `\x0314${s}\x0F`;
 }
 
+/**
+ * Main application function, ran by Probot
+ * @param {Application} app
+*/
 module.exports = app => {
   /**
    * @function
+   * @async
    * @param {string} user
    * @return {string} user with normal character
    */
@@ -64,6 +71,7 @@ module.exports = app => {
 
   /**
    * @function
+   * @async
    * @param {string} url - Url of the string to shorten
    * @param {function} cb - Function to callback shortened url with
   */
@@ -76,10 +84,10 @@ module.exports = app => {
   }
 
   /**
-   *
    * @function
+   * @async
    * @param {string} fullname - The full repository name
-   * @param {string} event - Event being received from webhook
+   * @param {string} event - Name of the event being received from webhook
    * @return {string} Attention string
   */
   async function attFormat(fullname, event) {
@@ -89,7 +97,7 @@ module.exports = app => {
     return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
   }
 
-  app.irc = new (require('./irc'))(app);
+  app.irc = new IRC(app);
 
   // App events
 
