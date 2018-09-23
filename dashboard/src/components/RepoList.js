@@ -19,13 +19,6 @@ class RepoList extends React.Component {
     history: PropTypes.object.isRequired
   };
 
-  /** Constructor
-   * @constructor
-   */
-  constructor(...args) {
-    super(...args);
-  }
-
   /** Renders the component
    * @return {React.ReactElement}
    */

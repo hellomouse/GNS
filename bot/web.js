@@ -3,7 +3,7 @@ const session = require('express-session');
 const request = require('request');
 const qs = require('querystring');
 const randomString = require('randomstring');
-const { Application } = require('probot'); // eslint-disable-line
+const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 const octokit = require('@octokit/rest')();
 const PouchDB = require('pouchdb');
 
@@ -15,7 +15,7 @@ const redirect_uri = `${process.env.HOST}/redirect`;
 
 /**
  * A wrapper function around the web API stuff
- * @param {Application} app
+ * @param {Application} app The probot application
  */
 module.exports = async function web(app) {
   const router = app.route('/');
