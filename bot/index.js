@@ -2,6 +2,7 @@ const request = require('request');
 const config = require('./config');
 const labels = require('./labels');
 const IRC = require('./irc');
+const web = require('./web');
 const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 
 let pendingStatus = []; // contains all pending checks from travis as multiple are sent
@@ -97,7 +98,8 @@ module.exports = app => {
     return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
   }
 
-  app.irc = new IRC(app);
+  app.irc = { privmsg: (...args)=>{} };
+  web(app);
 
   // App events
 
