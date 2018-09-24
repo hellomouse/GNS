@@ -105,6 +105,9 @@ module.exports = async function web(app) {
         }
       }
     }
+
+    const members = (await octokit.orgs.getUsers({ org: orgs[0].login, role: 'admin' }));
+
     res.send(
         `<p>You're logged in! Here's all your emails on GitHub: </p>${JSON.stringify(emails)}
             <p>Here are all your orgs that I have access to: ${JSON.stringify(orgs)}
