@@ -3,8 +3,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import Switch from '@material-ui/core/Switch';
+import ArrowBack from '@material-ui/icons/ArrowBack';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import Checkbox from '@material-ui/core/Checkbox';
+import Divider from '@material-ui/core/Divider';
 
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -23,20 +30,42 @@ class RepoSettingsPage extends React.Component {
    */
   render() {
     return (
-      <Paper className="app-paper">
-        <Typography variant="title">
+      <React.Fragment>
+        <Button variant="extendedFab" color="primary"><ArrowBack/> Back</Button>
+        <Paper className="app-paper">
+          <Typography variant="title">
           Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
+          </Typography>
 
-          <TextField className="rsp-entry" id="ircHost" label="IRC server host" /><br/>
-          <TextField className="rsp-entry" id="ircPort" label="IRC server port" /><br/>
-          <TextField className="rsp-entry" id="ircNick" label="IRC nickname" /><br/>
-          <TextField className="rsp-entry" id="ircUser" label="IRC username/ident" /><br/>
-          <TextField className="rsp-entry" id="ircPass" label="IRC password (leave blank for none)" /><br/>
-          <TextField className="rsp-entry" id="ircRnam" label="IRC realname/gecos" /><br/>
-          <TextField className="rsp-entry" id="ircChannel" label="IRC channel" /><br/>
+          <FormGroup>
+            <FormControlLabel
+              control={
+                <Switch />
+              }
+              label="Enable this repository"
+            />
+            <TextField className="rsp-entry" id="ircHost" label="IRC server host" />
+            <TextField className="rsp-entry" id="ircPort" label="IRC server port" type="number" />
+            <TextField className="rsp-entry" id="ircNick" label="IRC nickname" />
+            <TextField className="rsp-entry" id="ircUser" label="IRC username/ident" />
+            <TextField className="rsp-entry" id="ircPass" label="IRC password (leave blank for none)" />
+            <TextField className="rsp-entry" id="ircRnam" label="IRC realname/gecos" />
+            <TextField className="rsp-entry" id="ircChannel" label="IRC channel" />
+            <Divider style={{ margin: '0 20px' }}/>
+            <FormGroup>
+              <Typography variant="subheading">Events</Typography>
+              <FormControlLabel
+                control={
+                  <Checkbox />
+                }
+                label="Subscribe to this event"
+              />
+            </FormGroup>
+          </FormGroup>
 
-        </Typography>
-      </Paper>
+
+        </Paper>
+      </React.Fragment>
     );
   }
 
