@@ -24,22 +24,27 @@ class Events {
       this.app.log('Received ping');
     };
 
-    this.RPL_WELCOME = (app, event) => {
+    this.join = () => {
+      for (let i of Object.keys(config.orgs)) {
+        this.write(`JOIN ${config.orgs[i].irc.channel}`);
+        this.app.log('Joining channels');
+      }
+    };
+
+    /* this.RPL_WELCOME = (app, event) => {
       if (!config.irc.sasl.cert) {
         this.write(`PRIVMSG NickServ :identify ${config.irc.NickServPass}`);
       }
       if (!config.irc.requireAuth) {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
-        this.write(`JOIN ${config.irc.channel}`);
-        this.app.log('Joining channels');
+        this.join();
       }
-    };
+    };*/
 
     this.on_396 = (app, event) => {
       if (config.irc.requireAuth) {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
-        this.write(`JOIN ${config.irc.channel}`);
-        this.app.log('Joining channels');
+        this.join();
       }
     };
 
@@ -52,17 +57,9 @@ class Events {
         // Don't blindly assume server supports our requested caps, even though server sends a CAP NACK response
         const servcaps = event.args[2].split(' ');
 
-        for (const c of servcaps) {
-          const [cap, args] = c.trim().split('=');
-
+        for (const cap of servcaps) {
           if (this.stringcaps.includes(cap)) {
             this.availablecaps.push(cap);
-
-            if (typeof args !== 'undefined') {
-              this.args[cap] = args.split(',');
-            } else {
-              this.args[cap] = null;
-            }
           }
         }
 
