@@ -10,9 +10,6 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const key = fs.readFileSync('./private-key.pem').toString();
 
-// Get these values from https://github.com/organizations/hellomouse/settings/apps/notification-service at the bottom of the page
-process.env.CLIENT_ID = 'Iv1.65d7102b413614c4';
-process.env.CLIENT_SECRET = '5c84d211228bb02baf35c02e0d276a5bffa06580';
 process.env.HOST = 'http://wolfy1339.ddns.net:5678';
 const redirect_uri = `${process.env.HOST}/redirect`;
 
