@@ -66,9 +66,11 @@ module.exports = async function web(app) {
                 code,
                 redirect_uri,
                 state: req.session.csrf_string
-              })}`
+              })}`,
+            headers
           },
           (error, response, body) => {
+            if (error) throw error;
             req.session.access_token = qs.parse(body).access_token;
             res.redirect('/user');
           }
