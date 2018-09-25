@@ -6,12 +6,19 @@ const randomString = require('randomstring');
 const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 const octokit = require('@octokit/rest')();
 const PouchDB = require('pouchdb');
+const fs = require('fs');
+const jwt = require('jsonwebtoken');
+const key = fs.readFileSync('./private-key.pem').toString();
 
 // Get these values from https://github.com/organizations/hellomouse/settings/apps/notification-service at the bottom of the page
 process.env.CLIENT_ID = 'Iv1.65d7102b413614c4';
 process.env.CLIENT_SECRET = '5c84d211228bb02baf35c02e0d276a5bffa06580';
 process.env.HOST = 'http://wolfy1339.ddns.net:5678';
 const redirect_uri = `${process.env.HOST}/redirect`;
+
+const headers = {
+  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0'
+};
 
 /**
  * A wrapper function around the web API stuff
@@ -113,5 +120,28 @@ module.exports = async function web(app) {
             <p>Here are all your orgs that I have access to: ${JSON.stringify(orgs)}
             <p>Go back to <a href="./">log in page</a>.</p>`
     );
+  });
+
+  router.all('/setup', async (req, res) => {
+    app.log.debug(`Query strings for /setup: ${JSON.stringify(req.query)}`);
+    app.log.debug(`headers: ${JSON.stringify(req.headers)}`);
+    const payload = {
+      iss: process.env.APP_ID,
+      iat: Math.floor(Date.now() / 1000),
+      exp: Math.floor(Date.now() / 1000) + (10 * 60)
+    };
+
+    octokit.authenticate({
+      type: 'app',
+      token: jwt.sign(payload, key, { algorithm: 'RS256' })
+    });
+    try {
+      const installation = (await octokit.apps.createInstallationToken({ installation_id: req.query.installation_id })).data;
+
+      req.session.access_token = installation.token;
+      res.redirect('/user')
+    } catch (e) {
+      res.status(400).end();
+    }
   });
 };
