@@ -37,7 +37,7 @@ module.exports = async function web(app) {
       })
   );
 
-  router.get('/login', (req, res, next) => {
+  router.get('/login', (req, res) => {
     req.session.csrf_string = randomString.generate();
     const githubAuthUrl =
       `https://github.com/login/oauth/authorize?${
