@@ -1,14 +1,15 @@
-const config = require('../config');
+const IRC = require('../irc'); // eslint-disable-line no-unused-vars
 
 /**
  * @class
  */
 class Events {
 
+  /** */
   constructor() {}
   /**
    * constructor - description
-   * @param  {Object} irc description
+   * @param  {IRC} irc description
    */
   init(irc) {
     this.events = irc.irc_events;
@@ -25,8 +26,10 @@ class Events {
     };
 
     this.join = () => {
-      for (let i of Object.keys(config.orgs)) {
-        this.write(`JOIN ${config.orgs[i].irc.channel}`);
+      this.app.log(`${irc.org}: ${irc.config.notice}`)
+      if (irc.config.notice === undefined) irc.config.notice = false;
+      if (!irc.config.notice) {
+        this.write(`JOIN ${irc.config.irc.channel}`);
         this.app.log('Joining channels');
       }
     };
@@ -42,14 +45,14 @@ class Events {
     };*/
 
     this.on_396 = (app, event) => {
-      if (config.irc.requireAuth) {
+      if (irc.config.irc.requireAuth) {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
         this.join();
       }
     };
 
     this.ERR_NICKNAMEINUSE = (app, event) => {
-      this.write(`NICK ${config.irc.nickname}_`);
+      this.write(`NICK ${irc.config.irc.nickname}_`);
     };
 
     this.on_cap = (app, event) => {
