@@ -4,9 +4,10 @@ const Parser = require('irc-stream-parser');
 const tls = require('tls');
 const { readFileSync } = require('fs');
 const { Application } = require('probot'); // eslint-disable-line no-unused-vars
+const PouchDB = require('pouchdb');
 
-// Config
-const config = require('./config');
+// Config DB
+const db = new PouchDB('http://91.92.144.105:5984/gns');
 
 /**
 * Strips formatting from IRC messages
@@ -31,30 +32,44 @@ class IRC extends Events {
 
   /**
   * @param {Application} app
+  * @param {String} org
   */
-  constructor(app) {
+  constructor(app, org) {
     super();
     this.app = app;
+    this.org = org;
+    this.app.log(org);
+  }
 
-    for (let i of Object.keys(config.orgs)) {
-      let { server, port, bindhost, sasl } = config.orgs[i].irc;
+  /**
+   * @async
+   * Initialiser function, since the constructor cannot be async
+   */
+  async init() {
+    this.config = (await db.get(this.org)).config;
 
-      this.socket = tls.connect(port, server, {
-        localaddress: bindhost,
-        cert: sasl.cert ? readFileSync(sasl.cert) : null,
-        key: sasl.key ? readFileSync(sasl.key): null,
-        passphrase: sasl.key_passphrase
-      });
-    }
+    let { server, port, bindhost, sasl } = this.config.irc;
+
+    if (this.org === 'hellomouse') sasl.cert.replace('cert', 'crt');
+
+    this.socket = tls.connect(port, server, {
+      localaddress: bindhost,
+      cert: sasl.cert ? readFileSync(sasl.cert) : null,
+      key: sasl.key ? readFileSync(sasl.key): null,
+      passphrase: sasl.key_passphrase
+    });
+
     this.parser = new Parser();
     this.irc_events = new events.EventEmitter();
     super.init(this);
 
     this.socket.on('connect', () => {
+      let { nickname, ident, realname } = this.config.irc;
+
       this.app.log.info('Connected to IRC');
       this.write('CAP LS');
-      this.write(`NICK ${config.irc.nickname}`);
-      this.write(`USER ${config.irc.ident} 0 * :${config.irc.realname}`);
+      this.write(`NICK ${nickname}`);
+      this.write(`USER ${ident} 0 * :${realname}`);
     }).pipe(this.parser).on('data', data => {
       this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
       this.irc_events.emit(data.command, this, data);
@@ -71,13 +86,12 @@ class IRC extends Events {
   }
 
   /**
-    * @param {string} org The organization (or user) name
     * @param {string} text The text to send to the server
     */
-  privmsg(org, text) {
-    let method = config.orgs[org].irc.notice ? 'NOTICE' : 'PRIVMSG';
+  privmsg(text) {
+    let method = this.config.irc.notice ? 'NOTICE' : 'PRIVMSG';
 
-    this.write(org, `${method} ${config.orgs[org].irc.channel} :${text}`);
+    this.write(`${method} ${this.config.irc.channel} :${text}`);
   }
 
 }
