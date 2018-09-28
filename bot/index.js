@@ -72,10 +72,16 @@ module.exports = async app => {
   }
 
   /**
+ * Callback function type for the shortenURL function
+ * @callback URLCallback
+ * @param {String} url The minified URL
+ */
+
+  /**
    * @function
    * @async
    * @param {string} url - Url of the string to shorten
-   * @param {function} cb - Function to callback shortened url with
+   * @param {URLCallback} cb - Function to callback shortened url with
   */
   async function shortenUrl(url, cb) {
     // Posts to the api to create shorter url
