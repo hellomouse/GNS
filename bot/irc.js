@@ -50,8 +50,6 @@ class IRC extends Events {
 
     let { server, port, bindhost, sasl } = this.config.irc;
 
-    if (this.org === 'hellomouse') sasl.cert.replace('cert', 'crt');
-
     this.socket = tls.connect(port, server, {
       localaddress: bindhost,
       cert: sasl.cert ? readFileSync(sasl.cert) : null,
