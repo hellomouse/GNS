@@ -141,7 +141,8 @@ module.exports = async function web(app) {
       token: jwt.sign(payload, key, { algorithm: 'RS256' })
     });
     try {
-      const installation = (await octokit.apps.createInstallationToken({ installation_id: req.query.installation_id })).data;
+      const params = { installation_id: req.query.installation_id };
+      const { data: installation } = await octokit.apps.createInstallationToken(params);
 
       req.session.access_token = installation.token;
       res.redirect('/user');
