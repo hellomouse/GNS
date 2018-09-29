@@ -144,7 +144,7 @@ module.exports = async function web(app) {
       const installation = (await octokit.apps.createInstallationToken({ installation_id: req.query.installation_id })).data;
 
       req.session.access_token = installation.token;
-      res.redirect('/user')
+      res.redirect('/user');
     } catch (e) {
       res.status(400).end();
     }
