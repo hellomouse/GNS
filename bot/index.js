@@ -9,6 +9,13 @@ const db = new PouchDB('http://91.92.144.105:5984/gns');
 let pendingStatus = []; // contains all pending checks from travis as multiple are sent
 
 /**
+ * @return {Boolean}
+ */
+Array.prototype.empty = function empty() { // eslint-disable-line no-extend-native
+  return this.length === 0;
+};
+
+/**
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
@@ -44,7 +51,7 @@ function fmt_branch(s) {
  * @param  {string} s The tag name string
  * @return {string}   Returns formatted tag name string
  */
-function fmt_tag(s) { // eslint-disable-line no-unused-vars
+function fmt_tag(s) {
   return `\x0306${s}\x0F`;
 }
 
@@ -107,7 +114,7 @@ module.exports = async app => {
   }
 
   app.irc = {};
-  for await (let { id: i } of (await db.allDocs()).rows) {
+  for await (let { rows: { id: i } } of await db.allDocs()) {
     app.irc[i] = new IRC(app, i);
     await app.irc[i].init();
   }
@@ -278,47 +285,65 @@ module.exports = async app => {
       user = fmt_name(await antiHighlight(payload.sender.login)),
       numC = payload.commits.length,
       ref = fmt_branch(payload.ref.split('/')[2]),
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      distinct_commits = payload.commits.filter(x => x.distinct),
+      [, ref_type, ref_name] = payload.ref.split('/'),
+      [,, base_ref_name] = payload.base_ref.split('/'),
+      msg = [`${att}\x0F | \x0315${user}\x0F`],
+      pushType = payload.forced ? 'force-pushed' : 'pushed',
+      count = 1,
+      repo = `${fmt_repo(payload.repository.name)}/${ref}`,
+      config = await db.get(org);
 
-    if (payload.created && numC === 0 || payload.deleted) return; // We already handle these in their respective event
+    if (payload.created && config.detailedDeletesAndCreates) {
+      if (ref_type === 'tag') {
+        msg.push(`tagged ${fmt_tag(ref_name)} at ${
+          payload.base_ref ? fmt_branch(base_ref_name) : fmt_hash(payload.after)}`);
+      } else {
+        msg.push(`created ${fmt_branch(ref_name)}`);
+
+        if (payload.base_ref) {
+          msg.push(`from ${fmt_branch(base_ref_name)}`);
+        } else if (distinct_commits.empty) {
+          msg.push(`at ${fmt_hash(payload.after.substring(0, 7))}`);
+        }
+        msg.push(`(+\x02${distinct_commits.length}\x0F new commit${distinct_commits.length !== 1 ? 's' : ''})`);
+      }
+    } else if (payload.deleted && config.detailedDeletesAndCreates) {
+      msg.push(`\x0304deleted\x0F ${fmt_branch(ref_name)} at ${fmt_hash(payload.before.substring(0, 7))}`);
+    } else if (numC !== 0 && distinct_commits.empty()) {
+      if (payload.base_ref) {
+        msg.push(`merged ${fmt_branch(base_ref_name)} into ${ref}:`);
+      } else {
+        let before_sha = fmt_hash(payload.before.substring(0, 7)),
+          after_sha = fmt_hash(payload.after.substring(0, 7));
+
+        msg.push(`fast-forwarded ${ref} from ${before_sha} to ${after_sha}:`);
+      }
+    } else {
+      if (payload.delete || payload.create) return; // Handle these in their respective events
+      msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
+    }
 
     let isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits
 
     await shortenUrl(payload.compare, url => {
-      let pushType = payload.forced ? 'force-pushed' : 'pushed',
-        count = 1,
-        msg = `${att} \x0F| \x0315${user}\x0F`,
-        repo = `${fmt_repo(payload.repository.name)}/${ref}`;
+      msg.push(fmt_url(url));
+      app.irc.privmsg(msg.join(' '));
 
-      url = fmt_url(url);
+      for (let c of payload.commits) {
+        if (count <= app.irc.config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
+          c.message = c.message.split('\n')[0];
+          let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
+            author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
 
-      let distinct_commits = payload.commits.filter(x => x.distinct);
-
-      if (numC !== 0 && distinct_commits.length === 0) {
-        if (payload.base_ref) {
-          app.irc[org].privmsg(`${msg} merged ${fmt_branch(payload.base_ref)} into ${ref}: ${url}`);
+          app.irc[org].privmsg(`${repo} ${fmt_hash(c.id.substring(0, 7))} ${author}: ${message}`);
+          count++;
         } else {
-          let before_sha = fmt_hash(payload.before.substring(0, 7)),
-            after_sha = fmt_hash(payload.after.substring(0, 7));
-
-          app.irc[org].privmsg(`${msg} fast-forwarded ${ref} from ${before_sha} to ${after_sha}: ${url}`);
-        }
-      } else {
-        app.irc[org].privmsg(`${msg} ${pushType} \x02${numC}\x0F ${isM} to ${ref}: ${url}`);
-        for (let c of payload.commits) {
-          if (count <= app.irc.config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
-            c.message = c.message.split('\n')[0];
-            let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
-              author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
-
-            app.irc[org].privmsg(`${repo} ${fmt_hash(c.id.substring(0, 7))} ${author}: ${message}`);
-            count++;
-          } else {
-            count -= 1;
-            isM = numC - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
-            app.irc[org].privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
-            break;
-          }
+          count -= 1;
+          isM = numC - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
+          app.irc[org].privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
+          break;
         }
       }
     });
@@ -329,9 +354,10 @@ module.exports = async app => {
       user = fmt_name(await antiHighlight(payload.sender.login)),
       ref = fmt_branch(payload.ref),
       html_url = fmt_url(payload.repository.html_url),
-      org = payload.repository.owner.login;
+      org = payload.repository.owner.login,
+      config = await db.get(org);
 
-    if (payload.ref_type === 'tag') return; // We're not handling tags yet
+    if (payload.ref_type === 'tag' || config.detailedDeletesAndCreates) return; // We're not handling tags yet
     let att = await attFormat(payload.repository.full_name, 'branch-create');
 
     app.irc[org].privmsg(`${att} | ${user} \x0303created\x0F branch ${ref} - ${html_url}`);
@@ -359,9 +385,10 @@ module.exports = async app => {
   });
 
   app.on('delete', async context => {
-    let payload = context.payload;
+    let payload = context.payload,
+      config = await db.get(payload.repository.owner.login);
 
-    if (payload.ref_type === 'tag') return; // We're not handling tags yet
+    if (payload.ref_type === 'tag' || config.detailedDeletesAndCreates) return; // We're not handling tags yet
     let user = fmt_name(await antiHighlight(payload.sender.login)),
       ref = fmt_branch(payload.ref),
       html_url = fmt_url(payload.repository.html_url),
