@@ -26,3 +26,15 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.login-button {
+  float: right;
+  text-decoration: none;
+  position: relative;
+  top: -50px;
+  right: 30px;
+}
+
+.login-button .login-button-svg {
+  margin-right: 10px;
+}
