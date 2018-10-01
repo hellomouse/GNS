@@ -27,6 +27,7 @@
   to { transform: rotate(360deg); }
 }
 
+/* Fix the github login button */
 .login-button {
   float: right;
   text-decoration: none;
@@ -37,4 +38,25 @@
 
 .login-button .login-button-svg {
   margin-right: 10px;
+}
+
+/* Increase paper padding */
+.app-paper {
+  padding: 60px;
+}
+
+/* 2 inputs on same line */
+.sameline {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.sameline .MuiFormControl-root-133 {
+  margin: 0 20px 0 0;
+}
+
+/* Lighter label so you can actually see when focused */
+.sameline .MuiFormLabel-root-142.MuiFormLabel-focused-143 {
+  color: #dddddd;
 }
