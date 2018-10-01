@@ -31,7 +31,7 @@ class RepoSettingsPage extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button variant="extendedFab" color="primary"><ArrowBack/> Back</Button>
+        <Button variant="extendedFab" color="primary" className="back-btn"><ArrowBack/> Back</Button>
         <Paper className="app-paper">
           <Typography variant="title">
           Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
