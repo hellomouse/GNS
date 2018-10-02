@@ -47,20 +47,20 @@ class RepoSettingsPage extends React.Component {
               label="Enable this repository"
             />
             <div className="sameline">
-              <TextField className="rsp-entry" id="ircHost" label="IRC server host"
+              <TextField className="rsp-entry input-margin" id="ircHost" label="IRC server host"
                 style={{ width: '180%' }} />
-              <TextField className="rsp-entry" id="ircPort" label="IRC server port" type="number" />
+              <TextField className="rsp-entry input-margin" id="ircPort" label="IRC server port" type="number" />
             </div>
             <div className="sameline">
-              <TextField className="rsp-entry" id="ircNick" label="IRC nickname" />
-              <TextField className="rsp-entry" id="ircUser" label="IRC username/ident" />
+              <TextField className="rsp-entry input-margin" id="ircNick" label="IRC nickname" />
+              <TextField className="rsp-entry input-margin" id="ircUser" label="IRC username/ident" />
             </div>
             <div className="sameline">
-              <TextField className="rsp-entry" id="ircPass" label="IRC password (leave blank for none)" />
-              <TextField className="rsp-entry" id="ircRnam" label="IRC realname/gecos" />
+              <TextField className="rsp-entry input-margin" id="ircPass" label="IRC password (leave blank for none)" />
+              <TextField className="rsp-entry input-margin" id="ircRnam" label="IRC realname/gecos" />
             </div>
             <div className="sameline">
-              <TextField className="rsp-entry" id="ircChannel" label="IRC channel" />
+              <TextField className="rsp-entry input-margin" id="ircChannel" label="IRC channel" />
             </div>
             <Divider style={{ margin: '0 20px' }}/>
             <br /><br />

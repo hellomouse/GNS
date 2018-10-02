@@ -53,12 +53,12 @@
 }
 
 /* Right margin for input in .sameline */
-.sameline .MuiFormControl-root-133 {
+.sameline .input-margin {
   margin: 0 20px 0 0;
 }
 
 /* Lighter label so you can actually see when focused */
-.sameline .MuiFormLabel-root-142.MuiFormLabel-focused-143 {
+.sameline label[data-shrink="true"] {
   color: #dddddd;
 }
 
