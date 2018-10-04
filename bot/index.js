@@ -4,7 +4,7 @@ const IRC = require('./irc');
 const web = require('./web');
 const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 const PouchDB = require('pouchdb');
-const db = new PouchDB('http://91.92.144.105:5984/gns');
+const db = new PouchDB(process.env.POUCH_REMOTE);
 
 let pendingStatus = []; // contains all pending checks from travis as multiple are sent
 

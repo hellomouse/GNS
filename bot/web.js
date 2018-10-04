@@ -11,7 +11,6 @@ const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const key = fs.readFileSync('./private-key.pem').toString();
 
-process.env.HOST = 'http://wolfy1339.ddns.net:5678';
 const redirect_uri = `${process.env.HOST}/redirect`;
 
 const headers = {
@@ -89,7 +88,7 @@ module.exports = async function web(app) {
     const { data: emails } = await octokit.users.getEmails();
     const { data: orgs } = await octokit.users.getOrgs();
 
-    const db = new PouchDB('http://91.92.144.105:5984/GNS');
+    const db = new PouchDB(process.env.POUCH_REMOTE);
     const defaults = {
       enabled: true
     };
