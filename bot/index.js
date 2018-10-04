@@ -111,7 +111,9 @@ module.exports = async app => {
   }
 
   app.irc = {};
-  for await (let { rows: { id: i } } of await db.allDocs()) {
+  let docs = await db.allDocs();
+
+  for await (let { id: i } of docs.rows) {
     app.irc[i] = new IRC(app, i);
     await app.irc[i].init();
   }
