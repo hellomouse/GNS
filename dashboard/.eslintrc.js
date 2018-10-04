@@ -28,7 +28,7 @@ module.exports = {
                                                    // a function will be skipped.
     },
     plugins: ['react', 'babel', 'jsx-a11y'],
-    extends: ['@hellomouse/wolfy1339', 'plugin:react/recommended', '@hellomouse/eslint-config-react-app'],
+    extends: ['@hellomouse/wolfy1339', 'plugin:react/recommended', 'react-app'],
     rules: {
         'no-console': 'off',
         'babel/semi': 1

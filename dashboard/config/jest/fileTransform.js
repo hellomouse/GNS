@@ -11,7 +11,15 @@ module.exports = {
       return `module.exports = {
         __esModule: true,
         default: ${assetFilename},
-        ReactComponent: () => ${assetFilename},
+        ReactComponent: (props) => ({
+          $$typeof: Symbol.for('react.element'),
+          type: 'svg',
+          ref: null,
+          key: null,
+          props: Object.assign({}, props, {
+            children: ${assetFilename}
+          })
+        }),
       };`;
     }
 
