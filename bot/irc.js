@@ -7,7 +7,7 @@ const { Application } = require('probot'); // eslint-disable-line no-unused-vars
 const PouchDB = require('pouchdb');
 
 // Config DB
-const db = new PouchDB('http://91.92.144.105:5984/gns');
+const db = new PouchDB(process.env.POUCH_REMOTE);
 
 /**
 * Strips formatting from IRC messages
