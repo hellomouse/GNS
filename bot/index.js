@@ -235,7 +235,8 @@ module.exports = async app => {
       issueNumber = payload.pull_request.number,
       user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
-      reviewer = fmt_name(await antiHighlight(payload.requested_reviewer.login)),
+      reviewer = fmt_name(await antiHighlight(payload.requested_reviewer !== undefined ?
+        payload.requested_reviewer.login : payload.requested_team.name)),
       action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review',
       org = payload.repository.owner.login,
       url = fmt_url(await shortenUrl(payload.pull_request.html_url));
