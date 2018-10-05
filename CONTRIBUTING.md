@@ -2,7 +2,7 @@
 
 [fork]: /fork
 [pr]: /compare
-[style]: https://standardjs.com/
+[style]: https://google.github.io/styleguide/jsguide.html
 [code-of-conduct]: CODE_OF_CONDUCT.md
 
 Hi there! We're thrilled that you'd like to contribute to this project. Your help is essential for keeping it great.
@@ -27,7 +27,7 @@ We'd also love PRs. If you're thinking of a large PR, we advise opening up an is
 
 Here are a few things you can do that will increase the likelihood of your pull request being accepted:
 
-- Follow the [style guide][style] which is using standard. Any linting errors should be shown when running `npm test`.
+- Follow the [style guide][style] which is using eslint. Any linting errors should be shown when running `npm test`.
 - Write and update tests.
 - Keep your changes as focused as possible. If there are multiple changes you would like to make that are not dependent upon each other, consider submitting them as separate pull requests.
 - Write a [good commit message](http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html).
