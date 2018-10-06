@@ -42,7 +42,7 @@ class RepoSettingsPage extends React.Component {
           <FormGroup>
             <FormControlLabel
               control={
-                <Switch />
+                <Switch id="enabled"/>
               }
               label="Enable this repository"
             />
@@ -82,8 +82,8 @@ class RepoSettingsPage extends React.Component {
   }
 
   /** Gets executed when the component is mounted */
-  componentDidMount() {
-    storeGetRepoSettings(store, `${this.props.match.params.rUser}/${this.props.match.params.rName}`);
+  async componentDidMount() {
+    await storeGetRepoSettings(store, `${this.props.match.params.rUser}/${this.props.match.params.rName}`);
   }
 }
 
