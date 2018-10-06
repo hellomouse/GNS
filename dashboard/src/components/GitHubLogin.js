@@ -9,7 +9,7 @@ import Button from '@material-ui/core/Button';
 * @param {*} props
 * @return {React.Element}
 */
-function GitHub(props) {
+function GitHubLogin(props) {
   return (
     <a href="/login" className="login-button">
       <Button className="login-button-btn" variant="contained" color="primary" {...props}>
@@ -22,4 +22,4 @@ function GitHub(props) {
   );
 }
 
-export default GitHub;
+export default GitHubLogin;

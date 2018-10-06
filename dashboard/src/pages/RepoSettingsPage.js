@@ -3,15 +3,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
-import ArrowBack from '@material-ui/icons/ArrowBack';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
 import Divider from '@material-ui/core/Divider';
+
+import EventPicker from '../components/EventPicker';
+import BackButton from '../components/BackButton';
 
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -31,7 +31,7 @@ class RepoSettingsPage extends React.Component {
   render() {
     return (
       <React.Fragment>
-        <Button variant="extendedFab" color="primary" className="back-btn"><ArrowBack/> Back</Button>
+        <BackButton/>
         <Paper className="app-paper">
           <Typography variant="title">
           Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
@@ -64,15 +64,7 @@ class RepoSettingsPage extends React.Component {
             </div>
             <Divider style={{ margin: '0 20px' }}/>
             <br /><br />
-            <FormGroup>
-              <Typography variant="subheading">Events</Typography>
-              <FormControlLabel
-                control={
-                  <Checkbox />
-                }
-                label="Subscribe to this event"
-              />
-            </FormGroup>
+            <EventPicker/>
           </FormGroup>
 
 

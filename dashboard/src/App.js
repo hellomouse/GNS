@@ -9,7 +9,7 @@ import IndexPage from './pages/IndexPage';
 import RepoSettingsPage from './pages/RepoSettingsPage';
 
 import store from './store/store';
-import GitHub from './GitHub';
+import GitHubLogin from './components/GitHubLogin';
 
 import './App.css';
 
@@ -69,7 +69,7 @@ class App extends React.Component {
     return (
       <React.Fragment>
         <SimpleAppBar/>
-        <GitHub />
+        <GitHubLogin />
         <Provider store={store}>
           <BrowserRouter>
             <React.Fragment>
