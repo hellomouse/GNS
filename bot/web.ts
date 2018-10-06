@@ -1,15 +1,16 @@
-const express = require('express');
-const session = require('express-session');
-const request = require('request');
-const qs = require('querystring');
-const randomString = require('randomstring');
-const { Application } = require('probot'); // eslint-disable-line no-unused-vars
-const Octokit = require('@octokit/rest');
+import { static as serveStatic } from 'express';
+import session from 'express-session';
+import { post } from 'request';
+import { stringify, parse } from 'querystring';
+import { generate } from 'randomstring';
+import { Application } from 'probot'; // eslint-disable-line no-unused-vars
+import Octokit from '@octokit/rest';
+import PouchDB from 'pouchdb';
+import { readFileSync } from 'fs';
+import { sign } from 'jsonwebtoken';
+
 const octokit = new Octokit();
-const PouchDB = require('pouchdb');
-const fs = require('fs');
-const jwt = require('jsonwebtoken');
-const key = fs.readFileSync('./private-key.pem').toString();
+const key = readFileSync('./private-key.pem').toString();
 
 const redirect_uri = `${process.env.HOST}/redirect`;
 
@@ -21,13 +22,13 @@ const headers = {
  * A wrapper function around the web API stuff
  * @param {Application} app The probot application
  */
-module.exports = async function web(app) {
+export default async function web(app: Application) {
   const router = app.route('/');
 
-  router.use(express.static('public'));
+  router.use(serveStatic('public'));
   router.use(
       session({
-        secret: randomString.generate(),
+        secret: generate(),
         cookie: { maxAge: 60000 },
         resave: false,
         saveUninitialized: false
@@ -44,10 +45,10 @@ module.exports = async function web(app) {
     });
   });
   router.get('/login', (req, res) => {
-    req.session.csrf_string = randomString.generate();
+    req.session.csrf_string = generate();
     const githubAuthUrl =
       `https://github.com/login/oauth/authorize?${
-        qs.stringify({
+        stringify({
           client_id: process.env.CLIENT_ID,
           redirect_uri,
           state: req.session.csrf_string,
@@ -62,11 +63,11 @@ module.exports = async function web(app) {
     const returnedState = req.query.state;
 
     if (req.session.csrf_string === returnedState) {
-      request.post(
+      post(
           {
             url:
             `https://github.com/login/oauth/access_token?${
-              qs.stringify({
+              stringify({
                 client_id: process.env.CLIENT_ID,
                 client_secret: process.env.CLIENT_SECRET,
                 code,
@@ -77,7 +78,7 @@ module.exports = async function web(app) {
           },
           (error, response, body) => {
             if (error) throw error;
-            req.session.access_token = qs.parse(body).access_token;
+            req.session.access_token = parse(body).access_token;
             res.redirect('/user');
           }
       );
@@ -101,7 +102,7 @@ module.exports = async function web(app) {
     const defaults = {
       enabled: true
     };
-    let orgDB;
+    let orgDB : any;
 
     for await (const org of orgs) {
       try {
@@ -112,8 +113,8 @@ module.exports = async function web(app) {
           orgDB = await db.get(org.login);
         }
       }
-      const { data: repos } = await octokit.repos.getForOrg({ org });
-      const { data: members } = await octokit.orgs.getMembers({ org, role: 'admin' });
+      const { data: repos } = await octokit.repos.getForOrg({ org: org.login });
+      const { data: members } = await octokit.orgs.getMembers({ org: org.login, role: 'admin' });
 
       for (let { login: member } of members) {
         if (!orgDB.members.includes(member)) {
@@ -122,8 +123,8 @@ module.exports = async function web(app) {
       }
 
       for (let repo of repos) {
-        if (!orgDB[repo.fullname])
-          orgDB[repo.fullname] = { ...defaults };
+        if (!orgDB[repo.full_name])
+          orgDB[repo.full_name] = { ...defaults };
       }
       db.put(orgDB);
     }
@@ -146,7 +147,7 @@ module.exports = async function web(app) {
 
     octokit.authenticate({
       type: 'app',
-      token: jwt.sign(payload, key, { algorithm: 'RS256' })
+      token: sign(payload, key, { algorithm: 'RS256' })
     });
     try {
       const params = { installation_id: req.query.installation_id };
