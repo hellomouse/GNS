@@ -33,7 +33,16 @@ module.exports = async function web(app) {
         saveUninitialized: false
       })
   );
-
+  router.use((req, res, next) => { // Security headers to avoid and/or limit attacks
+    res.set({
+      'X-Content-Type-Options': 'nosniff',
+      'X-XSS-Protection': '1;mode=block',
+      'X-Frame-Options': 'sameorigin',
+      'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'Content-Security-Policy': 'default-src https:' // TODO: Reduce it to only allow used origins
+    });
+  });
   router.get('/login', (req, res) => {
     req.session.csrf_string = randomString.generate();
     const githubAuthUrl =
