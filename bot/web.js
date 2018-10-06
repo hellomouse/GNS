@@ -40,7 +40,7 @@ module.exports = async function web(app) {
       'X-Frame-Options': 'sameorigin',
       'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Content-Security-Policy': 'default-src \'self\' https:' // TODO: Reduce it to only allow used origins
+      'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
     });
   });
   router.get('/login', (req, res) => {
