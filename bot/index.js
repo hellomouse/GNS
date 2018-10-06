@@ -113,9 +113,17 @@ module.exports = async app => {
   app.irc = {};
   let docs = await db.allDocs();
 
-  for await (let { id: i } of docs.rows) {
-    app.irc[i] = new IRC(app, i);
-    await app.irc[i].init();
+  if (process.env.DEV) {
+    app.irc.hellomouse = new IRC(app, 'hellomouse');
+    for await (let { id: i } of docs.rows) {
+      app.irc[i] = app.irc.hellomouse;
+      await app.irc[i].init();
+    }
+  } else {
+    for await (let { id: i } of docs.rows) {
+      app.irc[i] = new IRC(app, i);
+      await app.irc[i].init();
+    }
   }
   web(app);
 
