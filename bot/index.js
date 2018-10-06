@@ -150,17 +150,16 @@ module.exports = async app => {
           + `issue #${issueNumber} (${issueText}) - ${url}`);
   });
 
-  app.on('issues.labeled', async context => {
-    let payload = context.payload,
-      att = await attFormat(payload.repository.full_name, 'issue.labeled'),
-      user = fmt_name(await antiHighlight(payload.sender.login)),
-      action = payload.action,
+  app.on(['issues.labeled', 'issues.unlabeled'], async context => {
+    let { payload: { action, issue, repository, label: Label, sender } } = context,
+      att = await attFormat(repository.full_name, `issue.${action}`),
+      user = fmt_name(await antiHighlight(sender.login)),
       color = `\x02${({ labeled: '\x0303', unlabeled: '\x0304' })[action]}`,
-      issueNumber = payload.issue.number,
-      issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`,
-      org = payload.repository.owner.login,
-      url = fmt_url(await shortenUrl(payload.issue.html_url));
-    let label = labels[payload.label.name] || payload.label.name;
+      issueNumber = issue.number,
+      issueText = `${issue.title.substring(0, 150)}${issue.title.length > 150 ? '...' : ''}`,
+      org = repository.owner.login,
+      url = fmt_url(await shortenUrl(issue.html_url));
+    let label = labels[Label.name] || Label.name;
 
     app.irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
@@ -235,7 +234,8 @@ module.exports = async app => {
       issueNumber = payload.pull_request.number,
       user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
-      reviewer = fmt_name(await antiHighlight(payload.requested_reviewer.login)),
+      reviewer = fmt_name(await antiHighlight(payload.requested_reviewer !== undefined ?
+        payload.requested_reviewer.login : payload.requested_team.name)),
       action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review',
       org = payload.repository.owner.login,
       url = fmt_url(await shortenUrl(payload.pull_request.html_url));
