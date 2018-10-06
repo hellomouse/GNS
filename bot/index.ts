@@ -1,17 +1,17 @@
-const request = require('request-promise-native');
-const labels = require('./labels');
-const IRC = require('./irc');
-const web = require('./web');
-const { Application } = require('probot'); // eslint-disable-line no-unused-vars
-const PouchDB = require('pouchdb');
+import request from 'request-promise-native';
+import labels from './labels';
+import IRC from './irc';
+import web from './web';
+import { Application } from 'probot'; // eslint-disable-line no-unused-vars
+import PouchDB from 'pouchdb';
 const db = new PouchDB(process.env.POUCH_REMOTE);
 
-let pendingStatus = []; // contains all pending checks from travis as multiple are sent
+let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
 
 /**
  * @return {Boolean}
  */
-Array.prototype.empty = function empty() { // eslint-disable-line no-extend-native
+Array.prototype.empty = function empty(): boolean { // eslint-disable-line no-extend-native
   return this.length === 0;
 };
 
@@ -19,7 +19,7 @@ Array.prototype.empty = function empty() { // eslint-disable-line no-extend-nati
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
-function fmt_url(s) {
+function fmt_url(s: string): string {
   return `\x0302\x1F${s}\x0F`;
 }
 
@@ -27,7 +27,7 @@ function fmt_url(s) {
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
-function fmt_repo(s) {
+function fmt_repo(s: string): string {
   return `\x0313${s}\x0F`;
 }
 
@@ -35,7 +35,7 @@ function fmt_repo(s) {
  * @param  {string} s The author name string
  * @return {string}   Returns formatted author name string
  */
-function fmt_name(s) {
+function fmt_name(s: string): string {
   return `\x0315${s}\x0F`;
 }
 
@@ -43,7 +43,7 @@ function fmt_name(s) {
  * @param  {string} s The branch name string
  * @return {string}   Returns formatted branch name string
  */
-function fmt_branch(s) {
+function fmt_branch(s: string): string {
   return `\x0306${s}\x0F`;
 }
 
@@ -51,7 +51,7 @@ function fmt_branch(s) {
  * @param  {string} s The tag name string
  * @return {string}   Returns formatted tag name string
  */
-function fmt_tag(s) {
+function fmt_tag(s: string): string {
   return `\x0306${s}\x0F`;
 }
 
@@ -59,7 +59,7 @@ function fmt_tag(s) {
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
-function fmt_hash(s) {
+function fmt_hash(s: string): string {
   return `\x0314${s}\x0F`;
 }
 
@@ -67,14 +67,14 @@ function fmt_hash(s) {
  * Main application function, ran by Probot
  * @param {Application} app
 */
-module.exports = async app => {
+module.exports = async (app: Application) => {
   /**
    * @function
    * @async
    * @param {string} user
-   * @return {string} user with normal character
+   * @return {Promise<string>} user with normal character
    */
-  async function antiHighlight(user) {
+  async function antiHighlight(user: string): Promise<string> {
     return `${user.slice(0, 1)}\u200B${user.slice(1)}`;
   }
 
@@ -84,7 +84,7 @@ module.exports = async app => {
    * @param {string} url - Url of the string to shorten
    * @return {Promise<string>}
   */
-  async function shortenUrl(url) {
+  async function shortenUrl(url: string): Promise<string> {
     // Posts to the api to create shorter url
     try {
       const req = await request.post({ uri: 'https://git.io/create', form: { url } });
@@ -92,6 +92,7 @@ module.exports = async app => {
       return `https://git.io/${req}`;
     } catch (e) {
       app.error(`Shorten url failed for ${url}: ${e.message}`);
+      return '';
     }
   }
 
@@ -100,9 +101,9 @@ module.exports = async app => {
    * @async
    * @param {string} fullname - The full repository name
    * @param {string} event - Name of the event being received from webhook
-   * @return {string} Attention string
+   * @return {Promise<string>} Attention string
   */
-  async function attFormat(fullname, event) {
+  async function attFormat(fullname: string, event: string): Promise<string> {
     // [user|org]/[name]
     let [org, name] = fullname.split('/'); // or user
     const { config } = await db.get(org);
@@ -251,7 +252,7 @@ module.exports = async app => {
   app.on('status', async context => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'status'),
-      colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }, // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
+      colors : { [key: string]: string} = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }, // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
       { state, description, target_url } = payload,
       webhookUrl = target_url ? target_url.split('?')[0] : '',
       color = colors[state],
@@ -274,7 +275,7 @@ module.exports = async app => {
       numC = payload.commits.length,
       ref = fmt_branch(payload.ref.split('/')[2]),
       org = payload.repository.owner.login,
-      distinct_commits = payload.commits.filter(x => x.distinct),
+      distinct_commits = payload.commits.filter((x: Object<string, any>) => x.distinct),
       [, ref_type, ref_name] = payload.ref.split('/'),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],

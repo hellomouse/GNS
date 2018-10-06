@@ -1,10 +1,10 @@
-const events = require('events');
-const Events = require('./irc/events');
-const Parser = require('irc-stream-parser');
-const tls = require('tls');
-const { readFileSync } = require('fs');
-const { Application } = require('probot'); // eslint-disable-line no-unused-vars
-const PouchDB = require('pouchdb');
+import { EventEmitter } from 'events';
+import Events from './irc/events';
+import Parser from 'irc-stream-parser';
+import { connect, TLSSocket } from 'tls';
+import { readFileSync } from 'fs';
+import { Application } from 'probot'; // eslint-disable-line no-unused-vars
+import PouchDB from 'pouchdb';
 
 // Config DB
 const db = new PouchDB(process.env.POUCH_REMOTE);
@@ -14,7 +14,7 @@ const db = new PouchDB(process.env.POUCH_REMOTE);
 * @param {string} msg
 * @return {string}
 */
-function strip_formatting(msg) {
+function strip_formatting(msg: string): string {
   /* eslint-disable no-control-regex */
   let ccodes = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
   /* eslint-enable no-control-regex */
@@ -28,14 +28,30 @@ function strip_formatting(msg) {
 /**
  * IRC connection wrapper
  */
-class IRC extends Events {
-
+class IRC {
+  parser!: Parser;
+  irc_events!: EventEmitter;
+  app: Application;
+  org: string;
+  config!: {
+    [key: string]: any;
+  };
+  socket!: TLSSocket;
+  availablecaps!: string[];
+  stringcaps!: string[];
+  caps!: Array<string | Function>;
+  on_ping!: () => void;
+  join!: () => void;
+  on_396!: (app: any, event: any) => void;
+  ERR_NICKNAMEINUSE!: (app: any, event: any) => void;
+  on_cap!: (app: any, event: any) => void;
+  args: any;
+  events: any;
   /**
   * @param {Application} app
   * @param {String} org
   */
-  constructor(app, org) {
-    super();
+  constructor(app: Application, org: string) {
     this.app = app;
     this.org = org;
     this.app.log(org);
@@ -50,7 +66,7 @@ class IRC extends Events {
 
     let { server, port, bindhost, sasl } = this.config.irc;
 
-    this.socket = tls.connect(port, server, {
+    this.socket = connect(port, server, {
       localaddress: bindhost,
       cert: sasl.cert ? readFileSync(sasl.cert) : null,
       key: sasl.key ? readFileSync(sasl.key): null,
@@ -58,8 +74,8 @@ class IRC extends Events {
     });
 
     this.parser = new Parser();
-    this.irc_events = new events.EventEmitter();
-    super.init(this);
+    this.irc_events = new EventEmitter();
+    (Events.bind(this))();
 
     this.socket.on('connect', () => {
       let { nickname, ident, realname } = this.config.irc;
@@ -78,7 +94,7 @@ class IRC extends Events {
   /**
   * @param {string} message
   */
-  write(message) {
+  write(message: string) {
     this.socket.write(`${message}\r\n`);
     this.app.log.debug(`<<< ${strip_formatting(message)}`);
   }
@@ -86,7 +102,7 @@ class IRC extends Events {
   /**
     * @param {string} text The text to send to the server
     */
-  privmsg(text) {
+  privmsg(text: string) {
     let method = this.config.irc.notice ? 'NOTICE' : 'PRIVMSG';
 
     this.write(`${method} ${this.config.irc.channel} :${text}`);
@@ -94,4 +110,4 @@ class IRC extends Events {
 
 }
 
-module.exports = IRC;
+export default IRC;
