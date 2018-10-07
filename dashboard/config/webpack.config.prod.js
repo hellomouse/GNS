@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const PnpWebpackPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const InlineChunkHtmlPlugin = require('react-dev-utils/InlineChunkHtmlPlugin');
+const SRIHashPlugin = require('webpack-subresource-integrity');
 const TerserPlugin = require('terser-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -431,6 +432,10 @@ module.exports = {
         minifyCSS: true,
         minifyURLs: true
       }
+    }),
+    new SRIHashPlugin({
+      hashFuncNames: ['sha256', 'sha384'],
+      enabled: true
     }),
     // Inlines the webpack runtime script. This script is too small to warrant
     // a network request.
