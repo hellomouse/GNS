@@ -68,6 +68,7 @@ function fmt_hash(s: string): string {
  * @param {Application} app
 */
 module.exports = async (app: Application) => {
+  app.error = app.log.error;
   /**
    * @function
    * @async
@@ -261,7 +262,7 @@ module.exports = async (app: Application) => {
     if (payload.state === 'pending') {
       if (pendingStatus.includes(payload.target_url)) return; // We don't want to send multiple pending messages to a channel - Potential spam
       pendingStatus.push(payload.target_url); // We'll use target_url as identifier
-    } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop(payload);
+    } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop();
 
     let url = await shortenUrl(payload.commit.html_url);
 
@@ -275,7 +276,7 @@ module.exports = async (app: Application) => {
       numC = payload.commits.length,
       ref = fmt_branch(payload.ref.split('/')[2]),
       org = payload.repository.owner.login,
-      distinct_commits = payload.commits.filter((x: Object<string, any>) => x.distinct),
+      distinct_commits = payload.commits.filter(x => x.distinct),
       [, ref_type, ref_name] = payload.ref.split('/'),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],

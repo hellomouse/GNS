@@ -1,4 +1,12 @@
 import IRC from '../irc'; // eslint-disable-line no-unused-vars
+import { Application } from 'probot';
+
+type Event = {
+  raw: string,
+  host: string,
+  args: string[]
+}
+type EventFunction = (app: Application, event) => void
 
 /**
 * constructor - description
@@ -40,7 +48,7 @@ function Events(this: IRC | {[key: string]:any}) {
     }
   };
 
-  this.ERR_NICKNAMEINUSE = (app, event) => {
+  this.ERR_NICKNAMEINUSE : EventFunction = (app: Application, event) => {
     this.write(`NICK ${this.config.this.nickname}_`);
   };
 
@@ -64,7 +72,7 @@ function Events(this: IRC | {[key: string]:any}) {
       for (const cap of this.caps) { // Iterate over this.caps so we have access to classes
         if (typeof cap !== 'string' && this.availablecaps.includes(cap.name)) { // Check that the cap is in this.availablecaps
           if (typeof cap.run === 'function') { // Check if the cap has the `run` property
-            cap.run(this.bot, this.args[cap.name]); // Run the cap with the args collected during CAP LS
+            cap.run(this); // Run the cap with the args collected during CAP LS
           } else {
             continue;
           }
