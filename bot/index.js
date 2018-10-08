@@ -105,7 +105,7 @@ module.exports = async app => {
   async function attFormat(fullname, event) {
     // [user|org]/[name]
     let [org, name] = fullname.split('/'); // or user
-    const config = await db.get(org);
+    const { config } = await db.get(org);
 
     return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
   }
