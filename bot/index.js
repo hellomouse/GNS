@@ -285,7 +285,7 @@ module.exports = async app => {
       pushType = payload.forced ? 'force-pushed' : 'pushed',
       count = 1,
       repo = `${fmt_repo(payload.repository.name)}/${ref}`,
-      config = await db.get(org),
+      { config } = await db.get(org),
       isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
       url = await shortenUrl(payload.compare);
 
@@ -325,7 +325,7 @@ module.exports = async app => {
     app.irc[org].privmsg(msg.join(' '));
 
     for (let c of payload.commits) {
-      if (count <= app.irc.config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
+      if (count <= config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
         c.message = c.message.split('\n')[0];
         let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
           author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
