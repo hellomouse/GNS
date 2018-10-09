@@ -2,14 +2,15 @@ import PouchDB from 'pouchdb';
 const db = new PouchDB('http://91.92.144.105:5984/gns');
 
 /** Returns list of repositories for a given user
+ * @async
  * @param {String} user
- * @return {Array<String>}
+ * @return {Promise<Array<String>>}
  */
 export const apiGetRepos = async user => {
   let { rows: docs } = await db.allDocs();
 
   return docs.filter(async x => {
-    let config = await db.get(x);
+    let config = await db.get(x.id);
 
     return config.members.includes(user);
   });
