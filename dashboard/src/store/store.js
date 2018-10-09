@@ -27,11 +27,13 @@ export const storeGetRepos = passedStore => {
   if (st.gotRepos) {
     return;
   }
-  let repos = apiGetRepos();
-
-  passedStore.dispatch({
-    type: 'setRepos',
-    repos: repos
+  apiGetRepos('wolfy1339').then(data => { // Todo: Replace this with a variable that changes when the user logs in
+    passedStore.dispatch({
+      type: 'setRepos',
+      repos: data
+    });
+  }).catch(e => {
+    throw e;
   });
 };
 
