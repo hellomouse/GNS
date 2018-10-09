@@ -285,7 +285,9 @@ module.exports = async app => {
       pushType = payload.forced ? 'force-pushed' : 'pushed',
       count = 1,
       repo = `${fmt_repo(payload.repository.name)}/${ref}`,
-      config = await db.get(org);
+      config = await db.get(org),
+      isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
+      url = await shortenUrl(payload.compare);
 
     if (payload.base_ref) base_ref_name = payload.base_ref.split('/')[2];
 
@@ -318,9 +320,6 @@ module.exports = async app => {
       if (payload.delete || payload.create) return; // Handle these in their respective events
       msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
     }
-
-    let isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
-      url = await shortenUrl(payload.compare);
 
     msg.push(fmt_url(url));
     app.irc.privmsg(msg.join(' '));
