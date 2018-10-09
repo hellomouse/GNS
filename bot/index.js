@@ -322,7 +322,7 @@ module.exports = async app => {
     }
 
     msg.push(fmt_url(url));
-    app.irc.privmsg(msg.join(' '));
+    app.irc[org].privmsg(msg.join(' '));
 
     for (let c of payload.commits) {
       if (count <= app.irc.config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
