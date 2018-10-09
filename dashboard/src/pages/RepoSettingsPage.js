@@ -3,7 +3,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -12,6 +11,8 @@ import Divider from '@material-ui/core/Divider';
 
 import EventPicker from '../components/EventPicker';
 import BackButton from '../components/BackButton';
+import IRCSettings from '../components/IRCSettings';
+
 
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -46,22 +47,7 @@ class RepoSettingsPage extends React.Component {
               }
               label="Enable this repository"
             />
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircHost" label="IRC server host"
-                style={{ width: '180%' }} />
-              <TextField className="rsp-entry input-margin" id="ircPort" label="IRC server port" type="number" />
-            </div>
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircNick" label="IRC nickname" />
-              <TextField className="rsp-entry input-margin" id="ircUser" label="IRC username/ident" />
-            </div>
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircPass" label="IRC password (leave blank for none)" />
-              <TextField className="rsp-entry input-margin" id="ircRnam" label="IRC realname/gecos" />
-            </div>
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircChannel" label="IRC channel" />
-            </div>
+            <IRCSettings />
             <Divider style={{ margin: '0 20px' }}/>
             <br /><br />
             <EventPicker/>
