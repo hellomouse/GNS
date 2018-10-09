@@ -280,12 +280,14 @@ module.exports = async app => {
       org = payload.repository.owner.login,
       distinct_commits = payload.commits.filter(x => x.distinct),
       [, ref_type, ref_name] = payload.ref.split('/'),
-      [,, base_ref_name] = payload.base_ref.split('/'),
+      base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],
       pushType = payload.forced ? 'force-pushed' : 'pushed',
       count = 1,
       repo = `${fmt_repo(payload.repository.name)}/${ref}`,
       config = await db.get(org);
+
+    if (payload.base_ref) base_ref_name = payload.base_ref.split('/')[2];
 
     if (payload.created && config.detailedDeletesAndCreates) {
       if (ref_type === 'tag') {
