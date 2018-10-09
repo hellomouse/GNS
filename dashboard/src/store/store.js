@@ -21,19 +21,17 @@ const store = createStore((state, action) => {
 /** Gets repository list
  * @param {store} passedStore
  */
-export const storeGetRepos = passedStore => {
+export const storeGetRepos = async passedStore => {
   let st = passedStore.getState();
 
   if (st.gotRepos) {
     return;
   }
-  apiGetRepos('wolfy1339').then(data => { // Todo: Replace this with a variable that changes when the user logs in
-    passedStore.dispatch({
-      type: 'setRepos',
-      repos: data
-    });
-  }).catch(e => {
-    throw e;
+  let repos = await apiGetRepos('wolfy1339'); // Todo: Replace this with a variable that changes when the user logs in
+
+  passedStore.dispatch({
+    type: 'setRepos',
+    repos: repos
   });
 };
 

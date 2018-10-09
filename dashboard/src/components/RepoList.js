@@ -40,8 +40,8 @@ class RepoList extends React.Component {
   }
 
   /** Gets executed when the component is mounted */
-  componentDidMount() {
-    storeGetRepos(store);
+  async componentDidMount() {
+    await storeGetRepos(store);
   }
 }
 
