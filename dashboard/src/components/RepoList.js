@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -36,7 +37,12 @@ class RepoList extends React.Component {
       );
     }
 
-    return <div>Loading...</div>;
+    return (
+      <React.Fragment>
+        <CircularProgress color="secondary" />
+        <div>Loading...</div>
+      </React.Fragment>
+    );
   }
 
   /** Gets executed when the component is mounted */
