@@ -5,12 +5,13 @@ import PropTypes from 'prop-types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import store, { storeGetRepos } from '../store/store';
+
+import Loading from '../components/Loading';
 
 /** Provides list of available repositories */
 class RepoList extends React.Component {
@@ -38,10 +39,7 @@ class RepoList extends React.Component {
     }
 
     return (
-      <React.Fragment>
-        <CircularProgress color="secondary" />
-        <div>Loading...</div>
-      </React.Fragment>
+      <Loading/>
     );
   }
 
