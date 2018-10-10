@@ -29,11 +29,7 @@
 
 /* Fix the github login button */
 .login-button {
-  float: right;
   text-decoration: none;
-  position: relative;
-  top: -50px;
-  right: 30px;
 }
 
 .login-button .login-button-svg {
