@@ -31,7 +31,10 @@ const styles = {
  */
 class SimpleAppBar extends React.Component {
   static propTypes = {
-    children: PropTypes.arrayOf(PropTypes.element),
+    children: PropTypes.oneOfType([
+      PropTypes.element,
+      PropTypes.arrayOf(PropTypes.element)
+    ]),
     classes: PropTypes.object
   };
   /** Renders the component
