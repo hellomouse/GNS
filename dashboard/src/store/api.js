@@ -9,11 +9,15 @@ const db = new PouchDB('http://91.92.144.105:5984/gns');
 export const apiGetRepos = async user => {
   let { rows: docs } = await db.allDocs();
 
-  return docs.filter(async x => {
-    let config = await db.get(x.id);
+  let repos = [];
 
-    return config.members.includes(user);
-  });
+  for await (let { id: org } of docs) {
+    let { repos: orgRepos, members } = await db.get(org);
+
+    if (members.includes(user)) repos.push(...Object.keys(orgRepos));
+  }
+
+  return repos;
 };
 
 /**
