@@ -5,6 +5,7 @@ import { Provider } from 'react-redux';
 
 import IndexPage from './pages/IndexPage';
 import RepoSettingsPage from './pages/RepoSettingsPage';
+import LoginPage from './pages/LoginPage';
 
 import store from './store/store';
 import GitHubLogin from './components/GitHubLogin';
@@ -28,6 +29,7 @@ class App extends React.Component {
             <React.Fragment>
               <Route exact path="/" component={IndexPage} />
               <Route exact path="/repo/:rUser/:rName" component={RepoSettingsPage} />
+              <Route exact path="/login" component={LoginPage} />
             </React.Fragment>
           </BrowserRouter>
         </Provider>
