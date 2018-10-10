@@ -21,7 +21,7 @@ export const apiGetRepos = async user => {
 };
 
 /**
- * @typedef {Object<string, boolean | string | Object<string, boolean>>} RepoSettings
+ * @typedef {Object<string, boolean | string | string[] | Object<string, boolean>>} RepoSettings
  */
 
 /** Returns settings for the given repository
