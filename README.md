@@ -1,4 +1,4 @@
-# gns
+# gns <img src="assets/logo.svg" width="120">
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/hellomouse/GNS.svg)](https://greenkeeper.io/)
 
