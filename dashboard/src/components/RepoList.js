@@ -39,7 +39,7 @@ class RepoList extends React.Component {
     }
 
     return (
-      <Loading/>
+      <Loading />
     );
   }
 

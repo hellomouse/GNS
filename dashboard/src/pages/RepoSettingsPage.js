@@ -52,8 +52,6 @@ class RepoSettingsPage extends React.Component {
             <br /><br />
             <EventPicker/>
           </FormGroup>
-
-
         </Paper>
       </React.Fragment>
     );
