@@ -4,14 +4,13 @@ import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormGroup from '@material-ui/core/FormGroup';
 import Divider from '@material-ui/core/Divider';
 
 import EventPicker from '../components/EventPicker';
 import BackButton from '../components/BackButton';
 import IRCSettings from '../components/IRCSettings';
+import SwitchLabel from '../components/SwitchLabel';
 
 
 import { withRouter } from 'react-router-dom';
@@ -41,12 +40,7 @@ class RepoSettingsPage extends React.Component {
           <br/>
 
           <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch id="enabled"/>
-              }
-              label="Enable this repository"
-            />
+            <SwitchLabel id="enabled" label="Enable this repository"/>
             <IRCSettings />
             <Divider style={{ margin: '0 20px' }}/>
             <br /><br />
