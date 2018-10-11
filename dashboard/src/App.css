@@ -8,15 +8,21 @@
 }
 
 /* Increase paper padding */
-.app-paper {
-  padding: 60px;
-}
+@media (min-width: 600px) {
+  .app-paper {
+    padding: 60px;
+  }
 
-/* 2 inputs on same line */
-.sameline {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  /* 2 inputs on same line */
+  .sameline {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .extra-width {
+    width: 180%;
+  }
 }
 
 /* Right margin for input in .sameline */

@@ -15,8 +15,7 @@ export default class IRCSettings extends React.Component {
     return (
       <React.Fragment>
         <div className="sameline">
-          <TextField className="rsp-entry input-margin" id="ircHost" label="IRC server host"
-            style={{ width: '180%' }} />
+          <TextField className="rsp-entry input-margin extra-width" id="ircHost" label="IRC server host" />
           <TextField className="rsp-entry input-margin" id="ircPort" label="IRC server port" type="number" />
         </div>
         <div className="sameline">
