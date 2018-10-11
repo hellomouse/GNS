@@ -22,7 +22,7 @@ export default class IRCSettings extends React.Component {
         </div>
         <div className="sameline">
           <TextField className="rsp-entry input-margin" id="ircNick" label="IRC nickname"
-            defaltValue='GNS' value='GNS' />
+            defaultValue='GNS' />
           <TextField className="rsp-entry input-margin" id="ircUser" label="IRC username/ident" />
         </div>
         <div className="sameline">
