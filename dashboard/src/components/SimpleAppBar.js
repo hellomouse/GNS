@@ -1,3 +1,4 @@
+/* eslint-disable new-cap */
 import React from 'react';
 
 import PropTypes from 'prop-types';
@@ -5,9 +6,8 @@ import PropTypes from 'prop-types';
 import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Logo from './Logo';
 
+import Logo from './Logo';
 
 const styles = {
   root: {
@@ -37,6 +37,7 @@ class SimpleAppBar extends React.Component {
     ]),
     classes: PropTypes.object
   };
+
   /** Renders the component
    * @return {React.ReactElement}
    */
@@ -44,11 +45,9 @@ class SimpleAppBar extends React.Component {
     return (
       <AppBar position="static" color="default">
         <Toolbar>
-          <Typography variant="title" color="inherit" className={this.props.classes.grow}>
-            <div color="inherit" className={this.props.classes.root}>
-              <Logo />
-            </div>
-          </Typography>
+          <div color="inherit" className={this.props.classes.grow}>
+            <Logo className={this.props.classes.logo} />
+          </div>
           {this.props.children}
         </Toolbar>
       </AppBar>
