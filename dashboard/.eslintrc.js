@@ -31,6 +31,9 @@ module.exports = {
     extends: ['@hellomouse/wolfy1339', 'plugin:react/recommended', 'react-app'],
     rules: {
         'no-console': 'off',
-        'babel/semi': 1
+        semi: 0,
+        'babel/semi': 1,
+        'no-invalid-this': 0,
+        'babel/no-invalid-this': 1
     }
 }
