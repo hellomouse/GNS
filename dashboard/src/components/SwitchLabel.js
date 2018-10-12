@@ -23,9 +23,7 @@ class SwitchLabel extends React.Component {
    * @param {string} name
    * @return {function(Event):void}
    */
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.checked });
-  };
+  handleChange = name => event => this.setState({ [name]: event.target.checked });
 
   /**
    * @return {React.ReactElement}
@@ -35,7 +33,7 @@ class SwitchLabel extends React.Component {
       <FormControlLabel
         control={
           <Switch
-            checked={this.state.checked}
+            checked={this.props.checked}
             onChange={
               this.props.onChange !== undefined ? this.props.onChange : this.handleChange('checked')
             }
