@@ -10,11 +10,13 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
  */
 class SwitchLabel extends React.Component {
   static propTypes = {
-    id: PropTypes.string,
-    label: PropTypes.string
+    id: PropTypes.string.isRequired,
+    label: PropTypes.string.isRequired,
+    checked: PropTypes.bool,
+    onChange: PropTypes.func
   };
   state = {
-    checked: true
+    checked: this.props.checked !== undefined ? this.props.checked : false
   };
 
   /**
@@ -34,7 +36,9 @@ class SwitchLabel extends React.Component {
         control={
           <Switch
             checked={this.state.checked}
-            onChange={this.handleChange('checked')}
+            onChange={
+              this.props.onChange !== undefined ? this.props.onChange : this.handleChange('checked')
+            }
             value="checked"
             id={this.props.id}
           />
