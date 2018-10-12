@@ -6,12 +6,6 @@ import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 /**
- * Callback function type for the handleChange function
- * @callback handleChangeCallback
- * @param {Object<string, any>} event The event
- */
-
-/**
  * Switch with Label
  */
 class SwitchLabel extends React.Component {
@@ -25,7 +19,7 @@ class SwitchLabel extends React.Component {
 
   /**
    * @param {string} name
-   * @return {handleChangeCallback}
+   * @return {function(Event):void}
    */
   handleChange = name => event => {
     this.setState({ [name]: event.target.checked });
