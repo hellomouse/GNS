@@ -12,14 +12,12 @@ import SwitchLabel from './SwitchLabel';
 export default class EventPicker extends React.Component {
   /**
    * Function to enable all default GitHub events
-   * @param {string} name
-   * @return {function(Event): void}
+   * @param {Event} event
    */
-  enableAllGitHub = name => event => {
-    alert(name);
+  enableAllGitHub = event => {
     this.setState({
       checkedGitHub: event.target.checked,
-      checkedA: true
+      checkedA: event.target.checked
     });
   };
 
@@ -35,7 +33,8 @@ export default class EventPicker extends React.Component {
     return (
       <FormGroup>
         <Typography variant="subheading">Events</Typography>
-        <SwitchLabel label="Enable all GitHub defaults" id="github-defaults" onChange={this.enableAllGitHub}
+        <SwitchLabel label="Enable all GitHub defaults" id="github-defaults"
+          onChange={this.enableAllGitHub}
           checked={this.state.checkedGitHub} />
         <FormControlLabel
           control={
