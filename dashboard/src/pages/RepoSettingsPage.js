@@ -4,8 +4,10 @@ import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import FormGroup from '@material-ui/core/FormGroup';
 import Divider from '@material-ui/core/Divider';
+import green from '@material-ui/core/colors/green';
+import Button from '@material-ui/core/Button';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import EventPicker from '../components/EventPicker';
 import BackButton from '../components/BackButton';
@@ -18,11 +20,26 @@ import { connect } from 'react-redux';
 
 import store, { storeGetRepoSettings } from '../store/store';
 
+
+const theme = createMuiTheme({
+  palette: {
+    primary: green
+  }
+});
+
 /** Repo settings page of the app */
 class RepoSettingsPage extends React.Component {
   static propTypes = {
     match: PropTypes.object.isRequired,
     repoSettings: PropTypes.object.isRequired
+  };
+
+  /**
+   * @param {Event} event
+   */
+  onSubmit = event => {
+    event.preventDefault();
+    // Placeholder funtion
   };
 
   /** Renders the component
@@ -39,13 +56,17 @@ class RepoSettingsPage extends React.Component {
 
           <br/>
 
-          <FormGroup>
+          <form onSubmit={this.onSubmit}>
             <SwitchLabel id="enabled" label="Enable this repository"/>
             <IRCSettings />
-            <Divider style={{ margin: '0 20px' }}/>
+            <Divider style={{ margin: '20px 0 20px' }}/>
             <br /><br />
             <EventPicker/>
-          </FormGroup>
+            <Divider style={{ margin: '20px 0 20px' }}/>
+            <MuiThemeProvider theme={theme}>
+              <Button type="submit" color="primary" variant="contained" style={{ display: 'block' }}>Submit</Button>
+            </MuiThemeProvider>
+          </form>
         </Paper>
       </React.Fragment>
     );
