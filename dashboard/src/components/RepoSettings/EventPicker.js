@@ -1,6 +1,8 @@
+import React from 'react';
+import PropTypes from 'prop-types';
+
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
@@ -9,7 +11,11 @@ import SwitchLabel from './SwitchLabel';
 /**
 * EventPicker component
 */
-export default class EventPicker extends React.Component {
+class EventPicker extends React.Component {
+  static propTypes = {
+    state: PropTypes.object.isRequired
+  };
+
   /**
    * Function to enable all default GitHub events
    * @param {Event} event
@@ -17,13 +23,14 @@ export default class EventPicker extends React.Component {
   enableAllGitHub = event => {
     this.setState({
       checkedGitHub: event.target.checked,
-      checkedA: event.target.checked
+      checkedEvent: event.target.checked
     });
   };
 
   state = {
-    checkedGitHub: true,
-    checkedA: false
+    config: this.props.state,
+    checkedGitHub: false,
+    checkedEvent: false
   };
 
   /**
@@ -36,13 +43,17 @@ export default class EventPicker extends React.Component {
         <SwitchLabel label="Enable all GitHub defaults" id="github-defaults"
           onChange={this.enableAllGitHub}
           checked={this.state.checkedGitHub} />
-        <FormControlLabel
-          control={
-            <Checkbox checked={this.state.checkedA}/>
-          }
-          label="Subscribe to this event"
-        />
+        {this.state.config.map(event =>
+          <FormControlLabel key={`event-${event}`}
+            control={
+              <Checkbox checked={this.state[`checked${event}`]}/>
+            }
+            label={event.toUpperCase()}
+          />
+        )}
       </FormGroup>
     );
   }
 }
+
+export default EventPicker;

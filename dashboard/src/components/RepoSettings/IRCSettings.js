@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import TextField from '@material-ui/core/TextField';
 
@@ -8,6 +9,11 @@ import TextField from '@material-ui/core/TextField';
  * @desc IRC Settings component for the repo settings page
  */
 export default class IRCSettings extends React.Component {
+  static propTypes = {
+    state: PropTypes.object.isRequired
+  };
+
+  state = { ...this.props.state };
   /** Renders the component
   * @return {React.ReactElement}
   */

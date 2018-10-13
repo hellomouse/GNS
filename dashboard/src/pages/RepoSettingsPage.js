@@ -9,9 +9,9 @@ import green from '@material-ui/core/colors/green';
 import Button from '@material-ui/core/Button';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import EventPicker from '../components/EventPicker';
+import EventPicker from '../components/RepoSettings/EventPicker';
 import BackButton from '../components/BackButton';
-import IRCSettings from '../components/IRCSettings';
+import IRCSettings from '../components/RepoSettings/IRCSettings';
 import SwitchLabel from '../components/SwitchLabel';
 
 
