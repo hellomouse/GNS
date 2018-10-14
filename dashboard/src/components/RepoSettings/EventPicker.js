@@ -6,7 +6,7 @@ import FormGroup from '@material-ui/core/FormGroup';
 import Typography from '@material-ui/core/Typography';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 
-import SwitchLabel from './SwitchLabel';
+import SwitchLabel from '../SwitchLabel';
 
 /**
 * EventPicker component
