@@ -1,18 +1,10 @@
 import IRC from '../irc'; // eslint-disable-line no-unused-vars
-import { Application } from 'probot';
-
-type Event = {
-  raw: string,
-  host: string,
-  args: string[]
-}
-type EventFunction = (app: Application, event) => void
 
 /**
-* constructor - description
-* @extends IRC
-*/
-function Events(this: IRC | {[key: string]:any}) {
+ * constructor - description
+ * @extends IRC
+ */
+function Events(this: IRC): void {
   this.stringcaps = [];
   this.caps = ['sasl'];
   this.availablecaps = [];
@@ -41,18 +33,18 @@ function Events(this: IRC | {[key: string]:any}) {
       }
     };*/
 
-  this.on_396 = (app, event) => {
+  this.on_396 = () => {
     if (this.config.this.requireAuth) {
       // Joining channels after being authenticated if config option is set, if not, join after the MOTD
       this.join();
     }
   };
 
-  this.ERR_NICKNAMEINUSE : EventFunction = (app: Application, event) => {
+  this.ERR_NICKNAMEINUSE = () => {
     this.write(`NICK ${this.config.this.nickname}_`);
   };
 
-  this.on_cap = (app, event: { args: string[] }) => {
+  this.on_cap = (app, event) => {
     if (event.args[1] === 'LS') {
       // Don't blindly assume server supports our requested caps, even though server sends a CAP NACK response
       const servcaps = event.args[2].split(' ');

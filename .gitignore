@@ -4,6 +4,7 @@ npm-debug.log
 *.key
 *.crt
 .env
+bot/lib/**
 coverage
 dashboard/build/
 dashboard/coverage/
