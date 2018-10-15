@@ -4,10 +4,11 @@ import { post } from 'request';
 import { stringify, parse } from 'querystring';
 import { generate } from 'randomstring';
 import { Application } from 'probot'; // eslint-disable-line no-unused-vars
-import Octokit from '@octokit/rest';
+import Octokit, { AuthOAuthSecret } from '@octokit/rest';
 import PouchDB from 'pouchdb';
 import { readFileSync } from 'fs';
 import { sign } from 'jsonwebtoken';
+import { Config } from './config';
 
 const octokit = new Octokit();
 const key = readFileSync('./private-key.pem').toString();
@@ -41,17 +42,18 @@ export default async function web(app: Application) {
       'X-Frame-Options': 'sameorigin',
       'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
+      // tslint:disable-next-line:quotemark
       'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
     });
   });
   router.get('/login', (req, res) => {
-    req.session.csrf_string = generate();
+    req.session!.csrf_string = generate();
     const githubAuthUrl =
       `https://github.com/login/oauth/authorize?${
         stringify({
           client_id: process.env.CLIENT_ID,
           redirect_uri,
-          state: req.session.csrf_string,
+          state: req.session!.csrf_string,
           scope: 'user:email read:org'
         })}`;
 
@@ -62,7 +64,7 @@ export default async function web(app: Application) {
     const code = req.query.code;
     const returnedState = req.query.state;
 
-    if (req.session.csrf_string === returnedState) {
+    if (req.session!.csrf_string === returnedState) {
       post(
           {
             url:
@@ -72,37 +74,38 @@ export default async function web(app: Application) {
                 client_secret: process.env.CLIENT_SECRET,
                 code,
                 redirect_uri,
-                state: req.session.csrf_string
+                state: req.session!.csrf_string
               })}`,
             headers
           },
           (error, response, body) => {
             if (error) throw error;
-            req.session.access_token = parse(body).access_token;
+            req.session!.access_token = parse(body).access_token;
             res.redirect('/user');
           }
       );
     } else {
-      app.log.error(`Expected ${req.session.csrf_sring}, but got ${returnedState}`);
+      app.log.error(`Expected ${req.session!.csrf_sring}, but got ${returnedState}`);
       res.redirect('/');
     }
   });
 
   router.get('/user', async (req, res) => {
-    octokit.authenticate({
+    const authenticate = (auth: AuthOAuthSecret) => { octokit.authenticate(auth); }; // Needed because stupid linters can't detect type properly
+    authenticate({
       type: 'oauth',
-      key: process.env.CLIENT_ID,
-      secret: process.env.CLIENT_SECRET
+      key: process.env.CLIENT_ID || '',
+      secret: process.env.CLIENT_SECRET || ''
     });
-    octokit.authenticate({ type: 'oauth', token: req.session.access_token });
+    octokit.authenticate({ type: 'oauth', token: req.session!.access_token });
     const { data: emails } = await octokit.users.getEmails();
     const { data: orgs } = await octokit.users.getOrgs();
 
-    const db = new PouchDB(process.env.POUCH_REMOTE);
+    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE || '');
     const defaults = {
       enabled: true
     };
-    let orgDB : any;
+    let orgDB: any;
 
     for await (const org of orgs) {
       try {
@@ -117,14 +120,14 @@ export default async function web(app: Application) {
       const { data: members } = await octokit.orgs.getMembers({ org: org.login, role: 'admin' });
 
       for (let { login: member } of members) {
-        if (!orgDB.members.includes(member)) {
-          orgDB.members.push(member);
+        if (!orgDB.members!.includes(member)) {
+          orgDB.members!.push(member);
         }
       }
 
       for (let repo of repos) {
-        if (!orgDB[repo.full_name])
-          orgDB[repo.full_name] = { ...defaults };
+        if (!orgDB[repo.full_name!])
+          orgDB[repo.full_name!] = { ...defaults };
       }
       db.put(orgDB);
     }
@@ -153,7 +156,7 @@ export default async function web(app: Application) {
       const params = { installation_id: req.query.installation_id };
       const { data: installation } = await octokit.apps.createInstallationToken(params);
 
-      req.session.access_token = installation.token;
+      req.session!.access_token = installation.token;
       res.redirect('/user');
     } catch (e) {
       res.status(400).end();

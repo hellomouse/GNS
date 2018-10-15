@@ -5,25 +5,36 @@ import { connect, TLSSocket } from 'tls';
 import { readFileSync } from 'fs';
 import { Application } from 'probot'; // eslint-disable-line no-unused-vars
 import PouchDB from 'pouchdb';
+import { Config } from './config';
 
-// Config DB
-const db = new PouchDB(process.env.POUCH_REMOTE);
+interface Event {
+  raw: string;
+  host: string;
+  args: string[];
+}
+type EventFunction = (app: Application, event: Event) => void;
+
+// config DB
+const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
 /**
-* Strips formatting from IRC messages
-* @param {string} msg
-* @return {string}
-*/
+ * Strips formatting from IRC messages
+ * @param {string} msg
+ * @return {string}
+ */
 function strip_formatting(msg: string): string {
   /* eslint-disable no-control-regex */
-  let ccodes = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
+  let ccodes: string[] = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
   /* eslint-enable no-control-regex */
 
-  for (let cc of ccodes)
+  for (let cc of ccodes) {
     msg = msg.replace(new RegExp(cc, 'g'), '');
+  }
 
   return msg;
 }
+
+type CapFunction = (bot: IRC) => void;
 
 /**
  * IRC connection wrapper
@@ -39,18 +50,19 @@ class IRC {
   socket!: TLSSocket;
   availablecaps!: string[];
   stringcaps!: string[];
-  caps!: Array<string | Function>;
+  caps!: Array<string | CapFunction>;
   on_ping!: () => void;
   join!: () => void;
-  on_396!: (app: any, event: any) => void;
-  ERR_NICKNAMEINUSE!: (app: any, event: any) => void;
-  on_cap!: (app: any, event: any) => void;
+  on_396!: EventFunction;
+  'ERR_NICKNAMEINUSE': EventFunction;
+  on_cap!: EventFunction;
   args: any;
   events: any;
+
   /**
-  * @param {Application} app
-  * @param {String} org
-  */
+   * @param {Application} app
+   * @param {String} org
+   */
   constructor(app: Application, org: string) {
     this.app = app;
     this.org = org;
@@ -61,15 +73,14 @@ class IRC {
    * @async
    * Initialiser function, since the constructor cannot be async
    */
-  async init() {
+  async init(): Promise<void> {
     this.config = (await db.get(this.org)).config;
 
     let { server, port, bindhost, sasl } = this.config.irc;
 
     this.socket = connect(port, server, {
-      localaddress: bindhost,
-      cert: sasl.cert ? readFileSync(sasl.cert) : null,
-      key: sasl.key ? readFileSync(sasl.key): null,
+      cert: sasl.cert ? readFileSync(sasl.cert) : undefined,
+      key: sasl.key ? readFileSync(sasl.key) : undefined,
       passphrase: sasl.key_passphrase
     });
 
@@ -92,18 +103,18 @@ class IRC {
   }
 
   /**
-  * @param {string} message
-  */
-  write(message: string) {
+   * @param {string} message
+   */
+  write(message: string): void {
     this.socket.write(`${message}\r\n`);
     this.app.log.debug(`<<< ${strip_formatting(message)}`);
   }
 
   /**
-    * @param {string} text The text to send to the server
-    */
-  privmsg(text: string) {
-    let method = this.config.irc.notice ? 'NOTICE' : 'PRIVMSG';
+   * @param {string} text The text to send to the server
+   */
+  privmsg(text: string): void {
+    let method: string = this.config.irc.notice ? 'NOTICE' : 'PRIVMSG';
 
     this.write(`${method} ${this.config.irc.channel} :${text}`);
   }
