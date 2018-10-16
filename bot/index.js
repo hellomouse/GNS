@@ -158,16 +158,15 @@ module.exports = async app => {
           + `issue #${issueNumber} (${issueText}) - ${url}`);
   });
 
-  app.on(['issues.labeled', 'issues.unlabeled'], async context => {
-    let { payload: { action, issue, repository, label: Label, sender } } = context,
+  app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled, pull_request.unlabeled'], async context => {
+    let { payload: { action, repository, label: Label, sender, [context.event]: { number: issueNumber, title, html_url } } } = context,
       att = await attFormat(repository.full_name, `issue.${action}`),
       user = fmt_name(await antiHighlight(sender.login)),
       color = `\x02${({ labeled: '\x0303', unlabeled: '\x0304' })[action]}`,
-      issueNumber = issue.number,
-      issueText = `${issue.title.substring(0, 150)}${issue.title.length > 150 ? '...' : ''}`,
+      issueText = `${title.substring(0, 150)}${title.length > 150 ? '...' : ''}`,
       org = repository.owner.login,
-      url = fmt_url(await shortenUrl(issue.html_url));
-    let label = labels[Label.name] || Label.name;
+      url = fmt_url(await shortenUrl(html_url)),
+      label = labels[Label.name] || Label.name;
 
     app.irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
@@ -175,17 +174,15 @@ module.exports = async app => {
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
       async context => {
-        let payload = context.payload,
-          att = await attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
-          issueNumber = payload.number || payload.issue.number,
-          action = payload.action,
-          user = fmt_name(await antiHighlight(payload.assignee.login)),
-          sender = fmt_name(await antiHighlight(payload.sender.login)),
-          fullname = payload.repository.full_name,
+        let { [context.event]: { number: issueNumber, html_url }, action, repository, assignee, sender: { login: assigneeLogin } }= context.payload,
+          att = await attFormat(repository.full_name, `${context.event}.${action}`),
+          user = fmt_name(await antiHighlight(assignee.login)),
+          sender = fmt_name(await antiHighlight(assigneeLogin)),
+          fullname = repository.full_name,
           color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
           event = context.event.replace('_', ' '),
           assignedText,
-          org = payload.repository.owner.login;
+          org = repository.owner.login;
 
         if (user === sender) {
           assignedText = `${user} ${color}${action}\x0F themselves `;
@@ -193,8 +190,7 @@ module.exports = async app => {
         } else {
           assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
         }
-        let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url,
-          url = fmt_url(await shortenUrl(html_url));
+        let url = fmt_url(await shortenUrl(html_url));
 
         app.irc[org].privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
