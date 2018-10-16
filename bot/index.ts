@@ -33,6 +33,7 @@ class CustomApplication extends Application {
   error: Application['log']['error'];
   constructor() {
     super();
+    this.error = super.log.error;
     let org = '';
     this.irc = {
       [org] : new IRC(this, org)
@@ -338,7 +339,7 @@ module.exports = async (app: CustomApplication) => {
         }
         msg.push(`(+\x02${distinct_commits.length}\x0F new commit${distinct_commits.length !== 1 ? 's' : ''})`);
       }
-    } else if (payload.deleted && config.detailedDeletesAndCreates) {
+    } else if (payload.deleted && config!.detailedDeletesAndCreates) {
       msg.push(`\x0304deleted\x0F ${fmt_branch(ref_name)} at ${fmt_hash(payload.before.substring(0, 7))}`);
     } else if (numC !== 0 && distinct_commits.empty()) {
       if (payload.base_ref) {
@@ -358,7 +359,7 @@ module.exports = async (app: CustomApplication) => {
     app.irc[org].privmsg(msg.join(' '));
 
     for (let c of payload.commits) {
-      if (count <= config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
+      if (count <= config!.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
         c.message = c.message.split('\n')[0];
         let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
           author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';

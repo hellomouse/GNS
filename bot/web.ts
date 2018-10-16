@@ -8,7 +8,7 @@ import Octokit, { AuthOAuthSecret } from '@octokit/rest';
 import PouchDB from 'pouchdb';
 import { readFileSync } from 'fs';
 import { sign } from 'jsonwebtoken';
-import { Config } from './config';
+import { Config, ConfigDefault } from './config';
 
 const octokit = new Octokit();
 const key = readFileSync('./private-key.pem').toString();
@@ -98,21 +98,19 @@ export default async function web(app: Application) {
       secret: process.env.CLIENT_SECRET || ''
     });
     octokit.authenticate({ type: 'oauth', token: req.session!.access_token });
-    const { data: emails } = await octokit.users.getEmails();
-    const { data: orgs } = await octokit.users.getOrgs();
+    const { data: emails } = await octokit.users.getEmails({});
+    const { data: orgs } = await octokit.users.getOrgs({});
 
-    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE || '');
-    const defaults = {
-      enabled: true
-    };
-    let orgDB: any;
+    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+
+    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
 
     for await (const org of orgs) {
       try {
         orgDB = await db.get(org.login);
       } catch (e) {
         if (e.name === 'not_found') {
-          db.put({ _id: org.login });
+          await db.put({ _id: org.login, ...ConfigDefault});
           orgDB = await db.get(org.login);
         }
       }
@@ -126,8 +124,8 @@ export default async function web(app: Application) {
       }
 
       for (let repo of repos) {
-        if (!orgDB[repo.full_name!])
-          orgDB[repo.full_name!] = { ...defaults };
+        if (!orgDB.repos[repo.full_name!])
+          orgDB.repos[repo.full_name!] = { enabled: true };
       }
       db.put(orgDB);
     }

@@ -18,14 +18,14 @@ function Events(this: IRC): void {
     this.app.log(`${this.org}: ${this.config.notice}`);
     if (this.config.notice === undefined) this.config.notice = false;
     if (!this.config.notice) {
-      this.write(`JOIN ${this.config.this.channel}`);
+      this.write(`JOIN ${this.config.channel}`);
       this.app.log('Joining channels');
     }
   };
 
   /* this.RPL_WELCOME = (app, event) => {
       if (!config.irc.sasl.cert) {
-        this.write(`PRIVMSG NickServ :identify ${config.this.NickServPass}`);
+        this.write(`PRIVMSG NickServ :identify ${config.NickServPass}`);
       }
       if (!config.irc.requireAuth) {
         // Joining channels after being authenticated if config option is set, if not, join after the MOTD
@@ -34,14 +34,14 @@ function Events(this: IRC): void {
     };*/
 
   this.on_396 = () => {
-    if (this.config.this.requireAuth) {
+    if (this.config.requireAuth) {
       // Joining channels after being authenticated if config option is set, if not, join after the MOTD
       this.join();
     }
   };
 
   this.ERR_NICKNAMEINUSE = () => {
-    this.write(`NICK ${this.config.this.nickname}_`);
+    this.write(`NICK ${this.config.nickname}_`);
   };
 
   this.on_cap = (app, event) => {
