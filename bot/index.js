@@ -317,7 +317,7 @@ module.exports = async app => {
         msg.push(`fast-forwarded ${ref} from ${before_sha} to ${after_sha}:`);
       }
     } else {
-      if (payload.delete || payload.create) return; // Handle these in their respective events
+      if (payload.deleted || payload.create) return; // Handle these in their respective events
       msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
     }
 
