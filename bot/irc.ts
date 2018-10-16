@@ -8,6 +8,8 @@ import PouchDB from 'pouchdb';
 import { Config } from './config';
 
 interface Event {
+  command: any;
+  numeric: any;
   raw: string;
   host: string;
   args: string[];
@@ -34,7 +36,7 @@ function strip_formatting(msg: string): string {
   return msg;
 }
 
-type CapFunction = (bot: IRC) => void;
+type CapFunction = (bot: IRC) => {run: () => void; };
 
 /**
  * IRC connection wrapper
@@ -44,9 +46,7 @@ class IRC {
   irc_events!: EventEmitter;
   app: Application;
   org: string;
-  config!: {
-    [key: string]: any;
-  };
+  config!: Config['config'];
   socket!: TLSSocket;
   availablecaps!: string[];
   stringcaps!: string[];
@@ -76,7 +76,7 @@ class IRC {
   async init(): Promise<void> {
     this.config = (await db.get(this.org)).config;
 
-    let { server, port, bindhost, sasl } = this.config.irc;
+    let { server, port, bindhost, sasl } = this.config!.irc;
 
     this.socket = connect(port, server, {
       cert: sasl.cert ? readFileSync(sasl.cert) : undefined,
@@ -95,7 +95,7 @@ class IRC {
       this.write('CAP LS');
       this.write(`NICK ${nickname}`);
       this.write(`USER ${ident} 0 * :${realname}`);
-    }).pipe(this.parser).on('data', data => {
+    }).pipe(this.parser).on('data', (data: Event) => {
       this.app.log.debug(`>>> ${strip_formatting(data.raw)}`);
       this.irc_events.emit(data.command, this, data);
       this.irc_events.emit(data.numeric, this, data);
@@ -114,9 +114,9 @@ class IRC {
    * @param {string} text The text to send to the server
    */
   privmsg(text: string): void {
-    let method: string = this.config.irc.notice ? 'NOTICE' : 'PRIVMSG';
+    let method: string = this.config!.irc.notice ? 'NOTICE' : 'PRIVMSG';
 
-    this.write(`${method} ${this.config.irc.channel} :${text}`);
+    this.write(`${method} ${this.config!.irc.channel} :${text}`);
   }
 
 }
