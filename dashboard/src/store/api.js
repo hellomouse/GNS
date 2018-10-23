@@ -7,13 +7,12 @@ const db = new PouchDB('http://91.92.144.105:5984/gns');
  * @return {Promise<Array<String>>}
  */
 export const apiGetRepos = async user => {
-  let { rows: docs } = await db.allDocs();
+  let { rows: docs } = await db.allDocs({ include_docs: true });
 
   let repos = [];
 
-  for await (let { id: org } of docs) {
-    let { repos: orgRepos, members } = await db.get(org);
-
+  // @ts-ignore
+  for await (let { doc: { repos: orgRepos, members } } of docs) {
     if (members.includes(user)) repos.push(...Object.keys(orgRepos));
   }
 
