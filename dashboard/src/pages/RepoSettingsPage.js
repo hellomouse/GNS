@@ -58,10 +58,10 @@ class RepoSettingsPage extends React.Component {
 
           <form onSubmit={this.onSubmit}>
             <SwitchLabel id="enabled" label="Enable this repository" checked={true} />
-            <IRCSettings />
+            <IRCSettings state={this.state}/>
             <Divider style={{ margin: '20px 0 20px' }}/>
             <br /><br />
-            <EventPicker/>
+            <EventPicker state={this.state}/>
             <Divider style={{ margin: '20px 0 20px' }}/>
             <MuiThemeProvider theme={theme}>
               <Button type="submit" color="primary" variant="contained" style={{ display: 'block' }}>Submit</Button>

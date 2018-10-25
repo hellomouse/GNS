@@ -1,14 +1,16 @@
+// @ts-check
 import PouchDB from 'pouchdb';
-const db = new PouchDB('http://91.92.144.105:5984/gns');
+const db = new PouchDB('https://couchdb.hellomouse.net/gns');
 
 /** Returns list of repositories for a given user
  * @async
  * @param {String} user
  * @return {Promise<Array<String>>}
  */
-export const apiGetRepos = async user => {
+export async function apiGetRepos(user) {
   let { rows: docs } = await db.allDocs({ include_docs: true });
 
+  /** @type {Array<string>*/
   let repos = [];
 
   // @ts-ignore
@@ -17,7 +19,7 @@ export const apiGetRepos = async user => {
   }
 
   return repos;
-};
+}
 
 /**
  * @typedef {Object<string, boolean | string | string[] | Object<string, boolean>>} RepoSettings
@@ -29,6 +31,7 @@ export const apiGetRepos = async user => {
  * @return {Promise<RepoSettings>}
  */
 export const apiGetRepoSettings = async repo => {
+  /** @type {import('./config').Config} */
   let orgSettings;
 
   try {
@@ -41,6 +44,7 @@ export const apiGetRepoSettings = async repo => {
 
   if (repoSettings.irc === undefined) repoSettings.irc = {};
 
+  // @ts-ignore
   return {
     enabled: repoSettings.enabled,
     ircHost: orgSettings.config.irc.server || 'irc.freenode.net',

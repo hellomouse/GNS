@@ -8,9 +8,9 @@ import TextField from '@material-ui/core/TextField';
  * @class
  * @desc IRC Settings component for the repo settings page
  */
-export default class IRCSettings extends React.Component {
+class IRCSettings extends React.Component {
   static propTypes = {
-    state: PropTypes.object.isRequired
+    state: PropTypes.object
   };
 
   state = { ...this.props.state };
@@ -43,3 +43,5 @@ export default class IRCSettings extends React.Component {
     );
   }
 }
+
+export default IRCSettings;

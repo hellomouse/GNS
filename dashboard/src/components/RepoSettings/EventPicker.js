@@ -13,7 +13,7 @@ import SwitchLabel from '../SwitchLabel';
 */
 class EventPicker extends React.Component {
   static propTypes = {
-    state: PropTypes.object.isRequired
+    state: PropTypes.object
   };
 
   /**
