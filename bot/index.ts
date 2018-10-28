@@ -102,8 +102,7 @@ function fmt_hash(s: string): string {
  * Main application function, ran by Probot
  * @param {Application} app
 */
-module.exports = async (app: CustomApplication) => {
-  app.error = app.log.error;
+export = async (app: CustomApplication) => {
   /**
    * @function
    * @async
