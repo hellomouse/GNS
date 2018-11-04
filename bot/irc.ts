@@ -6,7 +6,6 @@ import { readFileSync } from 'fs';
 import { Application } from 'probot'; // eslint-disable-line no-unused-vars
 import PouchDB from 'pouchdb';
 import { Config } from './config';
-import { runInContext } from 'vm';
 
 interface Event {
   command: any;

@@ -1,6 +1,6 @@
 const { Application } = require('probot');
 // Requiring our app implementation
-const myProbotApp = require('..');
+const myProbotApp = require('../lib');
 
 test('that we can run tests', () => {
   // your real tests go here
