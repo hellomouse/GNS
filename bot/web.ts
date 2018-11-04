@@ -54,7 +54,7 @@ export default function web(app: Application) {
         stringify({
           client_id: process.env.CLIENT_ID,
           redirect_uri,
-          state: req.session!.csrf_string,
+          state: req.session!.csrf_string as string,
           scope: 'user:email read:org'
         })}`;
 
@@ -104,13 +104,14 @@ export default function web(app: Application) {
 
     const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
-    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
+    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta = await db.get('');
 
     for await (const org of orgs) {
       try {
         orgDB = await db.get(org.login);
       } catch (e) {
-        if (e.name === 'not_found') {
+        const err: Error = e;
+        if (err.name === 'not_found') {
           await db.put({ _id: org.login, ...ConfigDefault});
           orgDB = await db.get(org.login);
         }
@@ -152,7 +153,7 @@ export default function web(app: Application) {
       token: sign(payload, key, { algorithm: 'RS256' })
     });
     try {
-      const params = { installation_id: req.query.installation_id };
+      const params = { installation_id: +req.query.installation_id };
       const { data: installation } = await octokit.apps.createInstallationToken(params);
 
       req.session!.access_token = installation.token;
@@ -161,4 +162,4 @@ export default function web(app: Application) {
       res.status(400).end();
     }
   });
-};
+}

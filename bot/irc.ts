@@ -6,6 +6,7 @@ import { readFileSync } from 'fs';
 import { Application } from 'probot'; // eslint-disable-line no-unused-vars
 import PouchDB from 'pouchdb';
 import { Config } from './config';
+import { runInContext } from 'vm';
 
 interface Event {
   command: any;
@@ -36,7 +37,11 @@ function strip_formatting(msg: string): string {
   return msg;
 }
 
-type CapFunction = (bot: IRC) => {run: () => void; };
+export declare class CapFunction {
+  name: string;
+  constructor(bot: IRC)
+  run(): void;
+}
 
 /**
  * IRC connection wrapper
@@ -54,7 +59,7 @@ class IRC {
   on_ping!: () => void;
   join!: () => void;
   on_396!: EventFunction;
-  'ERR_NICKNAMEINUSE': EventFunction;
+  ERR_NICKNAMEINUSE!: EventFunction;
   on_cap!: EventFunction;
   args: any;
   events: any;
@@ -79,9 +84,9 @@ class IRC {
     let { server, port, bindhost, sasl } = this.config!.irc;
 
     this.socket = connect(port, server, {
-      cert: sasl.cert ? readFileSync(sasl.cert) : undefined,
-      key: sasl.key ? readFileSync(sasl.key) : undefined,
-      passphrase: sasl.key_passphrase
+      cert: sasl!.cert ? readFileSync(sasl!.cert) : undefined,
+      key: sasl!.key ? readFileSync(sasl!.key) : undefined,
+      passphrase: sasl!.key_passphrase
     });
 
     this.parser = new Parser();
