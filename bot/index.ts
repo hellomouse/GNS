@@ -1,17 +1,52 @@
-const request = require('request-promise-native');
-const labels = require('./labels');
-const IRC = require('./irc');
-const web = require('./web');
-const { Application } = require('probot'); // eslint-disable-line no-unused-vars
-const PouchDB = require('pouchdb');
-const db = new PouchDB(process.env.POUCH_REMOTE);
+import request from 'request-promise-native';
+import labels from './labels';
+import IRC from './irc';
+import web from './web';
+import { Application } from 'probot'; // eslint-disable-line no-unused-vars
+import PouchDB from 'pouchdb';
+import { Config } from './config';
 
-let pendingStatus = []; // contains all pending checks from travis as multiple are sent
+const colors: { [key: string]: string } = {
+  // Issues and Pull Requests
+  opened: '\x0303',
+  reopened: '\x0307',
+  closed: '\x0304',
+  labeled: '\x0303',
+  unlabeled: '\x0304',
+  // Issues and Pull Requests comments
+  created: '\x0303',
+  edited: '\x0307',
+  deleted: '\x0304',
+  // Commit Status
+  success: '\x0303',
+  pending: '\x0311',
+  failure: '\x0304',
+  error: '\x02\x0301'
+};
+
+const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+
+class CustomApplication extends Application {
+  irc: {
+    [key: string]: IRC
+  };
+  error: Application['log']['error'];
+  constructor() {
+    super();
+    this.error = super.log.error;
+    let org = '';
+    this.irc = {
+      [org] : new IRC(this, org)
+    };
+  }
+}
+
+let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
 
 /**
  * @return {Boolean}
  */
-Array.prototype.empty = function empty() { // eslint-disable-line no-extend-native
+Array.prototype.empty = function empty(): boolean { // eslint-disable-line no-extend-native
   return this.length === 0;
 };
 
@@ -19,7 +54,7 @@ Array.prototype.empty = function empty() { // eslint-disable-line no-extend-nati
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
-function fmt_url(s) {
+function fmt_url(s: string): string {
   return `\x0302\x1F${s}\x0F`;
 }
 
@@ -27,7 +62,7 @@ function fmt_url(s) {
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
-function fmt_repo(s) {
+function fmt_repo(s: string): string {
   return `\x0313${s}\x0F`;
 }
 
@@ -35,7 +70,7 @@ function fmt_repo(s) {
  * @param  {string} s The author name string
  * @return {string}   Returns formatted author name string
  */
-function fmt_name(s) {
+function fmt_name(s: string): string {
   return `\x0315${s}\x0F`;
 }
 
@@ -43,7 +78,7 @@ function fmt_name(s) {
  * @param  {string} s The branch name string
  * @return {string}   Returns formatted branch name string
  */
-function fmt_branch(s) {
+function fmt_branch(s: string): string {
   return `\x0306${s}\x0F`;
 }
 
@@ -51,7 +86,7 @@ function fmt_branch(s) {
  * @param  {string} s The tag name string
  * @return {string}   Returns formatted tag name string
  */
-function fmt_tag(s) {
+function fmt_tag(s: string): string {
   return `\x0306${s}\x0F`;
 }
 
@@ -59,7 +94,7 @@ function fmt_tag(s) {
  * @param  {string} s The commit hash string
  * @return {string}   Returns formatted commit hash string
  */
-function fmt_hash(s) {
+function fmt_hash(s: string): string {
   return `\x0314${s}\x0F`;
 }
 
@@ -67,14 +102,14 @@ function fmt_hash(s) {
  * Main application function, ran by Probot
  * @param {Application} app
 */
-module.exports = async app => {
+export = async (app: CustomApplication) => {
   /**
    * @function
    * @async
    * @param {string} user
-   * @return {string} user with normal character
+   * @return {Promise<string>} user with normal character
    */
-  async function antiHighlight(user) {
+  async function antiHighlight(user: string): Promise<string> {
     return `${user.slice(0, 1)}\u200B${user.slice(1)}`;
   }
 
@@ -84,7 +119,7 @@ module.exports = async app => {
    * @param {string} url - Url of the string to shorten
    * @return {Promise<string>}
   */
-  async function shortenUrl(url) {
+  async function shortenUrl(url: string): Promise<string> {
     // Posts to the api to create shorter url
     try {
       const req = await request.post({ uri: 'https://git.io/create', form: { url } });
@@ -92,6 +127,7 @@ module.exports = async app => {
       return `https://git.io/${req}`;
     } catch (e) {
       app.error(`Shorten url failed for ${url}: ${e.message}`);
+      return '';
     }
   }
 
@@ -100,9 +136,9 @@ module.exports = async app => {
    * @async
    * @param {string} fullname - The full repository name
    * @param {string} event - Name of the event being received from webhook
-   * @return {string} Attention string
+   * @return {Promise<string>} Attention string
   */
-  async function attFormat(fullname, event) {
+  async function attFormat(fullname: string, event: string): Promise<string> {
     // [user|org]/[name]
     let [org, name] = fullname.split('/'); // or user
     const { config } = await db.get(org);
@@ -133,8 +169,8 @@ module.exports = async app => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'issue'),
       issueNumber = payload.issue.number,
-      action = payload.action,
-      color = ({ opened: '\x0303', reopened: '\x0307', closed: '\x0304' })[action], // opened: Green, reopened: Orange, closed: Red
+      action: string = payload.action,
+      color: string = colors[action], // opened: Green, reopened: Orange, closed: Red
       user = fmt_name(await antiHighlight(payload.sender.login)),
       fullname = payload.repository.full_name,
       org = payload.repository.owner.login,
@@ -146,28 +182,29 @@ module.exports = async app => {
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'issue.comment'),
-      action = payload.action,
-      color = ({ created: '\x0303', edited: '\x0307', deleted: '\x0304' })[action], // Created: Green, Edited: Orange, Deleted: Red
+      action: string = payload.action,
+      color: string = colors[action], // Created: Green, Edited: Orange, Deleted: Red
       user = fmt_name(await antiHighlight(payload.sender.login)),
-      issueNumber = payload.issue.number,
+      issueNumber: number = payload.issue.number,
       issueText = `${payload.issue.title.substring(0, 150)}${payload.issue.title.length > 150 ? '...' : ''}`,
-      org = payload.repository.owner.login,
+      org: string = payload.repository.owner.login,
       url = fmt_url(await shortenUrl(payload.comment.html_url));
 
     app.irc[org].privmsg(`${att} | ${user} ${color}${action}\x0F a comment on `
           + `issue #${issueNumber} (${issueText}) - ${url}`);
   });
 
-  app.on(['issues.labeled', 'issues.unlabeled'], async context => {
-    let { payload: { action, issue, repository, label: Label, sender } } = context,
+  app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled, pull_request.unlabeled'], async context => {
+    // tslint:disable-next-line:max-line-length
+    let { payload: { action, repository, label: Label, sender, [context.event]: { number, title, html_url } } } = context,
       att = await attFormat(repository.full_name, `issue.${action}`),
       user = fmt_name(await antiHighlight(sender.login)),
-      color = `\x02${({ labeled: '\x0303', unlabeled: '\x0304' })[action]}`,
-      issueNumber = issue.number,
+      color = `\x02${colors[action]}`,
+      issueNumber: number = number,
       issueText = `${issue.title.substring(0, 150)}${issue.title.length > 150 ? '...' : ''}`,
-      org = repository.owner.login,
-      url = fmt_url(await shortenUrl(issue.html_url));
-    let label = labels[Label.name] || Label.name;
+      org: string = repository.owner.login,
+      url = fmt_url(await shortenUrl(issue.html_url)),
+      label = labels[Label.name] || Label.name;
 
     app.irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
           + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
@@ -175,26 +212,23 @@ module.exports = async app => {
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
       async context => {
-        let payload = context.payload,
-          att = await attFormat(payload.repository.full_name, `${context.event}.${payload.action}`),
-          issueNumber = payload.number || payload.issue.number,
-          action = payload.action,
-          user = fmt_name(await antiHighlight(payload.assignee.login)),
-          sender = fmt_name(await antiHighlight(payload.sender.login)),
-          fullname = payload.repository.full_name,
+        let { [context.event]: { number: issueNumber, html_url }, action, repository, assignee, sender: { login: assigneeLogin } }= context.payload,
+          att = await attFormat(repository.full_name, `${context.event}.${action}`),
+          user = fmt_name(await antiHighlight(assignee.login)),
+          sender = fmt_name(await antiHighlight(assigneeLogin)),
+          fullname = repository.full_name,
           color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
           event = context.event.replace('_', ' '),
           assignedText,
-          org = payload.repository.owner.login;
+          org = repository.owner.login;
 
         if (user === sender) {
           assignedText = `${user} ${color}${action}\x0F themselves `;
-          assignedText += action === 'assigned' ? `to` : `from`;
+          assignedText += action === 'assigned' ? 'to' : 'from';
         } else {
           assignedText = `${user} was ${color}${action}\x0F by ${sender} to`;
         }
-        let html_url = context.event === 'pull_request' ? payload.pull_request.html_url : payload.issue.html_url,
-          url = fmt_url(await shortenUrl(html_url));
+        let url = fmt_url(await shortenUrl(html_url));
 
         app.irc[org].privmsg(`${att} | ${assignedText} ${event} #${issueNumber} on ${fullname} - ${url}`);
       });
@@ -255,16 +289,15 @@ module.exports = async app => {
   app.on('status', async context => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'status'),
-      colors = { success: '\x0303', pending: '\x0311', failure: '\x0304', error: '\x02\x0301' }, // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
       { state, description, target_url } = payload,
       webhookUrl = target_url ? target_url.split('?')[0] : '',
-      color = colors[state],
+      color = colors[state], // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
       org = payload.repository.owner.login;
 
     if (payload.state === 'pending') {
       if (pendingStatus.includes(payload.target_url)) return; // We don't want to send multiple pending messages to a channel - Potential spam
       pendingStatus.push(payload.target_url); // We'll use target_url as identifier
-    } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop(payload);
+    } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop();
 
     let url = await shortenUrl(payload.commit.html_url);
 
@@ -278,7 +311,7 @@ module.exports = async app => {
       numC = payload.commits.length,
       ref = fmt_branch(payload.ref.split('/')[2]),
       org = payload.repository.owner.login,
-      distinct_commits = payload.commits.filter(x => x.distinct),
+      distinct_commits = payload.commits.filter((x: { distinct: boolean }) => x.distinct),
       [, ref_type, ref_name] = payload.ref.split('/'),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],
@@ -305,7 +338,7 @@ module.exports = async app => {
         }
         msg.push(`(+\x02${distinct_commits.length}\x0F new commit${distinct_commits.length !== 1 ? 's' : ''})`);
       }
-    } else if (payload.deleted && config.detailedDeletesAndCreates) {
+    } else if (payload.deleted && config!.detailedDeletesAndCreates) {
       msg.push(`\x0304deleted\x0F ${fmt_branch(ref_name)} at ${fmt_hash(payload.before.substring(0, 7))}`);
     } else if (numC !== 0 && distinct_commits.empty()) {
       if (payload.base_ref) {
@@ -317,7 +350,7 @@ module.exports = async app => {
         msg.push(`fast-forwarded ${ref} from ${before_sha} to ${after_sha}:`);
       }
     } else {
-      if (payload.delete || payload.create) return; // Handle these in their respective events
+      if (payload.deleted || payload.create) return; // Handle these in their respective events
       msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
     }
 
@@ -325,7 +358,7 @@ module.exports = async app => {
     app.irc[org].privmsg(msg.join(' '));
 
     for (let c of payload.commits) {
-      if (count <= config.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
+      if (count <= config!.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
         c.message = c.message.split('\n')[0];
         let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
           author = fmt_name(c.author.name) || '\x02\x0304(No author name)\x0F';
@@ -371,14 +404,16 @@ module.exports = async app => {
     let payload = context.payload,
       user = fmt_name(await antiHighlight(payload.sender.login)),
       name = payload.repository.full_name,
-      att = await attFormat(payload.repository.owner.login, 'repository-delete');
+      owner: string = payload.repository.owner.login,
+      att = await attFormat(owner, 'repository-delete');
 
-    app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F repository ${name}`);
+    app.irc[owner].privmsg(`${att} | ${user} \x0304deleted\x0F repository ${name}`);
   });
 
   app.on('delete', async context => {
     let payload = context.payload,
-      config = await db.get(payload.repository.owner.login);
+      owner: string = payload.repository.owner.login,
+      config = await db.get(owner);
 
     if (payload.ref_type === 'tag' || config.detailedDeletesAndCreates) return; // We're not handling tags yet
     let user = fmt_name(await antiHighlight(payload.sender.login)),
@@ -386,7 +421,7 @@ module.exports = async app => {
       html_url = fmt_url(payload.repository.html_url),
       att = await attFormat(payload.repository.full_name, 'branch-delete');
 
-    app.irc.privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
+    app.irc[owner].privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
   });
 
   app.on('repository_vulnerability_alert', async context => {
@@ -410,6 +445,8 @@ module.exports = async app => {
       alertText = `Vulnerability ${package_name} (${extReference}) was ${action}ed ${fixed}`;
     }
 
-    app.irc.privmsg(`${att} | ${alertText} - ${extReference}`);
+    Object.keys(app.irc).forEach(org => {
+      app.irc[org].privmsg(`${att} | ${alertText} - ${extReference}`);
+    });
   });
 };
