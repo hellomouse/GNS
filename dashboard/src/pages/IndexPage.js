@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 
 import RepoList from '../components/RepoList';
+import { getCookie } from '../App';
 
 /** Index page of the app */
 export default class IndexPage extends React.Component {

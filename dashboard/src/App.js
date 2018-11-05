@@ -13,6 +13,27 @@ import SimpleAppBar from './components/SimpleAppBar';
 
 import './App.css';
 
+/**
+ * Get a cookie
+ * @param {string} cname The cookie name to get
+ * @return {string}
+ */
+export function getCookie(cname) {
+  let name = `${cname}=`;
+  let cookies = document.cookie.split(';');
+
+  for (let cookie of cookies) {
+    while (cookie.charAt(0) == ' ') {
+      cookie = cookie.substring(1);
+    }
+    if (cookie.indexOf(name) == 0) {
+      return cookie.substring(name.length, cookie.length);
+    }
+  }
+
+  return '';
+}
+
 /** The root application component */
 class App extends React.Component {
   /** Renders the component
