@@ -162,4 +162,4 @@ export default function web(app: Application) {
       res.status(400).end();
     }
   });
-}z
+};
