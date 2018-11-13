@@ -61,7 +61,7 @@ function Events(this: IRC): void {
         this.write(`CAP REQ :${this.availablecaps.join(' ')}`);
       }
     } else if (event.args[1] === 'ACK') {
-      for (let cap of this.caps) { // Iterate over this.caps so we have access to classes
+      /*for (let cap of this.caps) { // Iterate over this.caps so we have access to classes
         if (typeof cap !== 'string' && this.availablecaps.includes(cap.name)) { // Check that the cap is in this.availablecaps
           cap = new cap(this);
           if (typeof cap.run === 'function') { // Check if the cap has the `run` property
@@ -70,7 +70,7 @@ function Events(this: IRC): void {
             continue;
           }
         }
-      }
+      }*/
     }
   };
 
