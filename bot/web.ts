@@ -54,7 +54,7 @@ export default function web(app: Application) {
         stringify({
           client_id: process.env.CLIENT_ID,
           redirect_uri,
-          state: req.session!.csrf_string as string,
+          state: req.session!.csrf_string,
           scope: 'user:email read:org'
         })}`;
 
@@ -104,7 +104,7 @@ export default function web(app: Application) {
 
     const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
-    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta = await db.get('');
+    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta | undefined;
 
     for await (const org of orgs) {
       try {
@@ -120,16 +120,16 @@ export default function web(app: Application) {
       const { data: members } = await octokit.orgs.getMembers({ org: org.login, role: 'admin' });
 
       for (let { login: member } of members) {
-        if (!orgDB.members!.includes(member)) {
-          orgDB.members!.push(member);
+        if (!orgDB!.members.includes(member)) {
+          orgDB!.members!.push(member);
         }
       }
 
       for (let repo of repos) {
-        if (!orgDB.repos[repo.full_name!])
-          orgDB.repos[repo.full_name!] = { enabled: true };
+        if (!orgDB!.repos[repo.full_name!])
+          orgDB!.repos[repo.full_name!] = { enabled: true };
       }
-      db.put(orgDB);
+      db.put(orgDB!);
     }
 
     res.send(
@@ -153,7 +153,7 @@ export default function web(app: Application) {
       token: sign(payload, key, { algorithm: 'RS256' })
     });
     try {
-      const params = { installation_id: +req.query.installation_id };
+      const params = { installation_id: req.query.installation_id };
       const { data: installation } = await octokit.apps.createInstallationToken(params);
 
       req.session!.access_token = installation.token;
@@ -162,4 +162,4 @@ export default function web(app: Application) {
       res.status(400).end();
     }
   });
-}
+}z
