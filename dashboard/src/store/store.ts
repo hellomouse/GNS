@@ -1,23 +1,32 @@
 // @ts-check
-import { createStore } from 'redux';
+import Redux, { createStore } from 'redux';
 
 import { apiGetRepos, apiGetRepoSettings } from './api';
+import { Config } from '../config';
 
+// tslint:disable-next-line:max-line-length
 /** @typedef {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} passedStore */
-
-const defaultState = {
+// tslint:disable-next-line:max-line-length
+export type PassedStore = Redux.Store<{repos: Array<string>, gotRepos: boolean, repoSettings: Config['repos']}>;
+interface DefaultState {
+  repos: string[];
+  gotRepos: boolean;
+  repoSettings: any;
+  gotRepoSettings: boolean;
+}
+const defaultState: DefaultState = {
   repos: [],
   gotRepos: false,
   repoSettings: {},
   gotRepoSettings: false
 };
 
-/** @type {passedStore} */
-const store = createStore((state, action) => {
+const store = createStore<DefaultState, any, any, any>((state: any, action: Redux.AnyAction) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
   } else if (action.type === 'setRepoSettings') {
-    return { ...state, repoSettings: { ...state.repoSettings, [action.repo]: action.settings }, gotRepoSettings: true };
+    // tslint:disable-next-line:max-line-length
+    return { ...state, repoSettings: { ...state!.repoSettings, [action.repo!]: action.settings }, gotRepoSettings: true };
   }
 
   return state;
@@ -26,7 +35,7 @@ const store = createStore((state, action) => {
 /** Gets repository list
  * @param {passedStore} passedStore
  */
-export const storeGetRepos = async passedStore => {
+export const storeGetRepos = async (passedStore: PassedStore) => {
   let st = passedStore.getState();
 
   if (st.gotRepos) {
@@ -36,7 +45,7 @@ export const storeGetRepos = async passedStore => {
 
   passedStore.dispatch({
     type: 'setRepos',
-    repos: repos
+    repos
   });
 };
 
@@ -44,7 +53,7 @@ export const storeGetRepos = async passedStore => {
  * @param {passedStore} passedStore
  * @param {String} repo
  */
-export const storeGetRepoSettings = async (passedStore, repo) => {
+export const storeGetRepoSettings = async (passedStore: PassedStore, repo: string) => {
   let st = passedStore.getState();
 
   if (st.repoSettings[repo]) {
@@ -54,7 +63,7 @@ export const storeGetRepoSettings = async (passedStore, repo) => {
 
   passedStore.dispatch({
     type: 'setRepoSettings',
-    repo: repo,
+    repo,
     settings: rs
   });
 };

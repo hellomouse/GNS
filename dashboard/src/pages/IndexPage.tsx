@@ -9,13 +9,13 @@ import { getCookie } from '../App';
 /** Index page of the app */
 export default class IndexPage extends React.Component {
   /** Renders the component
-   * @return {React.ReactElement}
+   * @return {React.ReactNode}
    */
-  render() {
+  render(): React.ReactNode {
     return (
-      <Paper className="app-paper">
-        <Typography variant="title">Repositories</Typography>
-        <RepoList key="indexRepoList" />
+      <Paper className='app-paper'>
+        <Typography variant='title'>Repositories</Typography>
+        <RepoList key='indexRepoList' />
       </Paper>
     );
   }

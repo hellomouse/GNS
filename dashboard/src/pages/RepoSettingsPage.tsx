@@ -15,12 +15,10 @@ import IRCSettings from '../components/RepoSettings/IRCSettings';
 import SwitchLabel from '../components/SwitchLabel';
 import Loading from '../components/Loading';
 
-
-import { withRouter } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import store, { storeGetRepoSettings } from '../store/store';
-
 
 const theme = createMuiTheme({
   palette: {
@@ -28,46 +26,48 @@ const theme = createMuiTheme({
   }
 });
 
-/** Repo settings page of the app */
-class RepoSettingsPage extends React.Component {
-  static propTypes = {
-    match: PropTypes.object.isRequired,
-    repoSettings: PropTypes.object.isRequired,
-    gotRepoSettings: PropTypes.bool.isRequired
-  };
+interface Props extends RouteComponentProps<{
+  rUser: string;
+  rName: string
+}> {
+  gotRepoSettings: boolean;
+  repoSettings: any;
+}
 
+/** Repo settings page of the app */
+class RepoSettingsPage extends React.Component<Props> {
   /**
    * @param {Event} event
    */
-  onSubmit = event => {
+  onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Placeholder funtion
-  };
+  }
 
   /** Renders the component
-   * @return {React.ReactElement}
+   * @return {React.ReactNode}
    */
-  render() {
+  render(): React.ReactNode {
     if (this.props.gotRepoSettings) {
       return (
         <React.Fragment>
           <BackButton/>
-          <Paper className="app-paper">
-            <Typography variant="title">
+          <Paper className='app-paper'>
+            <Typography variant='title'>
             Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
             </Typography>
 
             <br/>
 
             <form onSubmit={this.onSubmit}>
-              <SwitchLabel id="enabled" label="Enable this repository" checked={true} />
+              <SwitchLabel id='enabled' label='Enable this repository' checked={true} />
               <IRCSettings state={this.props.repoSettings}/>
               <Divider style={{ margin: '20px 0 20px' }}/>
               <br /><br />
               <EventPicker state={this.props.repoSettings}/>
               <Divider style={{ margin: '20px 0 20px' }}/>
               <MuiThemeProvider theme={theme}>
-                <Button type="submit" color="primary" variant="contained" style={{ display: 'block' }}>Submit</Button>
+                <Button type='submit' color='primary' variant='contained' style={{ display: 'block' }}>Submit</Button>
               </MuiThemeProvider>
             </form>
           </Paper>
@@ -78,7 +78,7 @@ class RepoSettingsPage extends React.Component {
     return (
       <React.Fragment>
         <BackButton/>
-        <Paper className="app-paper">
+        <Paper className='app-paper'>
           <Loading/>
         </Paper>
       </React.Fragment>
@@ -94,7 +94,7 @@ class RepoSettingsPage extends React.Component {
  * @param {Object} state
  * @return {Object}
  */
-const mapStateToProps = state => {
+const mapStateToProps = (state: {[key: string]: any}): {[key: string]: any} => {
   return {
     repoSettings: state.repoSettings,
     gotRepoSettings: state.gotRepoSettings

@@ -1,14 +1,21 @@
+// @ts-check
 import React from 'react';
 
 import PropTypes from 'prop-types';
 
-import Switch from '@material-ui/core/Switch';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
+interface SwitchProps {
+  label: string;
+  checked: boolean;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  id: string;
+}
 /**
  * Switch with Label
  */
-class SwitchLabel extends React.Component {
+class SwitchLabel extends React.Component<SwitchProps> {
   static propTypes = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
@@ -23,12 +30,15 @@ class SwitchLabel extends React.Component {
    * @param {string} name
    * @return {function(Event):void}
    */
-  handleChange = name => event => this.setState({ [name]: event.target.checked });
+  // tslint:disable-next-line:max-line-length
+  handleChange = (name: string): React.ChangeEventHandler<HTMLInputElement> => (event: React.ChangeEvent<HTMLInputElement>) => {
+    return this.setState({ [name]: event.target.checked });
+  }
 
   /**
    * @return {React.ReactElement}
    */
-  render() {
+  render(): React.ReactNode {
     return (
       <FormControlLabel
         control={
@@ -37,7 +47,7 @@ class SwitchLabel extends React.Component {
             onChange={
               this.props.onChange !== undefined ? this.props.onChange : this.handleChange('checked')
             }
-            value="checked"
+            value='checked'
             id={this.props.id}
           />
         }

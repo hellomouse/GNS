@@ -6,15 +6,19 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 
-import { withRouter } from 'react-router-dom';
+import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import store, { storeGetRepos } from '../store/store';
+import store, { storeGetRepos, PassedStore } from '../store/store';
 
-import Loading from '../components/Loading';
+import Loading from './Loading';
 
+interface RepoListProps extends RouteComponentProps {
+  repos: string[];
+  gotRepos: boolean;
+}
 /** Provides list of available repositories */
-class RepoList extends React.Component {
+class RepoList extends React.Component<RepoListProps> {
   static propTypes = {
     repos: PropTypes.array.isRequired,
     gotRepos: PropTypes.bool.isRequired,
@@ -22,9 +26,9 @@ class RepoList extends React.Component {
   };
 
   /** Renders the component
-   * @return {React.ReactElement}
+   * @return {React.ReactNode}
    */
-  render() {
+  render(): React.ReactNode {
     if (this.props.gotRepos) {
       return (
         <List>
@@ -53,7 +57,8 @@ class RepoList extends React.Component {
  * @param {Object} state
  * @return {Object}
  */
-const mapStateToProps = state => {
+// tslint:disable-next-line:ban-types
+const mapStateToProps = (state: PassedStore): any => {
   return {
     repos: state.repos,
     gotRepos: state.gotRepos

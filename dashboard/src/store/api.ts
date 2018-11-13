@@ -1,13 +1,14 @@
 // @ts-check
 import PouchDB from 'pouchdb';
-const db = new PouchDB('https://couchdb.hellomouse.net/gns');
+import { Config, ConfigDefault } from '../config';
+const db = new PouchDB<Config>('https://couchdb.hellomouse.net/gns');
 
 /** Returns list of repositories for a given user
  * @async
  * @param {String} user
  * @return {Promise<Array<String>>}
  */
-export async function apiGetRepos(user) {
+export async function apiGetRepos(user: string): Promise<Array<string>> {
   let docs;
 
   try {
@@ -16,7 +17,7 @@ export async function apiGetRepos(user) {
     console.error(e.message);
   }
   /** @type {Array<string>} */
-  let repos = [];
+  let repos: Array<string> = [];
 
   // @ts-ignore
   for await (let { doc: { repos: orgRepos, members } } of docs) {
@@ -29,20 +30,32 @@ export async function apiGetRepos(user) {
 /**
  * @typedef {Object<string, boolean | string | string[] | Object<string, boolean>>} RepoSettings
  */
-
+interface RepoSettings {
+  enabled: boolean;
+  ircHost: string;
+  ircPort: string;
+  ircNick: string;
+  ircUser: string;
+  ircPass: string;
+  ircRnam: string;
+  ircChannel: string;
+  events: {
+    [key: string]: boolean
+  };
+}
 /** Returns settings for the given repository
  * @async
  * @param {String} repo
  * @return {Promise<RepoSettings>}
  */
-export const apiGetRepoSettings = async repo => {
+export const apiGetRepoSettings = async (repo: string): Promise<RepoSettings> => {
   /** @type {import('../config').Config} */
-  let orgSettings;
+  let orgSettings: Config;
 
   try {
     orgSettings = await db.get(repo.split('/')[0]);
   } catch (e) {
-    orgSettings = { config: { irc: {} } };
+    orgSettings = { ...ConfigDefault};
   }
 
   const repoSettings = orgSettings.repos[repo] || {};

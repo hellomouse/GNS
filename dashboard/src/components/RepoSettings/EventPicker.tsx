@@ -1,3 +1,4 @@
+// @ts-check
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -8,10 +9,21 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import SwitchLabel from '../SwitchLabel';
 
+interface EventPickerState {
+  [key: string]: any;
+  checkedGitHub: boolean;
+  checkedEvent: boolean;
+  config: any;
+}
+
+interface EventPickerProps {
+  state: any;
+}
+
 /**
 * EventPicker component
 */
-class EventPicker extends React.Component {
+class EventPicker extends React.Component<EventPickerProps, EventPickerState> {
   static propTypes = {
     state: PropTypes.object
   };
@@ -20,12 +32,12 @@ class EventPicker extends React.Component {
    * Function to enable all default GitHub events
    * @param {Event} event
    */
-  enableAllGitHub = event => {
+  enableAllGitHub: React.ChangeEventHandler<HTMLInputElement> = event => {
     this.setState({
       checkedGitHub: event.target.checked,
       checkedEvent: event.target.checked
     });
-  };
+  }
 
   componentWillMount() {
     this.setState({
@@ -38,13 +50,13 @@ class EventPicker extends React.Component {
   /**
    * @return {React.ReactElement}
    */
-  render() {
+  render(): React.ReactNode {
     const repo = Object.keys(this.props.state)[0];
 
     return (
       <FormGroup>
-        <Typography variant="subheading">Events</Typography>
-        <SwitchLabel label="Enable all GitHub defaults" id="github-defaults"
+        <Typography variant='subheading'>Events</Typography>
+        <SwitchLabel label='Enable all GitHub defaults' id='github-defaults'
           onChange={this.enableAllGitHub}
           checked={this.state.checkedGitHub} />
         {Object.keys(this.props.state[repo].events).map(event =>
