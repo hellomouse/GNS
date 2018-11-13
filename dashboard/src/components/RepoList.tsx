@@ -8,6 +8,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
+import redux from 'redux';
 
 import store, { storeGetRepos, PassedStore } from '../store/store';
 
@@ -19,12 +20,6 @@ interface RepoListProps extends RouteComponentProps {
 }
 /** Provides list of available repositories */
 class RepoList extends React.Component<RepoListProps> {
-  static propTypes = {
-    repos: PropTypes.array.isRequired,
-    gotRepos: PropTypes.bool.isRequired,
-    history: PropTypes.object.isRequired
-  };
-
   /** Renders the component
    * @return {React.ReactNode}
    */
@@ -54,11 +49,11 @@ class RepoList extends React.Component<RepoListProps> {
 }
 
 /** Maps redux state to RepoList props
- * @param {Object} state
- * @return {Object}
+ * @param {Store} state
+ * @return {Object<string, string[] | boolean}
  */
 // tslint:disable-next-line:ban-types
-const mapStateToProps = (state: PassedStore): any => {
+const mapStateToProps = (state: any): {repos: string[], gotRepos: boolean} => {
   return {
     repos: state.repos,
     gotRepos: state.gotRepos

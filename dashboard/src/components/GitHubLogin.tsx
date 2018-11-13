@@ -1,5 +1,6 @@
 // @ts-check
 /* eslint-disable max-len, new-cap */
+/* tslint:disable max-line-length */
 
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';

@@ -1,5 +1,6 @@
 // @ts-check
 import Redux, { createStore } from 'redux';
+import { devToolsEnhancer } from 'redux-devtools-extension';
 
 import { apiGetRepos, apiGetRepoSettings } from './api';
 import { Config } from '../config';
@@ -30,7 +31,7 @@ const store = createStore<DefaultState, any, any, any>((state: any, action: Redu
   }
 
   return state;
-}, defaultState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
+}, defaultState, devToolsEnhancer({}));
 
 /** Gets repository list
  * @param {passedStore} passedStore

@@ -11,7 +11,7 @@ import Button from '@material-ui/core/Button';
 * @param {React.ReactNode} [props.children]
 * @return {React.ReactNode}
 */
-const GitHub: React.SFC = props => {
+const GitHub: React.FunctionComponent = props => {
   return (
     <a href='/login' className='login-button'>
       <Button className='login-button-btn' variant='contained' color='primary' {...props}>

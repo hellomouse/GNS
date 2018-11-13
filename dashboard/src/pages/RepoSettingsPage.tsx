@@ -18,7 +18,7 @@ import Loading from '../components/Loading';
 import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 
-import store, { storeGetRepoSettings } from '../store/store';
+import store, { storeGetRepoSettings, PassedStore } from '../store/store';
 
 const theme = createMuiTheme({
   palette: {
@@ -94,7 +94,17 @@ class RepoSettingsPage extends React.Component<Props> {
  * @param {Object} state
  * @return {Object}
  */
-const mapStateToProps = (state: {[key: string]: any}): {[key: string]: any} => {
+const mapStateToProps = (state: {
+  repos: string[];
+  gotRepos: boolean;
+  gotRepoSettings: boolean
+  repoSettings: {
+      [key: string]: {
+          [key: string]: any;
+          enabled?: boolean | undefined;
+      } | undefined;
+  };
+}) => {
   return {
     repoSettings: state.repoSettings,
     gotRepoSettings: state.gotRepoSettings
