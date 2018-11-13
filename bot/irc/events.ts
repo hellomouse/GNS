@@ -1,4 +1,4 @@
-import IRC from '../irc'; // eslint-disable-line no-unused-vars
+import IRC = require('../irc'); // eslint-disable-line no-unused-vars
 
 /**
  * constructor - description
@@ -83,4 +83,4 @@ function Events(this: IRC): void {
   }
 }
 
-export default Events;
+export = Events;

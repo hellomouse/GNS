@@ -1,9 +1,9 @@
-import request from 'request-promise-native';
-import labels from './labels';
-import IRC from './irc';
-import web from './web';
-import { Application } from 'probot'; // eslint-disable-line no-unused-vars
-import PouchDB from 'pouchdb';
+import request = require('request-promise-native');
+import labels = require('./labels');
+import IRC = require('./irc');
+import web = require('./web');
+import probot = require('probot'); // eslint-disable-line no-unused-vars
+import PouchDB = require('pouchdb');
 import { Config } from './config';
 
 const colors: { [key: string]: string } = {
@@ -85,9 +85,9 @@ function fmt_hash(s: string): string {
 
 /**
  * Main application function, ran by Probot
- * @param {Application} app
+ * @param {probot.Application} app
 */
-export = async (app: Application) => {
+export = async (app: probot.Application) => {
   /**
    * @function
    * @async
