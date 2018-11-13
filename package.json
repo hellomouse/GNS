@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "start": "cd bot && probot run -p 5678 ./index.js",
+    "build": "tsc -p bot/tsconfig.json",
+    "start": "npm run build && cd bot && probot run -p 5678 ./lib/index.js",
     "lint": "eslint . --fix",
     "test": "jest bot && eslint .",
     "test:watch": "jest bot --watch --notify --notifyMode=change --coverage"
