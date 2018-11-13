@@ -304,6 +304,27 @@ export = async (app: CustomApplication) => {
     app.irc[org].privmsg(`${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`);
   });
 
+  app.on('check_run.created', async function check_run_created(context) {
+    let { payload: { check_run: { name: description, details_url: webhookUrl, check_suite: { before, after } }, ...payload } } = context,
+      att = await attFormat(payload.repository!.full_name!, payload.action!),
+      state = payload.check_run.status === 'queued' ? 'pending' : payload.check_run.status,
+      color = colors[state], // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
+      org = payload.repository!.owner.login,
+      url = before !== '0000000000000000000000000000000000000000' ?
+        `https://github.com/${payload.repostory.full_name}/compare/${before}...${after}` :
+        `https://github.com/${payload.repostory.full_name}/commit/${after}`;
+
+    /*if (state === 'pending') {
+      if (pendingStatus.includes(url)) return; // We don't want to send multiple pending messages to a channel - Potential spam
+      pendingStatus.push(url); // We'll use target_url as identifier
+    } else if (pendingStatus.includes(url)) pendingStatus.pop();*/
+
+    url = await shortenUrl(url);
+    let msg = `${att} | [${color}${state.toUpperCase()}\x0F] | ${description} - ${url} | ${webhookUrl}`;
+
+    app.irc[org].privmsg(msg);
+  });
+
   app.on('push', async context => {
     let payload = context.payload,
       att = await attFormat(payload.repository.full_name, 'push'),
