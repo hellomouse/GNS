@@ -9,6 +9,7 @@ import PouchDB from 'pouchdb';
 import fs = require('fs');
 import jwt = require('jsonwebtoken');
 import { Config, ConfigDefault } from './config';
+import PouchSesion = require('session-pouchdb-store');
 
 const octokit = new Octokit();
 const key = fs.readFileSync('./private-key.pem').toString();
@@ -25,6 +26,7 @@ const headers = {
  */
 export = function web(app: probot.Application) {
   const router = app.route('/');
+  const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
   router.use(express.static('public'));
   router.use(
@@ -32,7 +34,8 @@ export = function web(app: probot.Application) {
         secret: randomstring.generate(),
         cookie: { maxAge: 60000 },
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        store: new PouchSesion(db)
       })
   );
   router.use((req, res, next) => { // Security headers to avoid and/or limit attacks
@@ -101,8 +104,6 @@ export = function web(app: probot.Application) {
     octokit.authenticate({ type: 'oauth', token: req.session!.access_token });
     const { data: emails } = await octokit.users.getEmails({});
     const { data: orgs } = await octokit.users.getOrgs({});
-
-    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
     let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta | undefined;
 

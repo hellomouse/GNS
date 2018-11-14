@@ -11,6 +11,8 @@ import { connect } from 'react-redux';
 
 import store, { storeGetRepos } from '../store/store';
 
+import Loading from '../components/Loading';
+
 /** Provides list of available repositories */
 class RepoList extends React.Component {
   static propTypes = {
@@ -36,12 +38,14 @@ class RepoList extends React.Component {
       );
     }
 
-    return <div>Loading...</div>;
+    return (
+      <Loading />
+    );
   }
 
   /** Gets executed when the component is mounted */
-  componentDidMount() {
-    storeGetRepos(store);
+  async componentDidMount() {
+    await storeGetRepos(store);
   }
 }
 

@@ -3,20 +3,29 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Paper from '@material-ui/core/Paper';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Switch from '@material-ui/core/Switch';
-import ArrowBack from '@material-ui/icons/ArrowBack';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
 import Divider from '@material-ui/core/Divider';
+import green from '@material-ui/core/colors/green';
+import Button from '@material-ui/core/Button';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
+
+import EventPicker from '../components/RepoSettings/EventPicker';
+import BackButton from '../components/BackButton';
+import IRCSettings from '../components/RepoSettings/IRCSettings';
+import SwitchLabel from '../components/SwitchLabel';
+
 
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import store, { storeGetRepoSettings } from '../store/store';
+
+
+const theme = createMuiTheme({
+  palette: {
+    primary: green
+  }
+});
 
 /** Repo settings page of the app */
 class RepoSettingsPage extends React.Component {
@@ -25,13 +34,21 @@ class RepoSettingsPage extends React.Component {
     repoSettings: PropTypes.object.isRequired
   };
 
+  /**
+   * @param {Event} event
+   */
+  onSubmit = event => {
+    event.preventDefault();
+    // Placeholder funtion
+  };
+
   /** Renders the component
    * @return {React.ReactElement}
    */
   render() {
     return (
       <React.Fragment>
-        <Button variant="extendedFab" color="primary" className="back-btn"><ArrowBack/> Back</Button>
+        <BackButton/>
         <Paper className="app-paper">
           <Typography variant="title">
           Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
@@ -39,51 +56,25 @@ class RepoSettingsPage extends React.Component {
 
           <br/>
 
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch />
-              }
-              label="Enable this repository"
-            />
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircHost" label="IRC server host"
-                style={{ width: '180%' }} />
-              <TextField className="rsp-entry input-margin" id="ircPort" label="IRC server port" type="number" />
-            </div>
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircNick" label="IRC nickname" />
-              <TextField className="rsp-entry input-margin" id="ircUser" label="IRC username/ident" />
-            </div>
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircPass" label="IRC password (leave blank for none)" />
-              <TextField className="rsp-entry input-margin" id="ircRnam" label="IRC realname/gecos" />
-            </div>
-            <div className="sameline">
-              <TextField className="rsp-entry input-margin" id="ircChannel" label="IRC channel" />
-            </div>
-            <Divider style={{ margin: '0 20px' }}/>
+          <form onSubmit={this.onSubmit}>
+            <SwitchLabel id="enabled" label="Enable this repository" checked={true} />
+            <IRCSettings state={this.state}/>
+            <Divider style={{ margin: '20px 0 20px' }}/>
             <br /><br />
-            <FormGroup>
-              <Typography variant="subheading">Events</Typography>
-              <FormControlLabel
-                control={
-                  <Checkbox />
-                }
-                label="Subscribe to this event"
-              />
-            </FormGroup>
-          </FormGroup>
-
-
+            <EventPicker state={this.state}/>
+            <Divider style={{ margin: '20px 0 20px' }}/>
+            <MuiThemeProvider theme={theme}>
+              <Button type="submit" color="primary" variant="contained" style={{ display: 'block' }}>Submit</Button>
+            </MuiThemeProvider>
+          </form>
         </Paper>
       </React.Fragment>
     );
   }
 
   /** Gets executed when the component is mounted */
-  componentDidMount() {
-    storeGetRepoSettings(store, `${this.props.match.params.rUser}/${this.props.match.params.rName}`);
+  async componentDidMount() {
+    await storeGetRepoSettings(store, `${this.props.match.params.rUser}/${this.props.match.params.rName}`);
   }
 }
 

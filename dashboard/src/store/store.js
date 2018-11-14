@@ -19,15 +19,15 @@ const store = createStore((state, action) => {
 }, defaultState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 /** Gets repository list
- * @param {Object} passedStore
+ * @param {store} passedStore
  */
-export const storeGetRepos = passedStore => {
+export const storeGetRepos = async passedStore => {
   let st = passedStore.getState();
 
   if (st.gotRepos) {
     return;
   }
-  let repos = apiGetRepos();
+  let repos = await apiGetRepos('wolfy1339'); // Todo: Replace this with a variable that changes when the user logs in
 
   passedStore.dispatch({
     type: 'setRepos',
@@ -39,13 +39,13 @@ export const storeGetRepos = passedStore => {
  * @param {Object} passedStore
  * @param {String} repo
  */
-export const storeGetRepoSettings = (passedStore, repo) => {
+export const storeGetRepoSettings = async (passedStore, repo) => {
   let st = passedStore.getState();
 
   if (st.repoSettings[repo]) {
     return;
   }
-  let rs = apiGetRepoSettings(repo);
+  let rs = await apiGetRepoSettings(repo);
 
   passedStore.dispatch({
     type: 'setRepoSettings',

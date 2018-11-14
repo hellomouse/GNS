@@ -1,6 +1,6 @@
 declare module "session-pouchdb-store" {
-  import session from "express-session";
-  import express from "express";
+  import session = require("express-session");
+  import express = require("express");
 
   interface PouchSessionOptions extends session.SessionOptions {
     maxIdle?: number

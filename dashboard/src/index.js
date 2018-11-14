@@ -6,6 +6,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import './index.css';
 import CssBaseline from '@material-ui/core/CssBaseline';
+import 'normalize.css';
 
 import App from './App';
 
