@@ -1,39 +1,6 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
-}
-
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
-  color: white;
-}
-
-.App-title {
-  font-size: 1.5em;
-}
-
-.App-intro {
-  font-size: large;
-}
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
 /* Fix the github login button */
 .login-button {
-  float: right;
   text-decoration: none;
-  position: relative;
-  top: -50px;
-  right: 30px;
 }
 
 .login-button .login-button-svg {
@@ -41,15 +8,21 @@
 }
 
 /* Increase paper padding */
-.app-paper {
-  padding: 60px;
-}
+@media (min-width: 600px) {
+  .app-paper {
+    padding: 60px;
+  }
 
-/* 2 inputs on same line */
-.sameline {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  /* 2 inputs on same line */
+  .sameline {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .extra-width {
+    width: 180%;
+  }
 }
 
 /* Right margin for input in .sameline */

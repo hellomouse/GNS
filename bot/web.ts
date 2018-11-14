@@ -9,6 +9,7 @@ import PouchDB from 'pouchdb';
 import { readFileSync } from 'fs';
 import { sign } from 'jsonwebtoken';
 import { Config, ConfigDefault } from './config';
+import PouchSesion = require('session-pouchdb-store');
 
 const octokit = new Octokit();
 const key = readFileSync('./private-key.pem').toString();
@@ -25,6 +26,7 @@ const headers = {
  */
 export default function web(app: Application) {
   const router = app.route('/');
+  const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
   router.use(serveStatic('public'));
   router.use(
@@ -32,7 +34,8 @@ export default function web(app: Application) {
         secret: generate(),
         cookie: { maxAge: 60000 },
         resave: false,
-        saveUninitialized: false
+        saveUninitialized: false,
+        store: new PouchSesion(db)
       })
   );
   router.use((req, res, next) => { // Security headers to avoid and/or limit attacks
@@ -102,15 +105,14 @@ export default function web(app: Application) {
     const { data: emails } = await octokit.users.getEmails({});
     const { data: orgs } = await octokit.users.getOrgs({});
 
-    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
-
     let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta;
 
     for await (const org of orgs) {
       try {
         orgDB = await db.get(org.login);
       } catch (e) {
-        if (e.name === 'not_found') {
+        const err: Error = e;
+        if (err.name === 'not_found') {
           await db.put({ _id: org.login, ...ConfigDefault});
           orgDB = await db.get(org.login);
         }
