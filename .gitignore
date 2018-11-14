@@ -8,3 +8,5 @@ bot/lib/**
 coverage
 dashboard/build/
 dashboard/coverage/
+lib/**
+.vscode/

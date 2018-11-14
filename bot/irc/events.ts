@@ -1,4 +1,4 @@
-import IRC from '../irc'; // eslint-disable-line no-unused-vars
+import IRC = require('../irc'); // eslint-disable-line no-unused-vars
 
 /**
  * constructor - description
@@ -15,10 +15,10 @@ function Events(this: IRC): void {
   };
 
   this.join = () => {
-    this.app.log(`${this.org}: ${this.config.notice}`);
-    if (this.config.notice === undefined) this.config.notice = false;
-    if (!this.config.notice) {
-      this.write(`JOIN ${this.config.channel}`);
+    this.app.log(`${this.org}: ${this.config.irc.notice}`);
+    if (this.config.irc.notice === undefined) this.config.irc.notice = false;
+    if (!this.config.irc.notice) {
+      this.write(`JOIN ${this.config.irc.channel}`);
       this.app.log('Joining channels');
     }
   };
@@ -34,14 +34,14 @@ function Events(this: IRC): void {
     };*/
 
   this.on_396 = () => {
-    if (this.config.requireAuth) {
+    if (this.config.irc.requireAuth) {
       // Joining channels after being authenticated if config option is set, if not, join after the MOTD
       this.join();
     }
   };
 
   this.ERR_NICKNAMEINUSE = () => {
-    this.write(`NICK ${this.config.nickname}_`);
+    this.write(`NICK ${this.config.irc.nickname}_`);
   };
 
   this.on_cap = (app, event) => {
@@ -61,15 +61,16 @@ function Events(this: IRC): void {
         this.write(`CAP REQ :${this.availablecaps.join(' ')}`);
       }
     } else if (event.args[1] === 'ACK') {
-      for (const cap of this.caps) { // Iterate over this.caps so we have access to classes
+      /*for (let cap of this.caps) { // Iterate over this.caps so we have access to classes
         if (typeof cap !== 'string' && this.availablecaps.includes(cap.name)) { // Check that the cap is in this.availablecaps
+          cap = new cap(this);
           if (typeof cap.run === 'function') { // Check if the cap has the `run` property
             cap.run(this); // Run the cap with the args collected during CAP LS
           } else {
             continue;
           }
         }
-      }
+      }*/
     }
   };
 
@@ -82,4 +83,4 @@ function Events(this: IRC): void {
   }
 }
 
-export default Events;
+export = Events;
