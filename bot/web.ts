@@ -23,7 +23,7 @@ const headers = {
  * A wrapper function around the web API stuff
  * @param {Application} app The probot application
  */
-export default async function web(app: Application) {
+export default function web(app: Application) {
   const router = app.route('/');
 
   router.use(serveStatic('public'));
@@ -45,6 +45,7 @@ export default async function web(app: Application) {
       // tslint:disable-next-line:quotemark
       'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
     });
+    next();
   });
   router.get('/login', (req, res) => {
     req.session!.csrf_string = generate();
