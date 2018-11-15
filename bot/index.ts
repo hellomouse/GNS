@@ -141,8 +141,8 @@ export = async (app: probot.Application) => {
     irc.hellomouse = new IRC(app, 'hellomouse');
     for await (let { id: i } of docs.rows) {
       irc[i] = irc.hellomouse;
-      await irc[i].init();
     }
+    await irc.hellomouse.init();
   } else {
     for await (let { id: i } of docs.rows) {
       irc[i] = new IRC(app, i);
