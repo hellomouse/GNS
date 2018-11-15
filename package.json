@@ -35,7 +35,8 @@
     "querystring": "^0.2.0",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "session-pouchdb-store": "^0.2.1"
   },
   "devDependencies": {
     "@hellomouse/eslint-config-wolfy1339": "^1.1.0",
