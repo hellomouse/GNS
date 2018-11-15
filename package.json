@@ -25,6 +25,7 @@
     "test:watch": "jest bot --watch --notify --notifyMode=change --coverage"
   },
   "dependencies": {
+    "@hellomouse/session-pouchdb-store": "^0.3.1",
     "@octokit/rest": "^15.17.0",
     "express": "^4.16.4",
     "express-session": "^1.15.6",
@@ -35,8 +36,7 @@
     "querystring": "^0.2.0",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
-    "session-pouchdb-store": "^0.2.1"
+    "request-promise-native": "^1.0.5"
   },
   "devDependencies": {
     "@hellomouse/eslint-config-wolfy1339": "^1.1.0",

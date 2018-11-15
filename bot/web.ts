@@ -9,7 +9,7 @@ import PouchDB from 'pouchdb';
 import fs = require('fs');
 import jwt = require('jsonwebtoken');
 import { Config, ConfigDefault } from './config';
-import PouchSesion = require('session-pouchdb-store');
+import PouchSesion = require('@hellomouse/session-pouchdb-store');
 
 const octokit = new Octokit();
 const key = fs.readFileSync('./private-key.pem').toString();
