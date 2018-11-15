@@ -26,7 +26,15 @@ const headers = {
  */
 export = function web(app: probot.Application) {
   const router = app.route('/');
-  const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+  const loginDB: PouchDB.Database<{
+    cookie: {
+      originalMaxAge: number;
+      expires: string;
+      httpOnly: boolean;
+      path: string;
+    }
+    $ts: number;
+  }> = new PouchDB(`${process.env.POUCH_REMOTE}_logins`);
 
   router.use(express.static('public'));
   router.use(
@@ -35,7 +43,7 @@ export = function web(app: probot.Application) {
         cookie: { maxAge: 60000 },
         resave: false,
         saveUninitialized: false,
-        store: new PouchSesion(db)
+        store: new PouchSesion(loginDB)
       })
   );
   router.use((req, res, next) => { // Security headers to avoid and/or limit attacks
@@ -105,7 +113,8 @@ export = function web(app: probot.Application) {
     const { data: emails } = await octokit.users.getEmails({});
     const { data: orgs } = await octokit.users.getOrgs({});
 
-    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta | undefined;
+    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+    let orgDB: (Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta) | undefined;
 
     for await (const org of orgs) {
       try {
