@@ -41,6 +41,7 @@ function Events(this: IRC): void {
   };
 
   this.ERR_NICKNAMEINUSE = () => {
+    this.config.irc.nickname += '_';
     this.write(`NICK ${this.config.irc.nickname}_`);
   };
 
