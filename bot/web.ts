@@ -5,7 +5,7 @@ import querystring = require('querystring');
 import randomstring = require('randomstring');
 import probot = require('probot'); // eslint-disable-line no-unused-vars
 import Octokit = require('@octokit/rest');
-import PouchDB from 'pouchdb';
+import PouchDB = require('pouchdb');
 import fs = require('fs');
 import jwt = require('jsonwebtoken');
 import { Config, ConfigDefault } from './config';
