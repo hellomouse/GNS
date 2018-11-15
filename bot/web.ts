@@ -42,7 +42,7 @@ export = function web(app: probot.Application) {
         secret: randomstring.generate(),
         cookie: { maxAge: 60000 },
         resave: false,
-        saveUninitialized: false,
+        saveUninitialized: true,
         store: new PouchSesion(loginDB)
       })
   );
