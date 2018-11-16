@@ -186,8 +186,9 @@ export = async (app: probot.Application) => {
 
   app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled', 'pull_request.unlabeled'], async context => {
     // tslint:disable-next-line:max-line-length
-    let { payload: { action, repository, label: Label, sender, [context.event]: { number, title, html_url } } } = context,
-      att = await attFormat(repository!.full_name!, `issue.${action}`),
+    let name = context.name === 'issues' ? 'issue' : 'pull_request';
+    let { action, repository, label: Label, sender, [name]: { number, title, html_url } } = context.payload,
+      att = await attFormat(repository!.full_name!, `${name}.${action}`),
       user = fmt_name(await antiHighlight(sender!.login)),
       color = `\x02${colors[action!]}`,
       issueNumber: number = number,
@@ -202,7 +203,8 @@ export = async (app: probot.Application) => {
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
       async context => {
-        let { [context.event]: { number: issueNumber, html_url },
+        let name = context.name === 'issues' ? 'issue' : 'pull_request';
+        let { [name]: { number: issueNumber, html_url },
           action, repository, assignee } = context.payload,
           assigneeLogin = context.payload.sender!.login,
           att = await attFormat(repository!.full_name!, `${context.event}.${action}`),
