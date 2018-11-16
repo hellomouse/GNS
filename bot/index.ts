@@ -306,7 +306,7 @@ export = async (app: probot.Application) => {
       ref = fmt_branch(payload.ref.split('/')[2]),
       org = payload.repository!.owner.login,
       distinct_commits = payload.commits.filter((x: { distinct: boolean }) => x.distinct),
-      [, ref_type, ref_name] = payload.ref.split('/'),
+      [, ref_type, ...ref_name] = payload.ref.split('/'),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],
       pushType = payload.forced ? 'force-pushed' : 'pushed',
@@ -315,6 +315,8 @@ export = async (app: probot.Application) => {
       { config } = await db.get(org),
       isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
       url = await shortenUrl(payload.compare);
+
+    ref_name = (ref_name as string[]).join('/');
 
     if (payload.base_ref) base_ref_name = payload.base_ref.split('/')[2];
 
