@@ -207,12 +207,12 @@ export = async (app: probot.Application) => {
         let { [name]: { number: issueNumber, html_url },
           action, repository, assignee } = context.payload,
           assigneeLogin = context.payload.sender!.login,
-          att = await attFormat(repository!.full_name!, `${context.event}.${action}`),
+          att = await attFormat(repository!.full_name!, `${name}.${action}`),
           user = fmt_name(await antiHighlight(assignee.login)),
           sender = fmt_name(await antiHighlight(assigneeLogin as string)),
           fullname = repository!.full_name,
           color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
-          event = context.event.replace('_', ' '),
+          event = name.replace('_', ' '),
           assignedText,
           org = repository!.owner.login;
 
