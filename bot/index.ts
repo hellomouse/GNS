@@ -24,16 +24,14 @@ const colors: { [key: string]: string } = {
   error: '\x02\x0301'
 };
 
+Object.defineProperty(Array.prototype, 'empty', {
+  enumerable: true,
+  get() { return this.length === 0; }
+});
+
 const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
 let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
-
-/**
- * @return {Boolean}
- */
-Array.prototype.empty = function empty(): boolean { // eslint-disable-line no-extend-native
-  return this.length === 0;
-};
 
 /**
  * @param  {string} s The commit hash string
@@ -336,7 +334,7 @@ export = async (app: probot.Application) => {
       }
     } else if (payload.deleted && config!.detailedDeletesAndCreates) {
       msg.push(`\x0304deleted\x0F ${fmt_branch(ref_name)} at ${fmt_hash(payload.before.substring(0, 7))}`);
-    } else if (numC !== 0 && distinct_commits.empty()) {
+    } else if (numC !== 0 && distinct_commits.empty) {
       if (payload.base_ref) {
         msg.push(`merged ${fmt_branch(base_ref_name)} into ${ref}:`);
       } else {
