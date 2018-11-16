@@ -198,7 +198,7 @@ export = async (app: probot.Application) => {
       label = labels[Label.name] || Label.name;
 
     irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
-          + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
+          + `${name.replace('_', ' ')} #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
   });
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
