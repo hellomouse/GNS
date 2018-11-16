@@ -5,11 +5,11 @@ import querystring = require('querystring');
 import randomstring = require('randomstring');
 import probot = require('probot'); // eslint-disable-line no-unused-vars
 import Octokit = require('@octokit/rest');
-import PouchDB from 'pouchdb';
+import PouchDB = require('pouchdb');
 import fs = require('fs');
 import jwt = require('jsonwebtoken');
 import { Config, ConfigDefault } from './config';
-import PouchSesion = require('session-pouchdb-store');
+import PouchSesion = require('@hellomouse/session-pouchdb-store');
 
 const octokit = new Octokit();
 const key = fs.readFileSync('./private-key.pem').toString();
@@ -26,7 +26,15 @@ const headers = {
  */
 export = function web(app: probot.Application) {
   const router = app.route('/');
-  const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+  const loginDB: PouchDB.Database<{
+    cookie: {
+      originalMaxAge: number;
+      expires: string;
+      httpOnly: boolean;
+      path: string;
+    }
+    $ts: number;
+  }> = new PouchDB(`${process.env.POUCH_REMOTE}_logins`);
 
   router.use(express.static('public'));
   router.use(
@@ -34,8 +42,8 @@ export = function web(app: probot.Application) {
         secret: randomstring.generate(),
         cookie: { maxAge: 60000 },
         resave: false,
-        saveUninitialized: false,
-        store: new PouchSesion(db)
+        saveUninitialized: true,
+        store: new PouchSesion(loginDB)
       })
   );
   router.use((req, res, next) => { // Security headers to avoid and/or limit attacks
@@ -105,7 +113,8 @@ export = function web(app: probot.Application) {
     const { data: emails } = await octokit.users.getEmails({});
     const { data: orgs } = await octokit.users.getOrgs({});
 
-    let orgDB: Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta | undefined;
+    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+    let orgDB: (Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta) | undefined;
 
     for await (const org of orgs) {
       try {

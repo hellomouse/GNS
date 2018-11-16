@@ -24,16 +24,14 @@ const colors: { [key: string]: string } = {
   error: '\x02\x0301'
 };
 
+Object.defineProperty(Array.prototype, 'empty', {
+  enumerable: true,
+  get() { return this.length === 0; }
+});
+
 const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
 
 let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
-
-/**
- * @return {Boolean}
- */
-Array.prototype.empty = function empty(): boolean { // eslint-disable-line no-extend-native
-  return this.length === 0;
-};
 
 /**
  * @param  {string} s The commit hash string
@@ -141,8 +139,8 @@ export = async (app: probot.Application) => {
     irc.hellomouse = new IRC(app, 'hellomouse');
     for await (let { id: i } of docs.rows) {
       irc[i] = irc.hellomouse;
-      await irc[i].init();
     }
+    await irc.hellomouse.init();
   } else {
     for await (let { id: i } of docs.rows) {
       irc[i] = new IRC(app, i);
@@ -186,10 +184,11 @@ export = async (app: probot.Application) => {
           + `issue #${issueNumber} (${issueText}) - ${url}`);
   });
 
-  app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled, pull_request.unlabeled'], async context => {
+  app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled', 'pull_request.unlabeled'], async context => {
     // tslint:disable-next-line:max-line-length
-    let { payload: { action, repository, label: Label, sender, [context.event]: { number, title, html_url } } } = context,
-      att = await attFormat(repository!.full_name!, `issue.${action}`),
+    let name = context.name === 'issues' ? 'issue' : 'pull_request';
+    let { action, repository, label: Label, sender, [name]: { number, title, html_url } } = context.payload,
+      att = await attFormat(repository!.full_name!, `${name}.${action}`),
       user = fmt_name(await antiHighlight(sender!.login)),
       color = `\x02${colors[action!]}`,
       issueNumber: number = number,
@@ -199,20 +198,21 @@ export = async (app: probot.Application) => {
       label = labels[Label.name] || Label.name;
 
     irc[org].privmsg(`${att} \x0F| ${user} ${color}${action}\x0F `
-          + `issue #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
+          + `${name.replace('_', ' ')} #${issueNumber} with ${label}\x0F (${issueText}) - ${url}`);
   });
 
   app.on(['issues.assigned', 'issues.unassigned', 'pull_request.assigned', 'pull_request.unassigned'],
       async context => {
-        let { [context.event]: { number: issueNumber, html_url },
+        let name = context.name === 'issues' ? 'issue' : 'pull_request';
+        let { [name]: { number: issueNumber, html_url },
           action, repository, assignee } = context.payload,
           assigneeLogin = context.payload.sender!.login,
-          att = await attFormat(repository!.full_name!, `${context.event}.${action}`),
+          att = await attFormat(repository!.full_name!, `${name}.${action}`),
           user = fmt_name(await antiHighlight(assignee.login)),
           sender = fmt_name(await antiHighlight(assigneeLogin as string)),
           fullname = repository!.full_name,
           color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
-          event = context.event.replace('_', ' '),
+          event = name.replace('_', ' '),
           assignedText,
           org = repository!.owner.login;
 
@@ -308,7 +308,7 @@ export = async (app: probot.Application) => {
       ref = fmt_branch(payload.ref.split('/')[2]),
       org = payload.repository!.owner.login,
       distinct_commits = payload.commits.filter((x: { distinct: boolean }) => x.distinct),
-      [, ref_type, ref_name] = payload.ref.split('/'),
+      [, ref_type, ...ref_name] = payload.ref.split('/'),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],
       pushType = payload.forced ? 'force-pushed' : 'pushed',
@@ -317,6 +317,8 @@ export = async (app: probot.Application) => {
       { config } = await db.get(org),
       isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
       url = await shortenUrl(payload.compare);
+
+    ref_name = (ref_name as string[]).join('/');
 
     if (payload.base_ref) base_ref_name = payload.base_ref.split('/')[2];
 
@@ -336,7 +338,7 @@ export = async (app: probot.Application) => {
       }
     } else if (payload.deleted && config!.detailedDeletesAndCreates) {
       msg.push(`\x0304deleted\x0F ${fmt_branch(ref_name)} at ${fmt_hash(payload.before.substring(0, 7))}`);
-    } else if (numC !== 0 && distinct_commits.empty()) {
+    } else if (numC !== 0 && distinct_commits.empty) {
       if (payload.base_ref) {
         msg.push(`merged ${fmt_branch(base_ref_name)} into ${ref}:`);
       } else {
