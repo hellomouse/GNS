@@ -184,7 +184,7 @@ export = async (app: probot.Application) => {
           + `issue #${issueNumber} (${issueText}) - ${url}`);
   });
 
-  app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled, pull_request.unlabeled'], async context => {
+  app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled', 'pull_request.unlabeled'], async context => {
     // tslint:disable-next-line:max-line-length
     let { payload: { action, repository, label: Label, sender, [context.event]: { number, title, html_url } } } = context,
       att = await attFormat(repository!.full_name!, `issue.${action}`),
