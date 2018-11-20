@@ -110,8 +110,8 @@ export = function web(app: probot.Application) {
       secret: process.env.CLIENT_SECRET || ''
     });
     octokit.authenticate({ type: 'oauth', token: req.session!.access_token });
-    const { data: emails } = await octokit.users.getEmails({});
-    const { data: orgs } = await octokit.users.getOrgs({});
+    const { data: emails } = await octokit.users.listEmails({});
+    const { data: orgs } = await octokit.orgs.listForAuthenticatedUser({});
 
     const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
     let orgDB: (Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta) | undefined;
@@ -126,8 +126,8 @@ export = function web(app: probot.Application) {
           orgDB = await db.get(org.login);
         }
       }
-      const { data: repos } = await octokit.repos.getForOrg({ org: org.login });
-      const { data: members } = await octokit.orgs.getMembers({ org: org.login, role: 'admin' });
+      const { data: repos } = await octokit.repos.listForOrg({ org: org.login });
+      const { data: members } = await octokit.orgs.listMembers({ org: org.login, role: 'admin' });
 
       for (let { login: member } of members) {
         if (!orgDB!.members.includes(member)) {
