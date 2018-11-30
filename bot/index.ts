@@ -157,7 +157,6 @@ export = async (app: probot.Application) => {
       repository = payload.repository!,
       att = await attFormat(payload.repository!.full_name!, 'issue'),
       issueNumber = issue.number,
-      action = payload.action as string,
       color = colors[action], // opened: Green, reopened: Orange, closed: Red
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       fullname = repository.full_name,
@@ -258,7 +257,7 @@ export = async (app: probot.Application) => {
       issueNumber = payload.pull_request!.number,
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       fullname = repository.full_name!,
-      state = payload.review.state.replace('_', ' ') as string,
+      state = payload.review!.state.replace('_', ' '),
       org = payload.repository!.owner.login,
       url = fmt_url(await shortenUrl(payload.pull_request!.html_url!));
 
