@@ -37,6 +37,7 @@ declare module '@octokit/webhooks' {
     sender?: {
       [key: string]: any
       type: string
+      login: string
     }
     action?: string
     installation?: {
@@ -52,6 +53,10 @@ declare module '@octokit/webhooks' {
       }
       id: string
     }>
+    review?: {
+      [key: string]: any
+      state: string
+    }
   }
 
    export interface WebhookEvent {
