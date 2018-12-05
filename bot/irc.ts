@@ -46,6 +46,7 @@ declare class CapFunction {
  * IRC connection wrapper
  */
 class IRC {
+  [key: string]: any;
   parser!: Parser;
   irc_events!: events.EventEmitter;
   app: probot.Application;
@@ -90,7 +91,7 @@ class IRC {
 
     this.parser = new Parser();
     this.irc_events = new events.EventEmitter();
-    (Events.bind(this))();
+    Events(this);
 
     this.socket.on('connect', () => {
       let { nickname, ident, realname } = this.config.irc;

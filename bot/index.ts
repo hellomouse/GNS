@@ -157,7 +157,6 @@ export = async (app: probot.Application) => {
       repository = payload.repository!,
       att = await attFormat(payload.repository!.full_name!, 'issue'),
       issueNumber = issue.number,
-      action = payload.action as string,
       color = colors[action], // opened: Green, reopened: Orange, closed: Red
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       fullname = repository.full_name,
@@ -170,7 +169,7 @@ export = async (app: probot.Application) => {
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
     let payload = context.payload,
       repository = payload.repository!,
-      {title, number} = payload.issue!,
+      { title, number } = payload.issue!,
       att = await attFormat(repository.full_name!, 'issue.comment'),
       action: string = payload.action!,
       color: string = colors[action], // Created: Green, Edited: Orange, Deleted: Red
@@ -258,7 +257,7 @@ export = async (app: probot.Application) => {
       issueNumber = payload.pull_request!.number,
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       fullname = repository.full_name!,
-      state = payload.review.state.replace('_', ' ') as string,
+      state = payload.review!.state.replace('_', ' '),
       org = payload.repository!.owner.login,
       url = fmt_url(await shortenUrl(payload.pull_request!.html_url!));
 
@@ -304,21 +303,21 @@ export = async (app: probot.Application) => {
     let payload = context.payload,
       att = await attFormat(payload.repository!.full_name!, 'push'),
       user = fmt_name(await antiHighlight(payload.sender!.login)),
-      numC = payload.commits.length,
+      numC = payload.commits!.length,
       ref = fmt_branch(payload.ref.split('/')[2]),
       org = payload.repository!.owner.login,
-      distinct_commits = payload.commits.filter((x: { distinct: boolean }) => x.distinct),
-      [, ref_type, ...ref_name] = payload.ref.split('/'),
+      distinct_commits = payload.commits!.filter(x => x.distinct),
+      [, ref_type, ...rest] = payload.ref.split('/'),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],
       pushType = payload.forced ? 'force-pushed' : 'pushed',
       count = 1,
       repo = `${fmt_repo(payload.repository!.name)}/${ref}`,
       { config } = await db.get(org),
-      isM = (payload.commits.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
+      isM = (payload.commits!.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
       url = await shortenUrl(payload.compare);
 
-    ref_name = (ref_name as string[]).join('/');
+    const ref_name = rest.join('/');
 
     if (payload.base_ref) base_ref_name = payload.base_ref.split('/')[2];
 
@@ -355,7 +354,7 @@ export = async (app: probot.Application) => {
     msg.push(fmt_url(url));
     irc[org].privmsg(msg.join(' '));
 
-    for (let c of payload.commits) {
+    for (let c of payload.commits!) {
       if (count <= config!.multipleCommitsMaxLen) { // I know this isn't the best or prettiest solution, but it works
         c.message = c.message.split('\n')[0];
         let message = `${c.message.substring(0, 150)}${(c.message.length > 150 ? '...' : '')}`,
@@ -366,7 +365,7 @@ export = async (app: probot.Application) => {
       } else {
         count -= 1;
         isM = numC - count === 1 ? 'commit' : 'commits'; // Correct grammar for number of commits remaining
-        irc[org].privmsg(`... and ${payload.commits.length - count} more ${isM}.`);
+        irc[org].privmsg(`... and ${payload.commits!.length - count} more ${isM}.`);
         break;
       }
     }

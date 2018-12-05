@@ -18,7 +18,7 @@
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "build": "tsc -p bot/tsconfig.json",
+    "build": "tsc -p bot/tsconfig.json && cp bot/labels.js bot/lib/labels.js",
     "start": "npm run build && cd bot && probot run -p 5678 ./lib/index.js",
     "lint": "eslint . --fix",
     "test": "jest bot && eslint .",
@@ -32,7 +32,7 @@
     "irc-stream-parser": "^0.1.0",
     "jsonwebtoken": "^8.3.0",
     "pouchdb": "^7.0.0",
-    "probot": "^7.3.1",
+    "probot": "^7.4.0",
     "querystring": "^0.2.0",
     "randomstring": "^1.1.5",
     "request": "^2.88.0",
@@ -53,7 +53,7 @@
     "eslint": "^5.9.0",
     "eslint-plugin-react": "^7.11.1",
     "jest": "^23.6.0",
-    "nodemon": "^1.18.4",
+    "nodemon": "^1.18.7",
     "smee-client": "^1.0.2",
     "tslint": "^5.11.0",
     "typescript": "^3.1.6"
