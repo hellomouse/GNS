@@ -8,9 +8,14 @@ const db = new PouchDB('https://couchdb.hellomouse.net/gns');
  * @return {Promise<Array<String>>}
  */
 export async function apiGetRepos(user) {
-  let { rows: docs } = await db.allDocs({ include_docs: true });
+  let docs;
 
-  /** @type {Array<string>*/
+  try {
+    docs = (await db.allDocs({ include_docs: true })).rows;
+  } catch (e) {
+    console.error(e.message);
+  }
+  /** @type {Array<string>} */
   let repos = [];
 
   // @ts-ignore
@@ -31,7 +36,7 @@ export async function apiGetRepos(user) {
  * @return {Promise<RepoSettings>}
  */
 export const apiGetRepoSettings = async repo => {
-  /** @type {import('./config').Config} */
+  /** @type {import('../config').Config} */
   let orgSettings;
 
   try {

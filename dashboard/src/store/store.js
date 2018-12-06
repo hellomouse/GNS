@@ -1,3 +1,4 @@
+// @ts-check
 import { createStore } from 'redux';
 
 import { apiGetRepos, apiGetRepoSettings } from './api';
@@ -18,8 +19,9 @@ const store = createStore((state, action) => {
   return state;
 }, defaultState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
+// eslint-disable-next-line valid-jsdoc
 /** Gets repository list
- * @param {store} passedStore
+ * @param {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} passedStore
  */
 export const storeGetRepos = async passedStore => {
   let st = passedStore.getState();
