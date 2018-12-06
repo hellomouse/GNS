@@ -3,12 +3,15 @@ import { createStore } from 'redux';
 
 import { apiGetRepos, apiGetRepoSettings } from './api';
 
+/** @typedef {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} passedStore */
+
 const defaultState = {
   repos: [],
   gotRepos: false,
   repoSettings: {}
 };
 
+/** @type {passedStore} */
 const store = createStore((state, action) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
@@ -19,9 +22,8 @@ const store = createStore((state, action) => {
   return state;
 }, defaultState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
-// eslint-disable-next-line valid-jsdoc
 /** Gets repository list
- * @param {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} passedStore
+ * @param {passedStore} passedStore
  */
 export const storeGetRepos = async passedStore => {
   let st = passedStore.getState();
@@ -38,7 +40,7 @@ export const storeGetRepos = async passedStore => {
 };
 
 /** Gets settings for the given repository
- * @param {Object} passedStore
+ * @param {passedStore} passedStore
  * @param {String} repo
  */
 export const storeGetRepoSettings = async (passedStore, repo) => {
