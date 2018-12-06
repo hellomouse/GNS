@@ -5,14 +5,15 @@ import { apiGetRepos, apiGetRepoSettings } from './api';
 const defaultState = {
   repos: [],
   gotRepos: false,
-  repoSettings: {}
+  repoSettings: {},
+  gotRepoSettings: false
 };
 
 const store = createStore((state, action) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
   } else if (action.type === 'setRepoSettings') {
-    return { ...state, repoSettings: { ...state.repoSettings, [action.repo]: action.settings } };
+    return { ...state, repoSettings: { ...state.repoSettings, [action.repo]: action.settings }, gotRepoSettings: true };
   }
 
   return state;
