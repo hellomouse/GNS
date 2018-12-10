@@ -24,9 +24,12 @@ const colors: { [key: string]: string } = {
   error: '\x02\x0301'
 };
 
-Object.defineProperty(Array.prototype, 'empty', {
-  enumerable: true,
-  get() { return this.length === 0; }
+Object.defineProperties(Array.prototype, {
+  isEmpty: {
+    enumerable: true,
+    writable: false,
+    get() { return this.length === 0; },
+  }
 });
 
 const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
@@ -331,14 +334,14 @@ export = async (app: probot.Application) => {
 
         if (payload.base_ref) {
           msg.push(`from ${ref}`);
-        } else if (distinct_commits.empty) {
+        } else if (distinct_commits.isEmpty) {
           msg.push(`at ${fmt_hash(payload.after.substring(0, 7))}`);
         }
         msg.push(`(+\x02${distinct_commits.length}\x0F new commit${distinct_commits.length !== 1 ? 's' : ''})`);
       }
     } else if (payload.deleted && config!.detailedDeletesAndCreates) {
       msg.push(`\x0304deleted\x0F ${ref} at ${fmt_hash(payload.before.substring(0, 7))}`);
-    } else if (numC !== 0 && distinct_commits.empty) {
+    } else if (numC !== 0 && distinct_commits.isEmpty) {
       if (payload.base_ref) {
         msg.push(`merged ${fmt_branch(base_ref_name)} into ${ref}:`);
       } else {
