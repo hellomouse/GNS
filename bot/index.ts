@@ -4,7 +4,7 @@ import IRC = require('./irc');
 import web = require('./web');
 import probot = require('probot'); // eslint-disable-line no-unused-vars
 import PouchDB = require('pouchdb');
-import { Config } from './config';
+import { Config, ConfigDefault } from './config';
 
 const colors: { [key: string]: string } = {
   // Issues and Pull Requests
@@ -452,5 +452,53 @@ export = async (app: probot.Application) => {
     Object.keys(irc).forEach(org => {
       irc[org].privmsg(`${att} | ${alertText} - ${extReference}`);
     });
+  });
+
+  app.on('installation', async context => {
+    let payload = context.payload,
+      action = payload.action!,
+      sender = payload.sender!.login,
+      id = payload.installation!.id,
+      org = payload.installation!.account.login,
+      att = await attFormat(org, `installation-${action}`);
+
+    if (action === 'created') {
+      irc[org] = new IRC(app, org);
+      irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
+      const repos: {[key: string]: {enabled: boolean}} = {};
+
+      for (let repo of payload.repositories!) {
+        repos[repo.full_name] = {
+          enabled: true
+        };
+      }
+      await db.put({ _id: org, installation_id: id, repos, installee: sender, ...ConfigDefault });
+    } else {
+      await db.remove(await db.get(org));
+    }
+  });
+
+  app.on('installation_repositories', async context => {
+    let payload = context.payload,
+      action = payload.action!,
+      sender = payload.sender!.login,
+      id = payload.installation!.id,
+      org = payload.installation!.account.login,
+      att = await attFormat(org, `installation-repositories-${action}`);
+
+    irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
+    const orgDB = await db.get(org);
+
+    if (action === 'added') {
+      for (let repo of payload.repositories_added!) {
+        orgDB.repos[repo.full_name] = { enabled: true };
+      }
+      db.put(orgDB);
+    } else {
+      for (let repo of payload.repositories_removed!) {
+        delete orgDB.repos[repo.full_name];
+      }
+      db.put(orgDB);
+    }
   });
 };
