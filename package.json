@@ -17,7 +17,7 @@
     "probot-app"
   ],
   "scripts": {
-    "dev": "nodemon --exec \"npm start\"",
+    "dev": "nodemon -w ./bot/ -i bot/lib/ --exec \"npm start\"",
     "build": "tsc -p bot/tsconfig.json && cp bot/labels.js bot/lib/labels.js",
     "start": "npm run build && cd bot && probot run -p 5678 ./lib/index.js",
     "lint": "eslint . --fix",
