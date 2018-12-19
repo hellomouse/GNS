@@ -30,7 +30,7 @@ Object.defineProperty(Array.prototype, 'empty', {
 });
 
 const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
-
+// tslint:disable-next-line:ter-newline-after-var
 let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
 
 /**
@@ -110,6 +110,7 @@ export = async (app: probot.Application) => {
       return `https://git.io/${req}`;
     } catch (e) {
       const err: Error = e;
+
       app.log.error(`Shorten url failed for ${url}: ${err.message}`);
       return '';
     }
@@ -147,7 +148,7 @@ export = async (app: probot.Application) => {
       await irc[i].init();
     }
   }
-  await web(app);
+  web(app);
 
   // App events
 
@@ -156,8 +157,9 @@ export = async (app: probot.Application) => {
       issue = payload.issue!,
       repository = payload.repository!,
       att = await attFormat(payload.repository!.full_name!, 'issue'),
+      { action } = payload,
       issueNumber = issue.number,
-      color = colors[action], // opened: Green, reopened: Orange, closed: Red
+      color = colors[action!], // opened: Green, reopened: Orange, closed: Red
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       fullname = repository.full_name,
       org = repository.owner.login,

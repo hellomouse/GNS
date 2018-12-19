@@ -20,13 +20,15 @@ const headers = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:63.0) Gecko/20100101 Firefox/63.0'
 };
 
+const db = new PouchDB<Config>(process.env.POUCH_REMOTE);
+
 /**
  * A wrapper function around the web API stuff
  * @param {probot.Application} app The probot application
  */
 export = function web(app: probot.Application) {
   const router = app.route('/');
-  const loginDB: PouchDB.Database<{
+  const loginDB = new PouchDB<{
     cookie: {
       originalMaxAge: number;
       expires: string;
@@ -34,40 +36,41 @@ export = function web(app: probot.Application) {
       path: string;
     }
     $ts: number;
-  }> = new PouchDB(`${process.env.POUCH_REMOTE}_logins`);
+  }>(`${process.env.POUCH_REMOTE}_logins`);
 
-  router.use(express.static('public'));
   router.use(
+      express.static('public'),
       session({
         secret: randomstring.generate(),
         cookie: { maxAge: 60000 },
         resave: false,
         saveUninitialized: true,
         store: new PouchSesion(loginDB)
-      })
+      }),
+      (req, res, next) => { // Security headers to avoid and/or limit attacks
+        res.set({
+          'X-Content-Type-Options': 'nosniff',
+          'X-XSS-Protection': '1;mode=block',
+          'X-Frame-Options': 'sameorigin',
+          'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
+          'Referrer-Policy': 'strict-origin-when-cross-origin',
+        // tslint:disable-next-line:quotemark
+          'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
+        });
+        next();
+      }
   );
-  router.use((req, res, next) => { // Security headers to avoid and/or limit attacks
-    res.set({
-      'X-Content-Type-Options': 'nosniff',
-      'X-XSS-Protection': '1;mode=block',
-      'X-Frame-Options': 'sameorigin',
-      'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      // tslint:disable-next-line:quotemark
-      'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
-    });
-    next();
-  });
+
   router.get('/login', (req, res) => {
     req.session!.csrf_string = randomstring.generate();
     const githubAuthUrl =
       `https://github.com/login/oauth/authorize?${
-        querystring.stringify({
-          client_id: process.env.CLIENT_ID,
-          redirect_uri,
-          state: req.session!.csrf_string,
-          scope: 'user:email read:org'
-        })}`;
+      querystring.stringify({
+        client_id: process.env.CLIENT_ID,
+        redirect_uri,
+        state: req.session!.csrf_string,
+        scope: 'user:email read:org'
+      })}`;
 
     res.redirect(githubAuthUrl);
   });
@@ -78,18 +81,18 @@ export = function web(app: probot.Application) {
 
     if (req.session!.csrf_string === returnedState) {
       request.post(
-          {
-            url:
+        {
+          url:
             `https://github.com/login/oauth/access_token?${
-              querystring.stringify({
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
-                code,
-                redirect_uri,
-                state: req.session!.csrf_string
-              })}`,
-            headers
-          },
+            querystring.stringify({
+              client_id: process.env.CLIENT_ID,
+              client_secret: process.env.CLIENT_SECRET,
+              code,
+              redirect_uri,
+              state: req.session!.csrf_string
+            })}`,
+          headers
+        },
           (error, response, body) => {
             if (error) throw error;
             req.session!.access_token = querystring.parse(body).access_token;
@@ -103,8 +106,7 @@ export = function web(app: probot.Application) {
   });
 
   router.get('/user', async (req, res) => {
-    const authenticate = (auth: Octokit.AuthOAuthSecret) => { octokit.authenticate(auth); }; // Needed because stupid linters can't detect type properly
-    authenticate({
+    octokit.authenticate({
       type: 'oauth',
       key: process.env.CLIENT_ID || '',
       secret: process.env.CLIENT_SECRET || ''
@@ -113,7 +115,6 @@ export = function web(app: probot.Application) {
     const { data: emails } = await octokit.users.listEmails({});
     const { data: orgs } = await octokit.orgs.listForAuthenticatedUser({});
 
-    const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
     let orgDB: (Config & PouchDB.Core.IdMeta & PouchDB.Core.GetMeta) | undefined;
 
     for await (const org of orgs) {
@@ -121,8 +122,9 @@ export = function web(app: probot.Application) {
         orgDB = await db.get(org.login);
       } catch (e) {
         const err: Error = e;
+
         if (err.name === 'not_found') {
-          await db.put({ _id: org.login, ...ConfigDefault});
+          await db.put({ _id: org.login, ...ConfigDefault });
           orgDB = await db.get(org.login);
         }
       }
@@ -136,8 +138,9 @@ export = function web(app: probot.Application) {
       }
 
       for (let repo of repos) {
-        if (!orgDB!.repos[repo.full_name!])
+        if (!orgDB!.repos[repo.full_name!]) {
           orgDB!.repos[repo.full_name!] = { enabled: true };
+        }
       }
       db.put(orgDB!);
     }
@@ -150,6 +153,8 @@ export = function web(app: probot.Application) {
   });
 
   router.all('/setup', async (req, res) => {
+    // Needs to be used in conjunction with the following events:
+    // installation, integration_installation, installation_repositories, integration_installation_repositories
     app.log.debug(`Query strings for /setup: ${JSON.stringify(req.query)}`);
     app.log.debug(`headers: ${JSON.stringify(req.headers)}`);
     const payload = {
