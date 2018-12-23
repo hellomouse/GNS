@@ -42,7 +42,7 @@
     "pouchdb": "^7.0.0",
     "react": "^16.5.2",
     "react-app-polyfill": "^0.2.0",
-    "react-dev-utils": "^6.0.3",
+    "react-dev-utils": "^7.0.0",
     "react-dom": "^16.5.2",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
