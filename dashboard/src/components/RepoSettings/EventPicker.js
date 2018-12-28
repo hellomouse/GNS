@@ -27,23 +27,27 @@ class EventPicker extends React.Component {
     });
   };
 
-  state = {
-    config: this.props.state,
-    checkedGitHub: false,
-    checkedEvent: false
-  };
+  componentWillMount() {
+    this.setState({
+      config: this.props.state,
+      checkedGitHub: false,
+      checkedEvent: false
+    });
+  }
 
   /**
    * @return {React.ReactElement}
    */
   render() {
+    const repo = Object.keys(this.props.state)[0];
+
     return (
       <FormGroup>
         <Typography variant="subheading">Events</Typography>
         <SwitchLabel label="Enable all GitHub defaults" id="github-defaults"
           onChange={this.enableAllGitHub}
           checked={this.state.checkedGitHub} />
-        {this.state.config.map(event =>
+        {Object.keys(this.props.state[repo].events).map(event =>
           <FormControlLabel key={`event-${event}`}
             control={
               <Checkbox checked={this.state[`checked${event}`]}/>

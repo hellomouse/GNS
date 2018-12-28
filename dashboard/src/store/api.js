@@ -45,7 +45,7 @@ export const apiGetRepoSettings = async repo => {
     orgSettings = { config: { irc: {} } };
   }
 
-  const repoSettings = orgSettings[repo] || {};
+  const repoSettings = orgSettings.repos[repo] || {};
 
   if (repoSettings.irc === undefined) repoSettings.irc = {};
 
