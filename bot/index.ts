@@ -348,7 +348,14 @@ export = async (app: probot.Application) => {
       }
     } else {
       if (payload.deleted || payload.create) return; // Handle these in their respective events
-      msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
+      if (numC === 0 && payload.forced) {
+        let before_sha = fmt_hash(payload.before.substring(0, 7)),
+          after_sha = fmt_hash(payload.after.substring(0, 7));
+
+        msg.push(`force-pushed ${ref} from ${before_sha} to ${after_sha}:`);
+      } else {
+       msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
+      }
     }
 
     msg.push(fmt_url(url));
