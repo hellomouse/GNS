@@ -1,6 +1,9 @@
+// @ts-check
 import { createStore } from 'redux';
 
 import { apiGetRepos, apiGetRepoSettings } from './api';
+
+/** @typedef {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} passedStore */
 
 const defaultState = {
   repos: [],
@@ -8,6 +11,7 @@ const defaultState = {
   repoSettings: {}
 };
 
+/** @type {passedStore} */
 const store = createStore((state, action) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
@@ -19,7 +23,7 @@ const store = createStore((state, action) => {
 }, defaultState, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__());
 
 /** Gets repository list
- * @param {store} passedStore
+ * @param {passedStore} passedStore
  */
 export const storeGetRepos = async passedStore => {
   let st = passedStore.getState();
@@ -36,7 +40,7 @@ export const storeGetRepos = async passedStore => {
 };
 
 /** Gets settings for the given repository
- * @param {Object} passedStore
+ * @param {passedStore} passedStore
  * @param {String} repo
  */
 export const storeGetRepoSettings = async (passedStore, repo) => {
