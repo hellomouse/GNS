@@ -9,16 +9,12 @@ import TextField from '@material-ui/core/TextField';
  * @class
  * @desc IRC Settings component for the repo settings page
  */
-class IRCSettings extends React.Component {
-  static propTypes = {
-    state: PropTypes.object
-  };
-
-  state = { ...this.props.state };
+class IRCSettings extends React.Component<{state: any}> {
   /** Renders the component
   * @return {React.ReactElement}
   */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
+    this.setState(this.props.state);
     return (
       <React.Fragment>
         <div className='sameline'>

@@ -18,25 +18,25 @@ const styles = {
   }
 };
 
+interface Props {
+  classes: Record<'flex' | 'flx-center' | string, string>;
+}
+
 /**
  * @param {*} props
  * @return {React.ReactElement}
  */
-function Loading(props) {
+const Loading: React.FunctionComponent<Props> = props => {
   return (
     <div className={props.classes.flex}>
       <div className={props.classes['flex-center']}>
-        <CircularProgress color="secondary" size={100} />
-        <Typography variant="body1" gutterBottom>
+        <CircularProgress color='secondary' size={100} />
+        <Typography variant='body1' gutterBottom>
           Loading
         </Typography>
       </div>
     </div>
   );
-}
-
-Loading.propTypes = {
-  classes: PropTypes.object
 };
 
 export default withStyles(styles)(Loading);

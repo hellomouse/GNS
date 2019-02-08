@@ -16,13 +16,13 @@ interface SwitchProps {
  * Switch with Label
  */
 class SwitchLabel extends React.Component<SwitchProps> {
-  static propTypes = {
+  public static propTypes = {
     id: PropTypes.string.isRequired,
     label: PropTypes.string.isRequired,
     checked: PropTypes.bool,
     onChange: PropTypes.func
   };
-  state = {
+  public state = {
     checked: this.props.checked !== undefined ? this.props.checked : false
   };
 
@@ -31,14 +31,14 @@ class SwitchLabel extends React.Component<SwitchProps> {
    * @return {function(Event):void}
    */
   // tslint:disable-next-line:max-line-length
-  handleChange = (name: string): React.ChangeEventHandler<HTMLInputElement> => (event: React.ChangeEvent<HTMLInputElement>) => {
+  public handleChange = (name: string): React.ChangeEventHandler<HTMLInputElement> => (event: React.ChangeEvent<HTMLInputElement>) => {
     return this.setState({ [name]: event.target.checked });
   }
 
   /**
    * @return {React.ReactElement}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     return (
       <FormControlLabel
         control={

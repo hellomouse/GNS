@@ -5,10 +5,9 @@ import { devToolsEnhancer } from 'redux-devtools-extension';
 import { apiGetRepos, apiGetRepoSettings } from './api';
 import { Config } from '../config';
 
-// tslint:disable-next-line:max-line-length
-/** @typedef {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} passedStore */
-// tslint:disable-next-line:max-line-length
-export type PassedStore = Redux.Store<{repos: Array<string>, gotRepos: boolean, repoSettings: Config['repos']}>;
+// tslint:disable:max-line-length
+/** @typedef {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} PassedStore */
+export type PassedStore = Redux.Store<{repos: string[], gotRepos: boolean, repoSettings: Config['repos']}>;
 interface DefaultState {
   repos: string[];
   gotRepos: boolean;
@@ -22,12 +21,12 @@ const defaultState: DefaultState = {
   gotRepoSettings: false
 };
 
-const store = createStore<DefaultState, any, any, any>((state: any, action: Redux.AnyAction) => {
+const store: Redux.Store<DefaultState> = createStore<DefaultState, any, any, any>((state: any, action: Redux.AnyAction) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
   } else if (action.type === 'setRepoSettings') {
     // tslint:disable-next-line:max-line-length
-    return { ...state, repoSettings: { ...state!.repoSettings, [action.repo!]: action.settings }, gotRepoSettings: true };
+    return { ...state, repoSettings: { ...state.repoSettings, [action.repo!]: action.settings }, gotRepoSettings: true };
   }
 
   return state;

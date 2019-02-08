@@ -38,7 +38,7 @@ class SimpleAppBar extends React.Component<Props> {
   /** Renders the component
    * @return {React.ReactElement}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     return (
       <AppBar position='static' color='default'>
         <Toolbar>

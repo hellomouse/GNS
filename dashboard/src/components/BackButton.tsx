@@ -11,11 +11,14 @@ import ArrowBack from '@material-ui/icons/ArrowBack';
 
 /** Custom Back button component */
 class BackButton extends React.Component<RouteComponentProps> {
-  onClick = () => { this.props.history.goBack(); };
+  public onClick: React.MouseEventHandler<HTMLButtonElement> = event => {
+    event.preventDefault();
+    this.props.history.goBack();
+  }
   /**
    * @return {React.ReactElement}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     return (
       <Button variant='extendedFab' color='primary' className='back-btn' onClick={ this.onClick }>
         <ArrowBack/> Back

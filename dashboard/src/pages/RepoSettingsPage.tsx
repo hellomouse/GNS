@@ -39,7 +39,7 @@ class RepoSettingsPage extends React.Component<Props> {
   /**
    * @param {Event} event
    */
-  onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  public onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // Placeholder funtion
   }
@@ -47,7 +47,7 @@ class RepoSettingsPage extends React.Component<Props> {
   /** Renders the component
    * @return {React.ReactNode}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     if (this.props.gotRepoSettings) {
       return (
         <React.Fragment>
@@ -85,7 +85,7 @@ class RepoSettingsPage extends React.Component<Props> {
     );
   }
 
-  async componentDidMount() {
+  public async componentDidMount() {
     await storeGetRepoSettings(store, `${this.props.match.params.rUser}/${this.props.match.params.rName}`);
   }
 }
@@ -99,10 +99,10 @@ const mapStateToProps = (state: {
   gotRepos: boolean;
   gotRepoSettings: boolean
   repoSettings: {
-      [key: string]: {
-          [key: string]: any;
-          enabled?: boolean | undefined;
-      } | undefined;
+    [key: string]: {
+      [key: string]: any;
+      enabled?: boolean | undefined;
+    } | undefined;
   };
 }) => {
   return {
