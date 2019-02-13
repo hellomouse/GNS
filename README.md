@@ -1,8 +1,8 @@
-# gns <img src="assets/logo.svg" width="120">
+# gns <img src="assets/logo.svg" width="120" alt="GNS logo">
 
 [![Greenkeeper badge](https://badges.greenkeeper.io/hellomouse/GNS.svg)](https://greenkeeper.io/)
 
-> A GitHub App built with [Probot](https://github.com/probot/probot) that A Probot app
+> A GitHub App built with [Probot](https://github.com/probot/probot) that delivers notifications from GitHub to IRC
 
 ## Setup
 
@@ -22,4 +22,4 @@ For more, check out the [Contributing Guide](CONTRIBUTING.md).
 
 ## License
 
-[MIT](LICENSE) © 2018 Hellomouse LTD, wolfy1339 <webmaster@wolfy1339.com>
+[MIT](LICENSE) &copy; 2018 Hellomouse LTD, wolfy1339 <webmaster@wolfy1339.com>
