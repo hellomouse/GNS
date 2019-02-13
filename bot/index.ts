@@ -4,7 +4,7 @@ import IRC = require('./irc');
 import web = require('./web');
 import probot = require('probot'); // eslint-disable-line no-unused-vars
 import PouchDB = require('pouchdb');
-import { Config } from './config';
+import { Config, ConfigDefault } from './config';
 
 const colors: { [key: string]: string } = {
   // Issues and Pull Requests
@@ -30,7 +30,7 @@ Object.defineProperty(Array.prototype, 'empty', {
 });
 
 const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
-
+// tslint:disable-next-line:ter-newline-after-var
 let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
 
 /**
@@ -110,6 +110,7 @@ export = async (app: probot.Application) => {
       return `https://git.io/${req}`;
     } catch (e) {
       const err: Error = e;
+
       app.log.error(`Shorten url failed for ${url}: ${err.message}`);
       return '';
     }
@@ -147,7 +148,7 @@ export = async (app: probot.Application) => {
       await irc[i].init();
     }
   }
-  await web(app);
+  web(app);
 
   // App events
 
@@ -156,8 +157,9 @@ export = async (app: probot.Application) => {
       issue = payload.issue!,
       repository = payload.repository!,
       att = await attFormat(payload.repository!.full_name!, 'issue'),
+      { action } = payload,
       issueNumber = issue.number,
-      color = colors[action], // opened: Green, reopened: Orange, closed: Red
+      color = colors[action!], // opened: Green, reopened: Orange, closed: Red
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       fullname = repository.full_name,
       org = repository.owner.login,
@@ -304,10 +306,11 @@ export = async (app: probot.Application) => {
       att = await attFormat(payload.repository!.full_name!, 'push'),
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       numC = payload.commits!.length,
-      ref = fmt_branch(payload.ref.split('/')[2]),
-      org = payload.repository!.owner.login,
-      distinct_commits = payload.commits!.filter(x => x.distinct),
       [, ref_type, ...rest] = payload.ref.split('/'),
+      ref_name = rest.join('/'),
+      ref = fmt_branch(ref_name),
+      org = payload.repository.owner.login,
+      distinct_commits = payload.commits.filter(x => x.distinct),
       base_ref_name = '',
       msg = [`${att}\x0F | \x0315${user}\x0F`],
       pushType = payload.forced ? 'force-pushed' : 'pushed',
@@ -317,26 +320,24 @@ export = async (app: probot.Application) => {
       isM = (payload.commits!.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
       url = await shortenUrl(payload.compare);
 
-    const ref_name = rest.join('/');
-
-    if (payload.base_ref) base_ref_name = payload.base_ref.split('/')[2];
+    if (payload.base_ref) base_ref_name = payload.base_ref.split('/').slice(2).join('/');
 
     if (payload.created && config.detailedDeletesAndCreates) {
       if (ref_type === 'tag') {
         msg.push(`tagged ${fmt_tag(ref_name)} at ${
           payload.base_ref ? fmt_branch(base_ref_name) : fmt_hash(payload.after)}`);
       } else {
-        msg.push(`created ${fmt_branch(ref_name)}`);
+        msg.push(`created ${ref}`);
 
         if (payload.base_ref) {
-          msg.push(`from ${fmt_branch(base_ref_name)}`);
+          msg.push(`from ${ref}`);
         } else if (distinct_commits.empty) {
           msg.push(`at ${fmt_hash(payload.after.substring(0, 7))}`);
         }
         msg.push(`(+\x02${distinct_commits.length}\x0F new commit${distinct_commits.length !== 1 ? 's' : ''})`);
       }
     } else if (payload.deleted && config!.detailedDeletesAndCreates) {
-      msg.push(`\x0304deleted\x0F ${fmt_branch(ref_name)} at ${fmt_hash(payload.before.substring(0, 7))}`);
+      msg.push(`\x0304deleted\x0F ${ref} at ${fmt_hash(payload.before.substring(0, 7))}`);
     } else if (numC !== 0 && distinct_commits.empty) {
       if (payload.base_ref) {
         msg.push(`merged ${fmt_branch(base_ref_name)} into ${ref}:`);
@@ -347,7 +348,7 @@ export = async (app: probot.Application) => {
         msg.push(`fast-forwarded ${ref} from ${before_sha} to ${after_sha}:`);
       }
     } else {
-      if (payload.deleted || payload.create) return; // Handle these in their respective events
+      if (payload.deleted || payload.created) return; // Handle these in their respective events
       if (numC === 0 && payload.forced) {
         let before_sha = fmt_hash(payload.before.substring(0, 7)),
           after_sha = fmt_hash(payload.after.substring(0, 7));
@@ -452,5 +453,53 @@ export = async (app: probot.Application) => {
     Object.keys(irc).forEach(org => {
       irc[org].privmsg(`${att} | ${alertText} - ${extReference}`);
     });
+  });
+
+  app.on('installation', async context => {
+    let payload = context.payload,
+      action = payload.action!,
+      sender = payload.sender!.login,
+      id = payload.installation!.id,
+      org = payload.installation!.account.login,
+      att = await attFormat(org, `installation-${action}`);
+
+    if (action === 'created') {
+      irc[org] = new IRC(app, org);
+      irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
+      const repos: {[key: string]: {enabled: boolean}} = {};
+
+      for (let repo of payload.repositories!) {
+        repos[repo.full_name] = {
+          enabled: true
+        };
+      }
+      await db.put({ _id: org, installation_id: id, repos, installee: sender, ...ConfigDefault });
+    } else {
+      await db.remove(await db.get(org));
+    }
+  });
+
+  app.on('installation_repositories', async context => {
+    let payload = context.payload,
+      action = payload.action!,
+      sender = payload.sender!.login,
+      id = payload.installation!.id,
+      org = payload.installation!.account.login,
+      att = await attFormat(org, `installation-repositories-${action}`);
+
+    irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
+    const orgDB = await db.get(org);
+
+    if (action === 'added') {
+      for (let repo of payload.repositories_added!) {
+        orgDB.repos[repo.full_name] = { enabled: true };
+      }
+      db.put(orgDB);
+    } else {
+      for (let repo of payload.repositories_removed!) {
+        delete orgDB.repos[repo.full_name];
+      }
+      db.put(orgDB);
+    }
   });
 };

@@ -21,6 +21,30 @@ declare module '@octokit/webhooks' {
   export interface WebhookPayloadWithRepository {
     [key: string]: any
     ref: string
+    repositories?: Array<{
+      id: number
+      node_id: string
+      name: string
+      full_name: string
+      html_url: string
+      private: boolean
+    }>
+    repositories_added?: Array<{
+      id: number
+      node_id: string
+      name: string
+      full_name: string
+      html_url: string
+      private: boolean
+    }>
+    repositories_removed?: Array<{
+      id: number
+      node_id: string
+      name: string
+      full_name: string
+      html_url: string
+      private: boolean
+    }>
     repository?: PayloadRepository
     issue?: {
       [key: string]: any
@@ -42,6 +66,10 @@ declare module '@octokit/webhooks' {
     action?: string
     installation?: {
       id: number
+      account: {
+        [key: string]: any
+        login: string
+      }
       [key: string]: any
     }
     commits?: Array<{
