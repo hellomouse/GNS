@@ -12,11 +12,11 @@ install:
   - cd ..
 before_script: 
   - greenkeeper-lockfile-update
-  - npm run build
+  #- npm run build
   - cd dashboard && ./node_modukes/.bin/tsc -p tsconfig.json
   - cd ..
 script:
-  - npm test
+  #- npm test
   - cd dashboard && npm test
 after_script: greenkeeper-lockfile-upload
 notifications:
