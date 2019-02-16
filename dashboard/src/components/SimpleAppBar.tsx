@@ -1,3 +1,4 @@
+// @ts-check
 /* eslint-disable new-cap */
 import React from 'react';
 
@@ -26,26 +27,22 @@ const styles = {
   }
 };
 
+interface Props {
+  classes: Record<'root' | 'grow' | 'login-button' | 'logo', string>;
+}
+
 /**
  * App bar component
  */
-class SimpleAppBar extends React.Component {
-  static propTypes = {
-    children: PropTypes.oneOfType([
-      PropTypes.node,
-      PropTypes.arrayOf(PropTypes.node)
-    ]),
-    classes: PropTypes.object
-  };
-
+class SimpleAppBar extends React.Component<Props> {
   /** Renders the component
    * @return {React.ReactElement}
    */
-  render() {
+  public render(): React.ReactNode {
     return (
-      <AppBar position="static" color="default">
+      <AppBar position='static' color='default'>
         <Toolbar>
-          <div color="inherit" className={this.props.classes.grow}>
+          <div color='inherit' className={this.props.classes.grow}>
             <Logo className={this.props.classes.logo} />
           </div>
           {this.props.children}

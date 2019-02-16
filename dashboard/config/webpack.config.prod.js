@@ -119,7 +119,8 @@ module.exports = {
     devtoolModuleFilenameTemplate: info =>
       path
           .relative(paths.appSrc, info.absoluteResourcePath)
-          .replace(/\\/g, '/')
+          .replace(/\\/g, '/'),
+    crossOriginLoading: 'anonymous'
   },
   optimization: {
     minimizer: [
@@ -233,7 +234,7 @@ module.exports = {
 
       // First, run the linter.
       // It's important to do this before Babel processes the JS.
-      {
+      /* {
         test: /\.(js|jsx)$/,
         enforce: 'pre',
         use: [
@@ -247,7 +248,7 @@ module.exports = {
           }
         ],
         include: paths.appSrc
-      },
+      },*/
       {
         // `mjs` support is still in its infancy in the ecosystem, so we don't
         // support it.

@@ -1,7 +1,7 @@
 import React from 'react';
 
-function LoginPage() {
+const LoginPage: React.FunctionComponent = () => {
   return (<div>Login not implemented</div>);
-}
+};
 
 export default LoginPage;
