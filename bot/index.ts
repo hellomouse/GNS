@@ -402,20 +402,10 @@ export = async (app: probot.Application) => {
       name = payload.repository!.full_name,
       html_url = fmt_url(payload.repository!.html_url!),
       createText = payload.repository!.forked ? 'forked' : payload.action,
-      att = await attFormat(payload.repository!.owner.login, 'repository-create'),
+      att = await attFormat(payload.repository!.owner.login, `repository-${payload.action!.slice(0, -1)}`),
       org = payload.repository!.owner.login;
 
-    irc[org].privmsg(`${att} | ${user} \x0303${createText}\x0F repository ${name} - ${html_url}`);
-  });
-
-  app.on('repository.deleted', async context => {
-    let payload = context.payload,
-      user = fmt_name(await antiHighlight(payload.sender!.login)),
-      name = payload.repository!.full_name,
-      owner: string = payload.repository!.owner.login,
-      att = await attFormat(owner, 'repository-delete');
-
-    irc[owner].privmsg(`${att} | ${user} \x0304deleted\x0F repository ${name}`);
+    irc[org].privmsg(`${att} | ${user} ${colors[payload.action!]}${createText}\x0F repository ${name} - ${html_url}`);
   });
 
   app.on('delete', async context => {
