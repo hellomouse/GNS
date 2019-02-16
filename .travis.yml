@@ -9,12 +9,12 @@ before_install:
 install:
   - npm install
   - cd dashboard && npm install
-  - npm i typescript
+  - npm i -g typescript
   - cd ..
 before_script: 
   - greenkeeper-lockfile-update
   #- npm run build
-  - cd dashboard && ./node_modules/.bin/tsc -p tsconfig.json
+  - cd dashboard && tsc -p tsconfig.json
   - cd ..
 script:
   #- npm test
