@@ -25,4 +25,6 @@ function fromDir(startPath, filter) {
   }
 }
 
+process.chdir('..');
+
 fromDir('./src', /.\.css$/);
