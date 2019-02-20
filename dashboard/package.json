@@ -83,15 +83,15 @@
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
+      "lib/src/**/*.{js,jsx}"
     ],
     "resolver": "jest-pnp-resolver",
     "setupFiles": [
       "react-app-polyfill/jsdom"
     ],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx}",
-      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx}"
+      "<rootDir>/lib/src/**/__tests__/**/*.{js,jsx}",
+      "<rootDir>/lib/src/**/?(*.)(spec|test).{js,jsx}"
     ],
     "testEnvironment": "jsdom",
     "testURL": "http://localhost",
