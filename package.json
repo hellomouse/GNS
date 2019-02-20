@@ -30,7 +30,7 @@
     "express": "~4.16.4",
     "express-session": "~1.15.6",
     "irc-stream-parser": "~0.1.0",
-    "jsonwebtoken": "~8.4.0",
+    "jsonwebtoken": "~8.5.0",
     "pouchdb": "~7.0.0",
     "probot": "~7.5.0",
     "querystring": "~0.2.0",
