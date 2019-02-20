@@ -59,14 +59,15 @@
     "workbox-webpack-plugin": "^3.6.3"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.5",
+    "@types/jest-diff": "^20.0.1",
     "@types/material-ui": "^0.21.5",
     "@types/react": "^16.8.2",
     "@types/react-dom": "^16.8.0",
     "@types/react-redux": "^7.0.1",
     "@types/react-router": "^4.4.3",
     "@types/react-router-dom": "^4.3.1",
-    "@types/terser": "^3.8.0",
-    "@types/terser-webpack-plugin": "^1.2.0",
+    "@types/terser-webpack-plugin": "^1.2.1",
     "@types/webpack": "^4.4.24",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
@@ -76,21 +77,21 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "pre-build": "cd lib/src && eslint --fix .",
+    "pre-build": "tsc -p tsconfig.json && cd lib/src && eslint --fix . && cd ../.. && node scripts/moveCSS.js",
     "build": "npm run pre-build && node scripts/build.js",
     "test": "node scripts/test.js"
   },
   "jest": {
     "collectCoverageFrom": [
-      "src/**/*.{js,jsx}"
+      "lib/src/**/*.{js,jsx}"
     ],
     "resolver": "jest-pnp-resolver",
     "setupFiles": [
       "react-app-polyfill/jsdom"
     ],
     "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.{js,jsx}",
-      "<rootDir>/src/**/?(*.)(spec|test).{js,jsx}"
+      "<rootDir>/lib/src/**/__tests__/**/*.{js,jsx}",
+      "<rootDir>/lib/src/**/?(*.)(spec|test).{js,jsx}"
     ],
     "testEnvironment": "jsdom",
     "testURL": "http://localhost",
