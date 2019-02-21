@@ -55,7 +55,7 @@ class EventPicker extends React.Component<EventPickerProps, EventPickerState> {
 
     return (
       <FormGroup>
-        <Typography variant='subheading'>Events</Typography>
+        <Typography variant='subtitle1'>Events</Typography>
         <SwitchLabel label='Enable all GitHub defaults' id='github-defaults'
           onChange={this.enableAllGitHub}
           checked={this.state.checkedGitHub} />
