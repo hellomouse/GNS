@@ -16,7 +16,6 @@ before_script:
   - greenkeeper-lockfile-update
   #- npm run build
   - cd dashboard
-  - npm run pre-build
   #- cd ..
 script:
   #- npm test
