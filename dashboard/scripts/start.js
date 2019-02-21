@@ -12,9 +12,8 @@ process.on('unhandledRejection', err => {
 // Ensure environment variables are read.
 require('../config/env');
 
-
 const fs = require('fs');
-const chalk = require('chalk');
+const chalk = require('react-dev-utils/chalk');
 const webpack = require('webpack');
 const WebpackDevServer = require('webpack-dev-server');
 const clearConsole = require('react-dev-utils/clearConsole');
@@ -27,7 +26,7 @@ const {
 } = require('react-dev-utils/WebpackDevServerUtils');
 const openBrowser = require('react-dev-utils/openBrowser');
 const paths = require('../config/paths');
-const config = require('../config/webpack.config.dev');
+const configFactory = require('../config/webpack.config');
 const createDevServerConfig = require('../config/webpackDevServer.config');
 
 const useYarn = fs.existsSync(paths.yarnLockFile);
@@ -74,6 +73,7 @@ checkBrowsers(paths.appPath, isInteractive)
       // We have not found a port.
         return;
       }
+      const config = configFactory('development');
       const protocol = process.env.HTTPS === 'true' ? 'https' : 'http';
       const appName = require(paths.appPackageJson).name;
       const urls = prepareUrls(protocol, HOST, port);
