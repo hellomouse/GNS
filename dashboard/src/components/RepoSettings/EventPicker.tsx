@@ -24,7 +24,7 @@ interface EventPickerProps {
 * EventPicker component
 */
 class EventPicker extends React.Component<EventPickerProps, EventPickerState> {
-  static propTypes = {
+  public static propTypes = {
     state: PropTypes.object
   };
 
@@ -32,14 +32,14 @@ class EventPicker extends React.Component<EventPickerProps, EventPickerState> {
    * Function to enable all default GitHub events
    * @param {Event} event
    */
-  enableAllGitHub: React.ChangeEventHandler<HTMLInputElement> = event => {
+  private enableAllGitHub: React.ChangeEventHandler<HTMLInputElement> = event => {
     this.setState({
       checkedGitHub: event.target.checked,
       checkedEvent: event.target.checked
     });
   }
 
-  componentWillMount() {
+  public componentWillMount() {
     this.setState({
       config: this.props.state,
       checkedGitHub: false,
@@ -50,7 +50,7 @@ class EventPicker extends React.Component<EventPickerProps, EventPickerState> {
   /**
    * @return {React.ReactElement}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     const repo = Object.keys(this.props.state)[0];
 
     return (

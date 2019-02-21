@@ -39,7 +39,7 @@ class App extends React.Component {
   /** Renders the component
    * @return {React.ReactNode}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     return (
       <React.Fragment>
         <SimpleAppBar classes={{ grow: 'grow' }}>
