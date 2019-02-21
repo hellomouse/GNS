@@ -405,7 +405,8 @@ export = async (app: probot.Application) => {
       att = await attFormat(payload.repository!.owner.login, `repository-${payload.action!.slice(0, -1)}`),
       org = payload.repository!.owner.login;
 
-    irc[org].privmsg(`${att} | ${user} ${colors[payload.action!]}${createText}\x0F repository ${name} - ${html_url}`);
+    // tslint:disable-next-line:max-line-length
+    irc[org].privmsg(`${att} | ${user} ${colors[payload.action!]}${createText}\x0F repository ${name}${payload.action !== 'deleted' ? ` - ${html_url}` : ''}`);
   });
 
   app.on('delete', async context => {
@@ -416,10 +417,9 @@ export = async (app: probot.Application) => {
     if (payload.ref_type === 'tag' || config.detailedDeletesAndCreates) return; // We're not handling tags yet
     let user = fmt_name(await antiHighlight(payload.sender!.login)),
       ref = fmt_branch(payload.ref),
-      html_url = fmt_url(payload.repository!.html_url!),
       att = await attFormat(payload.repository!.full_name!, 'branch-delete');
 
-    irc[owner].privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref} - ${html_url}`);
+    irc[owner].privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref}`);
   });
 
   app.on('repository_vulnerability_alert', async context => {
