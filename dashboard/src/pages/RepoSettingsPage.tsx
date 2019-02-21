@@ -23,6 +23,9 @@ import store, { storeGetRepoSettings, PassedStore } from '../store/store';
 const theme = createMuiTheme({
   palette: {
     primary: green
+  },
+  typography: {
+    useNextVariants: true
   }
 });
 
@@ -53,7 +56,7 @@ class RepoSettingsPage extends React.Component<Props> {
         <React.Fragment>
           <BackButton/>
           <Paper className='app-paper'>
-            <Typography variant='title'>
+            <Typography variant='h6'>
             Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
             </Typography>
 
