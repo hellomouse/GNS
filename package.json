@@ -36,7 +36,7 @@
     "querystring": "~0.2.0",
     "randomstring": "~1.1.5",
     "request": "~2.88.0",
-    "request-promise-native": "~1.0.5"
+    "request-promise-native": "~1.0.7"
   },
   "devDependencies": {
     "@hellomouse/eslint-config-wolfy1339": "~1.1.0",
@@ -53,12 +53,12 @@
     "@types/request-promise-native": "~1.0.15",
     "eslint": "~5.14.1",
     "eslint-plugin-react": "~7.12.3",
-    "jest": "~23.6.0",
+    "jest": "~24.1.0",
     "nodemon": "~1.18.9",
     "smee-client": "~1.0.2",
     "tslint": "~5.12.1",
     "tslint-eslint-rules": "~5.4.0",
-    "typescript": "~3.2.2"
+    "typescript": "^3.3.3333"
   },
   "engines": {
     "node": ">= 8.3.0"
