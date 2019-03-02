@@ -51,7 +51,7 @@
     "@types/query-string": "~6.1.1",
     "@types/randomstring": "~1.1.6",
     "@types/request-promise-native": "~1.0.15",
-    "eslint": "~5.14.1",
+    "eslint": "~5.15.0",
     "eslint-plugin-react": "~7.12.3",
     "jest": "~24.1.0",
     "nodemon": "~1.18.9",
