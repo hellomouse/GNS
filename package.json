@@ -48,7 +48,7 @@
     "@types/lru-cache": "~5.1.0",
     "@types/node": "~11.10.4",
     "@types/pouchdb": "~6.3.2",
-    "@types/query-string": "~6.1.1",
+    "@types/query-string": "~6.3.0",
     "@types/randomstring": "~1.1.6",
     "@types/request-promise-native": "~1.0.15",
     "eslint": "~5.15.0",
