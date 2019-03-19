@@ -5,6 +5,7 @@ import web = require('./web');
 import probot = require('probot'); // eslint-disable-line no-unused-vars
 import PouchDB = require('pouchdb');
 import { Config, ConfigDefault } from './config';
+import Webhhooks = require('@octokit/webhooks');
 
 const colors: { [key: string]: string } = {
   // Issues and Pull Requests
@@ -156,7 +157,7 @@ export = async (app: probot.Application) => {
   // App events
 
   app.on(['issues.opened', 'issues.closed', 'issues.reopened'], async context => {
-    let payload = context.payload,
+    let payload = context.payload as Webhhooks.WebhookPayloadIssues,
       issue = payload.issue!,
       repository = payload.repository!,
       att = await attFormat(payload.repository!.full_name!, 'issue'),
@@ -172,10 +173,10 @@ export = async (app: probot.Application) => {
   });
 
   app.on(['issue_comment.created', 'issue_comment.edited', 'issue_comment.deleted'], async context => {
-    let payload = context.payload,
-      repository = payload.repository!,
-      { title, number } = payload.issue!,
-      att = await attFormat(repository.full_name!, 'issue.comment'),
+    let payload = context.payload as Webhhooks.WebhookPayloadIssueComment,
+      repository = payload.repository,
+      { title, number } = payload.issue,
+      att = await attFormat(repository.full_name, 'issue.comment'),
       action: string = payload.action!,
       color: string = colors[action], // Created: Green, Edited: Orange, Deleted: Red
       user = fmt_name(await antiHighlight(payload.sender!.login)),
@@ -191,7 +192,8 @@ export = async (app: probot.Application) => {
   app.on(['issues.labeled', 'issues.unlabeled', 'pull_request.labeled', 'pull_request.unlabeled'], async context => {
     // tslint:disable-next-line:max-line-length
     let name = context.name === 'issues' ? 'issue' : 'pull_request';
-    let { action, repository, label: Label, sender, [name]: { number, title, html_url } } = context.payload,
+    // tslint:disable-next-line:max-line-length
+    let { action, repository, label: Label, sender, [name]: { number, title, html_url } } = context.payload as (Webhhooks.WebhookPayloadIssues | Webhhooks.WebhookPayloadPullRequest) & {[key: string]: any},
       att = await attFormat(repository!.full_name!, `${name}.${action}`),
       user = fmt_name(await antiHighlight(sender!.login)),
       color = `\x02${colors[action!]}`,
@@ -209,16 +211,17 @@ export = async (app: probot.Application) => {
       async context => {
         let name = context.name === 'issues' ? 'issue' : 'pull_request';
         let { [name]: { number: issueNumber, html_url },
-          action, repository, assignee } = context.payload,
-          assigneeLogin = context.payload.sender!.login,
-          att = await attFormat(repository!.full_name!, `${name}.${action}`),
+          // tslint:disable-next-line:max-line-length
+          action, repository, assignee } = context.payload as (Webhhooks.WebhookPayloadIssues | Webhhooks.WebhookPayloadPullRequest) & {[key: string]: any},
+          assigneeLogin = context.payload.sender.login,
+          att = await attFormat(repository.full_name, `${name}.${action}`),
           user = fmt_name(await antiHighlight(assignee.login)),
           sender = fmt_name(await antiHighlight(assigneeLogin as string)),
           fullname = repository!.full_name,
           color = action === 'assigned' ? '\x0303' : '\x0304', // Color for assigned message
           event = name.replace('_', ' '),
           assignedText,
-          org = repository!.owner.login;
+          org = repository.owner.login;
 
         if (user === sender) {
           assignedText = `${user} ${color}${action}\x0F themselves `;
@@ -232,13 +235,13 @@ export = async (app: probot.Application) => {
       });
 
   app.on(['pull_request.opened', 'pull_request.closed', 'pull_request.reopened'], async context => {
-    let payload = context.payload,
-      pull_request = payload.pull_request!,
-      att = await attFormat(payload.repository!.full_name!, 'pull_request'),
-      issueNumber = payload.pull_request!.number,
+    let payload = context.payload as Webhhooks.WebhookPayloadPullRequest,
+      pull_request = payload.pull_request,
+      att = await attFormat(payload.repository.full_name, 'pull_request'),
+      issueNumber = payload.pull_request.number,
       action = payload.action === 'closed' && pull_request.merged ? 'merged' : payload.action,
-      user = fmt_name(await antiHighlight(payload.sender!.login)),
-      fullname = payload.repository!.full_name,
+      user = fmt_name(await antiHighlight(payload.sender.login)),
+      fullname = payload.repository.full_name,
       merge = '',
       org = payload.repository!.owner.login,
       url = await shortenUrl(payload.pull_request!.html_url!);
@@ -256,13 +259,13 @@ export = async (app: probot.Application) => {
   });
 
   app.on('pull_request_review', async context => {
-    let payload = context.payload,
-      repository = payload.repository!,
-      att = await attFormat(repository!.full_name!, 'pull_request_review'),
-      issueNumber = payload.pull_request!.number,
+    let payload = context.payload as Webhhooks.WebhookPayloadPullRequestReview,
+      repository = payload.repository,
+      att = await attFormat(repository.full_name, 'pull_request_review'),
+      issueNumber = payload.pull_request.number,
       user = fmt_name(await antiHighlight(payload.sender!.login)),
-      fullname = repository.full_name!,
-      state = payload.review!.state.replace('_', ' '),
+      fullname = repository.full_name,
+      state = payload.review.state.replace('_', ' '),
       org = payload.repository!.owner.login,
       url = fmt_url(await shortenUrl(payload.pull_request!.html_url!));
 
@@ -271,15 +274,15 @@ export = async (app: probot.Application) => {
   });
 
   app.on(['pull_request.review_requested', 'pull_request.review_request_removed'], async context => {
-    let payload = context.payload,
-      att = await attFormat(payload.repository!.full_name!, 'pull_request_review'),
-      issueNumber = payload.pull_request!.number,
-      user = fmt_name(await antiHighlight(payload.sender!.login)),
-      fullname = payload.repository!.full_name,
+    let payload = context.payload as Webhhooks.WebhookPayloadPullRequest,
+      att = await attFormat(payload.repository.full_name, 'pull_request_review'),
+      issueNumber = payload.pull_request.number,
+      user = fmt_name(await antiHighlight(payload.sender.login)),
+      fullname = payload.repository.full_name,
       reviewer = fmt_name(await antiHighlight(payload.requested_reviewer !== undefined ?
-        payload.requested_reviewer.login : payload.requested_team.name)),
+        payload.requested_reviewer!.login : payload.requested_team!.name)),
       action = payload.action === 'review_request_removed' ? 'removed a review request' : 'requested a review',
-      org = payload.repository!.owner.login,
+      org = payload.repository.owner.login,
       url = fmt_url(await shortenUrl(payload.pull_request!.html_url!));
 
     irc[org].privmsg(`${att} | ${user} has ${action} from ${reviewer} on Pull Request #${issueNumber}`
@@ -287,17 +290,17 @@ export = async (app: probot.Application) => {
   });
 
   app.on('status', async context => {
-    let payload = context.payload,
-      att = await attFormat(payload.repository!.full_name!, 'status'),
+    let payload = context.payload as Webhhooks.WebhookPayloadStatus,
+      att = await attFormat(payload.repository.full_name, 'status'),
       { state, description, target_url } = payload,
       webhookUrl = target_url ? target_url.split('?')[0] : '',
       color = colors[state], // Success: Green, Pending: Cyan, Failure: Red, Error: Bold + Black
-      org = payload.repository!.owner.login;
+      org = payload.repository.owner.login;
 
     if (payload.state === 'pending') {
-      if (pendingStatus.includes(payload.target_url)) return; // We don't want to send multiple pending messages to a channel - Potential spam
-      pendingStatus.push(payload.target_url); // We'll use target_url as identifier
-    } else if (pendingStatus.includes(payload.target_url)) pendingStatus.pop();
+      if (pendingStatus.includes(target_url!)) return; // We don't want to send multiple pending messages to a channel - Potential spam
+      pendingStatus.push(target_url!); // We'll use target_url as identifier
+    } else if (pendingStatus.includes(target_url!)) pendingStatus.pop();
 
     let url = await shortenUrl(payload.commit.html_url);
 
@@ -305,7 +308,7 @@ export = async (app: probot.Application) => {
   });
 
   app.on('push', async context => {
-    let payload = context.payload,
+    let payload = context.payload as Webhhooks.WebhookPayloadPush,
       att = await attFormat(payload.repository!.full_name!, 'push'),
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       numC = payload.commits!.length,
@@ -319,11 +322,11 @@ export = async (app: probot.Application) => {
       pushType = payload.forced ? 'force-pushed' : 'pushed',
       count = 1,
       repo = `${fmt_repo(payload.repository!.name)}/${ref}`,
-      { config } = await db.get(org),
+      { config } = await db.get<void>(org),
       isM = (payload.commits!.length || 1) === 1 ? 'commit' : 'commits', // Correct grammar for number of commits
       url = await shortenUrl(payload.compare);
 
-    if (payload.base_ref) base_ref_name = payload.base_ref.split('/').slice(2).join('/');
+    if (payload.base_ref) base_ref_name = payload.base_ref!.split('/').slice(2).join('/');
 
     if (payload.created && config.detailedDeletesAndCreates) {
       if (ref_type === 'tag') {
@@ -358,7 +361,7 @@ export = async (app: probot.Application) => {
 
         msg.push(`force-pushed ${ref} from ${before_sha} to ${after_sha}:`);
       } else {
-       msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
+        msg.push(`${pushType} \x02${numC}\x0F ${isM} to ${ref}`);
       }
     }
 
@@ -383,12 +386,12 @@ export = async (app: probot.Application) => {
   });
 
   app.on('create', async context => {
-    let payload = context.payload,
+    let payload = context.payload as Webhhooks.WebhookPayloadCreate,
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       ref = fmt_branch(payload.ref),
       html_url = fmt_url(payload.repository!.html_url!),
       org = payload.repository!.owner.login,
-      { config } = await db.get(org);
+      { config } = await db.get<void>(org);
 
     if (payload.ref_type === 'tag' || config.detailedDeletesAndCreates) return; // We're not handling tags yet
     let att = await attFormat(payload.repository!.full_name!, 'branch-create');
@@ -397,40 +400,42 @@ export = async (app: probot.Application) => {
   });
 
   app.on(['repository.created', 'repository.deleted'], async context => {
-    let payload = context.payload,
+    let payload = context.payload as Webhhooks.WebhookPayloadRepository,
       user = fmt_name(await antiHighlight(payload.sender!.login)),
-      name = payload.repository!.full_name,
-      html_url = fmt_url(payload.repository!.html_url!),
-      createText = payload.repository!.forked ? 'forked' : payload.action,
-      att = await attFormat(payload.repository!.owner.login, `repository-${payload.action!.slice(0, -1)}`),
-      org = payload.repository!.owner.login;
+      name = payload.repository.full_name,
+      html_url = fmt_url(payload.repository.html_url!),
+      createText = payload.repository.fork ? 'forked' : payload.action,
+      att = await attFormat(payload.repository.owner.login, `repository-${payload.action.slice(0, -1)}`),
+      org = payload.repository.owner.login;
 
     // tslint:disable-next-line:max-line-length
     irc[org].privmsg(`${att} | ${user} ${colors[payload.action!]}${createText}\x0F repository ${name}${payload.action !== 'deleted' ? ` - ${html_url}` : ''}`);
   });
 
   app.on('delete', async context => {
-    let payload = context.payload,
-      owner: string = payload.repository!.owner.login,
+    let payload = context.payload as Webhhooks.WebhookPayloadDelete,
+      owner = payload.repository.owner.login,
       { config } = await db.get(owner);
 
     if (payload.ref_type === 'tag' || config.detailedDeletesAndCreates) return; // We're not handling tags yet
-    let user = fmt_name(await antiHighlight(payload.sender!.login)),
+
+    let user = fmt_name(await antiHighlight(payload.sender.login)),
       ref = fmt_branch(payload.ref),
-      att = await attFormat(payload.repository!.full_name!, 'branch-delete');
+      att = await attFormat(payload.repository.full_name, 'branch-delete');
 
     irc[owner].privmsg(`${att} | ${user} \x0304deleted\x0F branch ${ref}`);
   });
 
   app.on('repository_vulnerability_alert', async context => {
-    let payload = context.payload,
+    let payload = context.payload as Webhhooks.WebhookPayloadRepositoryVulnerabilityAlert,
       action = payload.action,
       att = await attFormat('', `repository-vulnerability-${action}`); // We're not given repo or org name
 
     // Alert specific
     let alert = payload.alert,
       // eslint-disable-next-line no-unused-vars
-      { package_name, extReference, affectRange, extID, fixedIn } = alert,
+      // tslint:disable-next-line:max-line-length
+      { affected_package_name: package_name, external_reference: extReference, affected_range: affectRange, external_identifier: extID, fixed_in: fixedIn } = alert,
       alertText = '';
 
     if (payload.action === 'dimiss') {
@@ -449,11 +454,11 @@ export = async (app: probot.Application) => {
   });
 
   app.on('installation', async context => {
-    let payload = context.payload,
-      action = payload.action!,
-      sender = payload.sender!.login,
-      id = payload.installation!.id,
-      org = payload.installation!.account.login,
+    let payload = context.payload as Webhhooks.WebhookPayloadInstallation,
+      action = payload.action,
+      sender = payload.sender.login,
+      id = payload.installation.id,
+      org = payload.installation.account.login,
       att = await attFormat(org, `installation-${action}`);
 
     if (action === 'created') {
@@ -461,7 +466,7 @@ export = async (app: probot.Application) => {
       irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
       const repos: {[key: string]: {enabled: boolean}} = {};
 
-      for (let repo of payload.repositories!) {
+      for (let repo of payload.repositories.repositories_added) {
         repos[repo.full_name] = {
           enabled: true
         };
@@ -473,18 +478,18 @@ export = async (app: probot.Application) => {
   });
 
   app.on('installation_repositories', async context => {
-    let payload = context.payload,
-      action = payload.action!,
-      sender = payload.sender!.login,
-      id = payload.installation!.id,
-      org = payload.installation!.account.login,
+    let payload = context.payload as Webhhooks.WebhookPayloadInstallationRepositories,
+      action = payload.action,
+      sender = payload.sender.login,
+      id = payload.installation.id,
+      org = payload.installation.account.login,
       att = await attFormat(org, `installation-repositories-${action}`);
 
     irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
     const orgDB = await db.get(org);
 
     if (action === 'added') {
-      for (let repo of payload.repositories_added!) {
+      for (let repo of payload.repositories_added) {
         orgDB.repos[repo.full_name] = { enabled: true };
       }
       db.put(orgDB);
