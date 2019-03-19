@@ -6,6 +6,7 @@
   ],
   "jsRules": {},
   "rules": {
+    "interface-name": false,
     "object-literal-sort-keys": false,
     "max-line-length": [true, {
       "limit": 120,
@@ -35,11 +36,7 @@
       "as-needed"
     ],
     "one-variable-per-eclaration": false,
-    "variable-name": [
-      true,
-      "allow-leading-underscore",
-      "allow-pascal-case"
-    ],
+    "variable-name": false,
     "ter-max-len": [
       "error",
       {
@@ -129,7 +126,8 @@
     "ter-no-tabs": true,
     "no-trailing-whitespace": [true, "ignore-template-strings"],
     "comment-format": [true, "check-space"],
-    "no-var-keyword": true
+    "no-var-keyword": true,
+    "max-classes-per-file": false
   },
   "rulesDirectory": []
 }

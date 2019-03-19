@@ -11,7 +11,7 @@ export default class IndexPage extends React.Component {
   /** Renders the component
    * @return {React.ReactNode}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     return (
       <Paper className='app-paper'>
         <Typography variant='h6'>Repositories</Typography>

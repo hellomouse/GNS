@@ -131,7 +131,8 @@
     "comment-format": [true, "check-space"],
     "no-var-keyword": true,
     "interface-name": false,
-    "no-console": false
+    "no-console": false,
+    "member-ordering": false
   },
   "rulesDirectory": []
 }
