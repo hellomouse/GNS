@@ -36,11 +36,6 @@
       "as-needed"
     ],
     "one-variable-per-eclaration": false,
-    /*"variable-name": [
-      true,
-      "allow-leading-underscore",
-      "allow-pascal-case"
-    ],*/
     "variable-name": false,
     "ter-max-len": [
       "error",
