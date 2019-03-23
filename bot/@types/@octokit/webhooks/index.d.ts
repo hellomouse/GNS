@@ -1682,6 +1682,7 @@ declare module "@octokit/webhooks" {
       base: WebhookPayloadPullRequestPullRequestBase;
       _links: WebhookPayloadPullRequestPullRequestLinks;
       author_association: string;
+      draft: boolean;
       merged: boolean;
       mergeable: boolean;
       rebaseable: boolean;

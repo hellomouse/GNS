@@ -244,7 +244,8 @@ export = async (app: probot.Application) => {
       fullname = payload.repository.full_name,
       merge = '',
       org = payload.repository!.owner.login,
-      url = await shortenUrl(payload.pull_request!.html_url!);
+      url = await shortenUrl(payload.pull_request!.html_url!),
+      pullRequestType = pull_request.draft ? 'Draft Pull Request' : 'Pull Request';
 
     if (action === 'opened' || action === 'reopened') {
       if (pull_request.base.repo.full_name !== pull_request.head.repo.full_name) {
@@ -254,7 +255,7 @@ export = async (app: probot.Application) => {
       }
     }
 
-    irc[org].privmsg(`${att} | Pull Request #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
+    irc[org].privmsg(`${att} | ${pullRequestType} #${issueNumber} ${action} by ${user} on ${fullname} ${merge}`
             + `\x02\x0303+${pull_request.additions} \x0304-${pull_request.deletions}\x0F - ${url}`);
   });
 
