@@ -245,7 +245,7 @@ export = async (app: probot.Application) => {
       merge = '',
       org = payload.repository!.owner.login,
       url = await shortenUrl(payload.pull_request!.html_url!),
-      pullRequestType = 'Draft Pull Request' ? pull_request.draft : 'Pull Request';
+      pullRequestType = pull_request.draft ? 'Draft Pull Request' : 'Pull Request';
 
     if (action === 'opened' || action === 'reopened') {
       if (pull_request.base.repo.full_name !== pull_request.head.repo.full_name) {
