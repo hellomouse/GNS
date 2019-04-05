@@ -28,7 +28,6 @@ const colors: { [key: string]: string } = {
 Object.defineProperties(Array.prototype, {
   isEmpty: {
     enumerable: true,
-    writable: false,
     get() { return this.length === 0; },
   }
 });
