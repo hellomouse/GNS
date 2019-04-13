@@ -404,7 +404,7 @@ export = async (app: probot.Application) => {
       user = fmt_name(await antiHighlight(payload.sender!.login)),
       name = payload.repository.full_name,
       html_url = fmt_url(payload.repository.html_url!),
-      createText = payload.repository.fork ? 'forked' : payload.action,
+      createText = payload.action !== 'deleted' && payload.repository.fork ? 'forked' : payload.action,
       att = await attFormat(payload.repository.owner.login, `repository-${payload.action.slice(0, -1)}`),
       org = payload.repository.owner.login;
 
