@@ -16,7 +16,7 @@
     "bfj": "^6.1.1",
     "case-sensitive-paths-webpack-plugin": "^2.2.0",
     "css-loader": "^2.1.0",
-    "dotenv": "^7.0.0",
+    "dotenv": "^8.0.0",
     "dotenv-expand": "^5.0.0",
     "eslint": "^5.16.0",
     "eslint-config-react-app": "^4.0.0",
