@@ -72,7 +72,7 @@
     "babel-jest": "^24.8.0",
     "hoist-non-react-statics": "^3.3.0",
     "jest": "^24.3.0",
-    "jest-pnp-resolver": "^1.2.0",
+    "jest-pnp-resolver": "^1.2.1",
     "jest-resolve": "^24.3.0",
     "jest-watch-typeahead": "^0.3.0",
     "typescript": "^3.5.1",
