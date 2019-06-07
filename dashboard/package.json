@@ -76,7 +76,7 @@
     "jest-resolve": "^24.8.0",
     "jest-watch-typeahead": "^0.3.1",
     "typescript": "^3.5.1",
-    "webpack-dev-server": "^3.6.0"
+    "webpack-dev-server": "^3.7.1"
   },
   "scripts": {
     "start": "node scripts/start.js",
