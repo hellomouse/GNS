@@ -39,7 +39,7 @@
     "request-promise-native": "~1.0.7"
   },
   "devDependencies": {
-    "@hellomouse/eslint-config-wolfy1339": "~1.1.0",
+    "@hellomouse/eslint-config-wolfy1339": "~1.2.0",
     "@types/bunyan": "~1.8.5",
     "@types/express": "~4.17.0",
     "@types/express-session": "~1.15.11",
