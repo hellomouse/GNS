@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@hellomouse/session-pouchdb-store": "~0.3.2",
-    "@octokit/rest": "~16.27.3",
+    "@octokit/rest": "~16.28.0",
     "express": "~4.17.1",
     "express-session": "~1.16.1",
     "irc-stream-parser": "~0.1.0",
