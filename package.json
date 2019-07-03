@@ -22,7 +22,9 @@
     "start": "npm run build && cd bot && probot run -p 5678 ./lib/index.js",
     "lint": "eslint . --fix",
     "test": "jest bot && eslint .",
-    "test:watch": "jest bot --watch --notify --notifyMode=change --coverage"
+    "test:watch": "jest bot --watch --notify --notifyMode=change --coverage",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "dependencies": {
     "@hellomouse/session-pouchdb-store": "~0.3.3",
@@ -36,7 +38,8 @@
     "querystring": "~0.2.0",
     "randomstring": "~1.1.5",
     "request": "~2.88.0",
-    "request-promise-native": "~1.0.7"
+    "request-promise-native": "~1.0.7",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "@hellomouse/eslint-config-wolfy1339": "~1.2.0",
@@ -73,5 +76,6 @@
     "lockfiles": {
       "outOfRangeUpdatesOnly": true
     }
-  }
+  },
+  "snyk": true
 }
