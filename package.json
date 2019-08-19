@@ -41,7 +41,7 @@
   "devDependencies": {
     "@hellomouse/eslint-config-wolfy1339": "~1.2.0",
     "@types/bunyan": "~1.8.6",
-    "@types/express": "~4.17.0",
+    "@types/express": "~4.17.1",
     "@types/express-session": "~1.15.12",
     "@types/ioredis": "~4.0.12",
     "@types/jest": "~24.0.14",
