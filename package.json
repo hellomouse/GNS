@@ -42,7 +42,7 @@
     "@hellomouse/eslint-config-wolfy1339": "~1.2.0",
     "@types/bunyan": "~1.8.6",
     "@types/express": "~4.17.0",
-    "@types/express-session": "~1.15.12",
+    "@types/express-session": "~1.15.14",
     "@types/ioredis": "~4.0.12",
     "@types/jest": "~24.0.14",
     "@types/jsonwebtoken": "~8.3.2",
