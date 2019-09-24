@@ -3,5 +3,14 @@
     "config:base",
     ":preserveSemverRanges"
   ],
-  "statusCheckVerify": true
+  "statusCheckVerify": true,
+  "labels": [
+    "dependencies"
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "labels": [
+      "🛡️security🔒"
+    ]
+  }
 }
