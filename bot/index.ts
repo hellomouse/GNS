@@ -329,7 +329,7 @@ export = async (app: probot.Application) => {
     if (payload.base_ref) base_ref_name = payload.base_ref!.split('/').slice(2).join('/');
 
     if (payload.created && config.detailedDeletesAndCreates) {
-      if (ref_type === 'tag') {
+      if (ref_type === 'tags') {
         msg.push(`tagged ${fmt_tag(ref_name)} at ${
           payload.base_ref ? fmt_branch(base_ref_name) : fmt_hash(payload.after)}`);
       } else {
