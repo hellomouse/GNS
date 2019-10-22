@@ -4,7 +4,7 @@ import Parser = require('irc-stream-parser');
 import tls = require('tls');
 import fs = require('fs');
 import probot = require('probot'); // eslint-disable-line no-unused-vars
-import PouchDB =  require('pouchdb');
+import PouchDB = require('pouchdb');
 import config = require('./config');
 
 interface Event {
