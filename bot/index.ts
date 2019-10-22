@@ -30,11 +30,11 @@ const colors: { [key: string]: string } = {
 Object.defineProperties(Array.prototype, {
   isEmpty: {
     enumerable: true,
-    get() { return this.length === 0; },
+    get() { return this.length === 0; }
   }
 });
 
-const db: PouchDB.Database<Config> = new PouchDB(process.env.POUCH_REMOTE);
+const db = new PouchDB<Config>(process.env.POUCH_REMOTE);
 // tslint:disable-next-line:ter-newline-after-var
 let pendingStatus: string[] = []; // contains all pending checks from travis as multiple are sent
 
