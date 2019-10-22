@@ -80,6 +80,7 @@ declare module "@octokit/webhooks" {
       description: string;
       privacy: string;
       url: string;
+      html_url: string;
       members_url: string;
       repositories_url: string;
       permission: string;
@@ -137,6 +138,7 @@ declare module "@octokit/webhooks" {
       description: string;
       privacy: string;
       url: string;
+      html_url: string;
       members_url: string;
       repositories_url: string;
       permission: string;
@@ -172,6 +174,7 @@ declare module "@octokit/webhooks" {
     type WebhookPayloadStatusBranchesItem = {
       name: string;
       commit: WebhookPayloadStatusBranchesItemCommit;
+      protected: boolean;
     };
     type WebhookPayloadStatusCommitCommitter = {
       login: string;
@@ -265,6 +268,32 @@ declare module "@octokit/webhooks" {
       repository: PayloadRepository;
       sender: WebhookPayloadStatusSender;
     };
+    type WebhookPayloadStarSender = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadStar = {
+      action: string;
+      starred_at: string;
+      repository: PayloadRepository;
+      sender: WebhookPayloadStarSender;
+    };
     type WebhookPayloadSecurityAdvisorySecurityAdvisoryVulnerabilitiesItemFirstPatchedVersion = {
       identifier: string;
     };
@@ -307,7 +336,7 @@ declare module "@octokit/webhooks" {
       action: string;
       security_advisory: WebhookPayloadSecurityAdvisorySecurityAdvisory;
     };
-    type WebhookPayloadRepositoryVulnerabilityAlertAlertDismisser = {
+    type WebhookPayloadRepositoryVulnerabilityAlertSender = {
       login: string;
       id: number;
       node_id: string;
@@ -334,13 +363,13 @@ declare module "@octokit/webhooks" {
       external_reference: string;
       external_identifier: string;
       fixed_in: string;
-      dismisser: WebhookPayloadRepositoryVulnerabilityAlertAlertDismisser;
-      dismiss_reason: string;
-      dismissed_at: string;
+      dismisser: WebhookPayloadRepositoryVulnerabilityAlertSender
     };
     type WebhookPayloadRepositoryVulnerabilityAlert = {
       action: string;
       alert: WebhookPayloadRepositoryVulnerabilityAlertAlert;
+      repository: PayloadRepository;
+      sender: WebhookPayloadRepositoryVulnerabilityAlertSender;
     };
     type WebhookPayloadRepositoryImportSender = {
       login: string;
@@ -406,6 +435,53 @@ declare module "@octokit/webhooks" {
       action: string;
       repository: PayloadRepository;
       sender: WebhookPayloadRepositorySender;
+    };
+    type WebhookPayloadRepositoryDispatchInstallation = {
+      id: number;
+      node_id: string;
+    };
+    type WebhookPayloadRepositoryDispatchSender = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadRepositoryDispatchOrganization = {
+      login: string;
+      id: number;
+      node_id: string;
+      url: string;
+      repos_url: string;
+      events_url: string;
+      hooks_url: string;
+      issues_url: string;
+      members_url: string;
+      public_members_url: string;
+      avatar_url: string;
+      description: string;
+    };
+    type WebhookPayloadRepositoryDispatch = {
+      action: string;
+      branch: string;
+      ref: string;
+      repository: PayloadRepository;
+      organization: WebhookPayloadRepositoryDispatchOrganization;
+      sender: WebhookPayloadRepositoryDispatchSender;
+      installation: WebhookPayloadRepositoryDispatchInstallation;
     };
     type WebhookPayloadReleaseSender = {
       login: string;
@@ -473,6 +549,159 @@ declare module "@octokit/webhooks" {
       repository: PayloadRepository;
       sender: WebhookPayloadReleaseSender;
     };
+    type WebhookPayloadRegistryPackageSender = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackageRegistry = {
+      about_url: string;
+      name: string;
+      type: string;
+      url: string;
+      vendor: string;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackagePackageVersionAuthor = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackagePackageVersionPackageFilesItem = {
+      download_url: string;
+      id: number;
+      name: string;
+      sha256: string;
+      sha1: string;
+      md5: string;
+      content_type: string;
+      state: string;
+      size: number;
+      created_at: string;
+      updated_at: string;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackagePackageVersionReleaseAuthor = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackagePackageVersionRelease = {
+      url: string;
+      html_url: string;
+      id: number;
+      tag_name: string;
+      target_commitish: string;
+      name: string;
+      draft: boolean;
+      author: WebhookPayloadRegistryPackageRegistryPackagePackageVersionReleaseAuthor;
+      prerelease: boolean;
+      created_at: string;
+      published_at: string;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackagePackageVersion = {
+      id: number;
+      version: string;
+      summary: string;
+      body: string;
+      body_html: string;
+      release: WebhookPayloadRegistryPackageRegistryPackagePackageVersionRelease;
+      manifest: string;
+      html_url: string;
+      tag_name: string;
+      target_commitish: string;
+      target_oid: string;
+      draft: boolean;
+      prerelease: boolean;
+      created_at: string;
+      updated_at: string;
+      metadata: Array<any>;
+      package_files: Array<
+        WebhookPayloadRegistryPackageRegistryPackagePackageVersionPackageFilesItem
+      >;
+      author: WebhookPayloadRegistryPackageRegistryPackagePackageVersionAuthor;
+      installation_command: string;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackageOwner = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadRegistryPackageRegistryPackage = {
+      id: number;
+      name: string;
+      package_type: string;
+      html_url: string;
+      created_at: string;
+      updated_at: string;
+      owner: WebhookPayloadRegistryPackageRegistryPackageOwner;
+      package_version: WebhookPayloadRegistryPackageRegistryPackagePackageVersion;
+      registry: WebhookPayloadRegistryPackageRegistryPackageRegistry;
+    };
+    type WebhookPayloadRegistryPackage = {
+      action: string;
+      registry_package: WebhookPayloadRegistryPackageRegistryPackage;
+      repository: PayloadRepository;
+      sender: WebhookPayloadRegistryPackageSender;
+    };
     type WebhookPayloadPushSender = {
       login: string;
       id: number;
@@ -504,7 +733,27 @@ declare module "@octokit/webhooks" {
       base_ref: string | null;
       compare: string;
       commits: Array<any>;
-      head_commit: null;
+      head_commit: {
+        "id": string,
+        "tree_id": string,
+        "distinct": boolean,
+        "message": string,
+        "timestamp": string,
+        "url": string
+        "author": {
+          "name": string,
+          "email": string,
+          "username": string
+        },
+        "committer": {
+          "name": string,
+          "email": string,
+          "username": string
+        },
+        "added": string[],
+        "removed": string[]
+        "modified": string[]
+      } | null;
       repository: PayloadRepository;
       pusher: WebhookPayloadPushPusher;
       sender: WebhookPayloadPushSender;
@@ -588,8 +837,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadPullRequestReviewCommentPullRequestBaseRepoOwner;
       private: boolean;
+      owner: WebhookPayloadPullRequestReviewCommentPullRequestBaseRepoOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -641,7 +890,7 @@ declare module "@octokit/webhooks" {
       size: number;
       stargazers_count: number;
       watchers_count: number;
-      language: null;
+      language: string;
       has_issues: boolean;
       has_projects: boolean;
       has_downloads: boolean;
@@ -650,6 +899,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -709,8 +959,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadPullRequestReviewCommentPullRequestHeadRepoOwner;
       private: boolean;
+      owner: WebhookPayloadPullRequestReviewCommentPullRequestHeadRepoOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -762,7 +1012,7 @@ declare module "@octokit/webhooks" {
       size: number;
       stargazers_count: number;
       watchers_count: number;
-      language: null;
+      language: string;
       has_issues: boolean;
       has_projects: boolean;
       has_downloads: boolean;
@@ -771,6 +1021,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -994,8 +1245,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadPullRequestReviewPullRequestBaseRepoOwner;
       private: boolean;
+      owner: WebhookPayloadPullRequestReviewPullRequestBaseRepoOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -1047,7 +1298,7 @@ declare module "@octokit/webhooks" {
       size: number;
       stargazers_count: number;
       watchers_count: number;
-      language: null;
+      language: string;
       has_issues: boolean;
       has_projects: boolean;
       has_downloads: boolean;
@@ -1056,6 +1307,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -1115,8 +1367,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadPullRequestReviewPullRequestHeadRepoOwner;
       private: boolean;
+      owner: WebhookPayloadPullRequestReviewPullRequestHeadRepoOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -1168,7 +1420,7 @@ declare module "@octokit/webhooks" {
       size: number;
       stargazers_count: number;
       watchers_count: number;
-      language: null;
+      language: string;
       has_issues: boolean;
       has_projects: boolean;
       has_downloads: boolean;
@@ -1177,6 +1429,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -1379,8 +1632,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadPullRequestPullRequestBaseRepoOwner;
       private: boolean;
+      owner: WebhookPayloadPullRequestPullRequestBaseRepoOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -1441,6 +1694,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -1500,8 +1754,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadPullRequestPullRequestHeadRepoOwner;
       private: boolean;
+      owner: WebhookPayloadPullRequestPullRequestHeadRepoOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -1562,6 +1816,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -1596,26 +1851,6 @@ declare module "@octokit/webhooks" {
       user: WebhookPayloadPullRequestPullRequestHeadUser;
       repo: WebhookPayloadPullRequestPullRequestHeadRepo;
     };
-    type WebhookPayloadPullRequestPullRequestUser = {
-      login: string;
-      id: number;
-      node_id: string;
-      avatar_url: string;
-      gravatar_id: string;
-      url: string;
-      html_url: string;
-      followers_url: string;
-      following_url: string;
-      gists_url: string;
-      starred_url: string;
-      subscriptions_url: string;
-      organizations_url: string;
-      repos_url: string;
-      events_url: string;
-      received_events_url: string;
-      type: string;
-      site_admin: boolean;
-    };
     type WebhookPayloadPullRequestPullRequestRequestedTeam = {
       name: string;
       id: number;
@@ -1629,7 +1864,7 @@ declare module "@octokit/webhooks" {
       repositories_url: string;
       permissions: string;
     };
-    type WebhookPayloadPullRequestPullRequestRequestedReviewer = {
+    type WebhookPayloadPullRequestPullRequestUser = {
       login: string;
       id: number;
       node_id: string;
@@ -1638,8 +1873,9 @@ declare module "@octokit/webhooks" {
       url: string;
       html_url: string;
       followers_url: string;
+      following_url: string;
       gists_url: string;
-      starred_url: string
+      starred_url: string;
       subscriptions_url: string;
       organizations_url: string;
       repos_url: string;
@@ -1664,12 +1900,12 @@ declare module "@octokit/webhooks" {
       body: string;
       created_at: string;
       updated_at: string;
-      closed_at: string;
+      closed_at: null;
       merged_at: null;
-      merge_commit_sha: string;
+      merge_commit_sha: null;
       assignee: null;
       assignees: Array<any>;
-      requested_reviewers: Array<WebhookPayloadPullRequestPullRequestRequestedReviewer>;
+      requested_reviewers: Array<WebhookPayloadPullRequestPullRequestUser>;
       requested_teams: Array<WebhookPayloadPullRequestPullRequestRequestedTeam>;
       labels: Array<any>;
       milestone: null;
@@ -1703,7 +1939,7 @@ declare module "@octokit/webhooks" {
       repository: PayloadRepository;
       sender: WebhookPayloadPullRequestSender;
       requested_team?:WebhookPayloadPullRequestPullRequestRequestedTeam;
-      requested_reviewer?: WebhookPayloadPullRequestPullRequestRequestedReviewer;
+      requested_reviewer?: WebhookPayloadPullRequestPullRequestUser;
     };
     type WebhookPayloadPublicSender = {
       login: string;
@@ -1874,6 +2110,7 @@ declare module "@octokit/webhooks" {
       id: number;
       node_id: string;
       note: string;
+      archived: boolean;
       creator: WebhookPayloadProjectCardProjectCardCreator;
       created_at: string;
       updated_at: string;
@@ -2132,6 +2369,48 @@ declare module "@octokit/webhooks" {
       repository: PayloadRepository;
       sender: WebhookPayloadMilestoneSender;
     };
+    type WebhookPayloadMetaSender = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadMetaHookConfig = {
+      content_type: string;
+      insecure_ssl: string;
+      url: string;
+    };
+    type WebhookPayloadMetaHook = {
+      type: string;
+      id: number;
+      name: string;
+      active: boolean;
+      events: Array<string>;
+      config: WebhookPayloadMetaHookConfig;
+      updated_at: string;
+      created_at: string;
+    };
+    type WebhookPayloadMeta = {
+      action: string;
+      hook_id: number;
+      hook: WebhookPayloadMetaHook;
+      repository: PayloadRepository;
+      sender: WebhookPayloadMetaSender;
+    };
     type WebhookPayloadMembershipOrganization = {
       login: string;
       id: number;
@@ -2154,6 +2433,7 @@ declare module "@octokit/webhooks" {
       description: string;
       privacy: string;
       url: string;
+      html_url: string;
       members_url: string;
       repositories_url: string;
       permission: string;
@@ -2226,10 +2506,6 @@ declare module "@octokit/webhooks" {
       type: string;
       site_admin: boolean;
     };
-    type WebhookPayloadMemberChangesPermission = { from: string };
-    type WebhookPayloadMemberChanges = {
-      permission: WebhookPayloadMemberChangesPermission;
-    };
     type WebhookPayloadMemberMember = {
       login: string;
       id: number;
@@ -2253,7 +2529,6 @@ declare module "@octokit/webhooks" {
     type WebhookPayloadMember = {
       action: string;
       member: WebhookPayloadMemberMember;
-      changes: WebhookPayloadMemberChanges;
       repository: PayloadRepository;
       sender: WebhookPayloadMemberSender;
     };
@@ -2364,6 +2639,84 @@ declare module "@octokit/webhooks" {
       site_admin: boolean;
     };
     type WebhookPayloadIssuesChanges = {};
+    type WebhookPayloadIssuesIssueMilestoneCreator = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadIssuesIssueMilestone = {
+      url: string;
+      html_url: string;
+      labels_url: string;
+      id: number;
+      node_id: string;
+      number: number;
+      title: string;
+      description: string;
+      creator: WebhookPayloadIssuesIssueMilestoneCreator;
+      open_issues: number;
+      closed_issues: number;
+      state: string;
+      created_at: string;
+      updated_at: string;
+      due_on: string;
+      closed_at: string;
+    };
+    type WebhookPayloadIssuesIssueAssigneesItem = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadIssuesIssueAssignee = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
     type WebhookPayloadIssuesIssueLabelsItem = {
       id: number;
       node_id: string;
@@ -2407,9 +2760,9 @@ declare module "@octokit/webhooks" {
       labels: Array<WebhookPayloadIssuesIssueLabelsItem>;
       state: string;
       locked: boolean;
-      assignee: null;
-      assignees: Array<any>;
-      milestone: null;
+      assignee: WebhookPayloadIssuesIssueAssignee;
+      assignees: Array<WebhookPayloadIssuesIssueAssigneesItem>;
+      milestone: WebhookPayloadIssuesIssueMilestone;
       comments: number;
       created_at: string;
       updated_at: string;
@@ -2476,6 +2829,84 @@ declare module "@octokit/webhooks" {
       author_association: string;
       body: string;
     };
+    type WebhookPayloadIssueCommentIssueMilestoneCreator = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadIssueCommentIssueMilestone = {
+      url: string;
+      html_url: string;
+      labels_url: string;
+      id: number;
+      node_id: string;
+      number: number;
+      title: string;
+      description: string;
+      creator: WebhookPayloadIssueCommentIssueMilestoneCreator;
+      open_issues: number;
+      closed_issues: number;
+      state: string;
+      created_at: string;
+      updated_at: string;
+      due_on: string;
+      closed_at: string;
+    };
+    type WebhookPayloadIssueCommentIssueAssigneesItem = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadIssueCommentIssueAssignee = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
     type WebhookPayloadIssueCommentIssueLabelsItem = {
       id: number;
       node_id: string;
@@ -2519,9 +2950,9 @@ declare module "@octokit/webhooks" {
       labels: Array<WebhookPayloadIssueCommentIssueLabelsItem>;
       state: string;
       locked: boolean;
-      assignee: null;
-      assignees: Array<any>;
-      milestone: null;
+      assignee: WebhookPayloadIssueCommentIssueAssignee;
+      assignees: Array<WebhookPayloadIssueCommentIssueAssigneesItem>;
+      milestone: WebhookPayloadIssueCommentIssueMilestone;
       comments: number;
       created_at: string;
       updated_at: string;
@@ -2556,16 +2987,26 @@ declare module "@octokit/webhooks" {
       type: string;
       site_admin: boolean;
     };
-    type WebhookPayloadInstallationRepositoriesRepositoriesRemovedItem = {
+    type WebhookPayloadInstallationRepositoriesRepositoriesAddedItem = {
       id: number;
+      node_id: string;
       name: string;
       full_name: string;
       private: boolean;
     };
     type WebhookPayloadInstallationRepositoriesInstallationPermissions = {
-      metadata: string;
-      contents: string;
+      administration: string;
+      statuses: string;
+      repository_projects: string;
+      repository_hooks: string;
+      pull_requests: string;
+      pages: string;
       issues: string;
+      deployments: string;
+      contents: string;
+      checks: string;
+      metadata: string;
+      vulnerability_alerts: string;
     };
     type WebhookPayloadInstallationRepositoriesInstallationAccount = {
       login: string;
@@ -2598,22 +3039,21 @@ declare module "@octokit/webhooks" {
       target_id: number;
       target_type: string;
       permissions: WebhookPayloadInstallationRepositoriesInstallationPermissions;
-      events: Array<string>;
+      events: Array<any>;
       created_at: number;
       updated_at: number;
-      single_file_name: string;
+      single_file_name: null;
     };
-    type WebhookPayloadInstallationRepositories =
-      {
-        action: string;
-        installation: WebhookPayloadInstallationRepositoriesInstallation;
-        repository_selection: string;
-        repositories_added: Array<any>;
-        repositories_removed: Array<
-          WebhookPayloadInstallationRepositoriesRepositoriesRemovedItem
-        >;
-        sender: WebhookPayloadInstallationRepositoriesSender;
-      };
+    type WebhookPayloadInstallationRepositories = {
+      action: string;
+      installation: WebhookPayloadInstallationRepositoriesInstallation;
+      repository_selection: string;
+      repositories_added: Array<
+        WebhookPayloadInstallationRepositoriesRepositoriesAddedItem
+      >;
+      repositories_removed: Array<any>;
+      sender: WebhookPayloadInstallationRepositoriesSender;
+    };
     type WebhookPayloadInstallationSender = {
       login: string;
       id: number;
@@ -2684,7 +3124,7 @@ declare module "@octokit/webhooks" {
     type WebhookPayloadInstallation = {
       action: string;
       installation: WebhookPayloadInstallationInstallation;
-      repositories: WebhookPayloadInstallationRepositories;
+      repositories: Array<WebhookPayloadInstallationRepositoriesItem>;
       sender: WebhookPayloadInstallationSender;
     };
     type WebhookPayloadGollumSender = {
@@ -2789,8 +3229,8 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: WebhookPayloadForkForkeeOwner;
       private: boolean;
+      owner: WebhookPayloadForkForkeeOwner;
       html_url: string;
       description: null;
       fork: boolean;
@@ -2851,6 +3291,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -2913,6 +3354,7 @@ declare module "@octokit/webhooks" {
       ref: string;
       task: string;
       payload: WebhookPayloadDeploymentStatusDeploymentPayload;
+      original_environment: string;
       environment: string;
       description: null;
       creator: WebhookPayloadDeploymentStatusDeploymentCreator;
@@ -2948,6 +3390,7 @@ declare module "@octokit/webhooks" {
       state: string;
       creator: WebhookPayloadDeploymentStatusDeploymentStatusCreator;
       description: string;
+      environment: string;
       target_url: string;
       created_at: string;
       updated_at: string;
@@ -3009,6 +3452,7 @@ declare module "@octokit/webhooks" {
       ref: string;
       task: string;
       payload: WebhookPayloadDeploymentDeploymentPayload;
+      original_environment: string;
       environment: string;
       description: null;
       creator: WebhookPayloadDeploymentDeploymentCreator;
@@ -3021,6 +3465,41 @@ declare module "@octokit/webhooks" {
       deployment: WebhookPayloadDeploymentDeployment;
       repository: PayloadRepository;
       sender: WebhookPayloadDeploymentSender;
+    };
+    type WebhookPayloadDeployKeySender = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadDeployKeyKey = {
+      id: number;
+      key: string;
+      url: string;
+      title: string;
+      verified: boolean;
+      created_at: string;
+      read_only: boolean;
+    };
+    type WebhookPayloadDeployKey = {
+      action: string;
+      key: WebhookPayloadDeployKeyKey;
+      repository: PayloadRepository;
+      sender: WebhookPayloadDeployKeySender;
     };
     type WebhookPayloadDeleteSender = {
       login: string;
@@ -3077,6 +3556,42 @@ declare module "@octokit/webhooks" {
       pusher_type: string;
       repository: PayloadRepository;
       sender: WebhookPayloadCreateSender;
+    };
+    type WebhookPayloadContentReferenceInstallation = {
+      id: number;
+      node_id: string;
+    };
+    type WebhookPayloadContentReferenceSender = {
+      login: string;
+      id: number;
+      node_id: string;
+      avatar_url: string;
+      gravatar_id: string;
+      url: string;
+      html_url: string;
+      followers_url: string;
+      following_url: string;
+      gists_url: string;
+      starred_url: string;
+      subscriptions_url: string;
+      organizations_url: string;
+      repos_url: string;
+      events_url: string;
+      received_events_url: string;
+      type: string;
+      site_admin: boolean;
+    };
+    type WebhookPayloadContentReferenceContentReference = {
+      id: number;
+      node_id: string;
+      reference: string;
+    };
+    type WebhookPayloadContentReference = {
+      action: string;
+      content_reference: WebhookPayloadContentReferenceContentReference;
+      repository: PayloadRepository;
+      sender: WebhookPayloadContentReferenceSender;
+      installation: WebhookPayloadContentReferenceInstallation;
     };
     type WebhookPayloadCommitCommentSender = {
       login: string;
@@ -3139,7 +3654,6 @@ declare module "@octokit/webhooks" {
       repository: PayloadRepository;
       sender: WebhookPayloadCommitCommentSender;
     };
-    type WebhookPayloadCheckSuiteInstallation = { id: number };
     type WebhookPayloadCheckSuiteSender = {
       login: string;
       id: number;
@@ -3160,20 +3674,6 @@ declare module "@octokit/webhooks" {
       type: string;
       site_admin: boolean;
     };
-    type WebhookPayloadCheckSuiteOrganization = {
-      login: string;
-      id: number;
-      node_id: string;
-      url: string;
-      repos_url: string;
-      events_url: string;
-      hooks_url: string;
-      issues_url: string;
-      members_url: string;
-      public_members_url: string;
-      avatar_url: string;
-      description: string;
-    };
     type WebhookPayloadCheckSuiteCheckSuiteHeadCommitCommitter = {
       name: string;
       email: string;
@@ -3189,6 +3689,27 @@ declare module "@octokit/webhooks" {
       timestamp: string;
       author: WebhookPayloadCheckSuiteCheckSuiteHeadCommitAuthor;
       committer: WebhookPayloadCheckSuiteCheckSuiteHeadCommitCommitter;
+    };
+    type WebhookPayloadCheckSuiteCheckSuiteAppPermissions = {
+      administration: string;
+      checks: string;
+      contents: string;
+      deployments: string;
+      issues: string;
+      members: string;
+      metadata: string;
+      organization_administration: string;
+      organization_hooks: string;
+      organization_plan: string;
+      organization_projects: string;
+      organization_user_blocking: string;
+      pages: string;
+      pull_requests: string;
+      repository_hooks: string;
+      repository_projects: string;
+      statuses: string;
+      team_discussions: string;
+      vulnerability_alerts: string;
     };
     type WebhookPayloadCheckSuiteCheckSuiteAppOwner = {
       login: string;
@@ -3215,14 +3736,44 @@ declare module "@octokit/webhooks" {
       node_id: string;
       owner: WebhookPayloadCheckSuiteCheckSuiteAppOwner;
       name: string;
-      description: null;
+      description: string;
       external_url: string;
       html_url: string;
       created_at: string;
       updated_at: string;
+      permissions: WebhookPayloadCheckSuiteCheckSuiteAppPermissions;
+      events: Array<any>;
+    };
+    type WebhookPayloadCheckSuiteCheckSuitePullRequestsItemBaseRepo = {
+      id: number;
+      url: string;
+      name: string;
+    };
+    type WebhookPayloadCheckSuiteCheckSuitePullRequestsItemBase = {
+      ref: string;
+      sha: string;
+      repo: WebhookPayloadCheckSuiteCheckSuitePullRequestsItemBaseRepo;
+    };
+    type WebhookPayloadCheckSuiteCheckSuitePullRequestsItemHeadRepo = {
+      id: number;
+      url: string;
+      name: string;
+    };
+    type WebhookPayloadCheckSuiteCheckSuitePullRequestsItemHead = {
+      ref: string;
+      sha: string;
+      repo: WebhookPayloadCheckSuiteCheckSuitePullRequestsItemHeadRepo;
+    };
+    type WebhookPayloadCheckSuiteCheckSuitePullRequestsItem = {
+      url: string;
+      id: number;
+      number: number;
+      head: WebhookPayloadCheckSuiteCheckSuitePullRequestsItemHead;
+      base: WebhookPayloadCheckSuiteCheckSuitePullRequestsItemBase;
     };
     type WebhookPayloadCheckSuiteCheckSuite = {
       id: number;
+      node_id: string;
       head_branch: string;
       head_sha: string;
       status: string;
@@ -3230,7 +3781,7 @@ declare module "@octokit/webhooks" {
       url: string;
       before: string;
       after: string;
-      pull_requests: Array<any>;
+      pull_requests: Array<WebhookPayloadCheckSuiteCheckSuitePullRequestsItem>;
       app: WebhookPayloadCheckSuiteCheckSuiteApp;
       created_at: string;
       updated_at: string;
@@ -3242,11 +3793,8 @@ declare module "@octokit/webhooks" {
       action: string;
       check_suite: WebhookPayloadCheckSuiteCheckSuite;
       repository: PayloadRepository;
-      organization: WebhookPayloadCheckSuiteOrganization;
       sender: WebhookPayloadCheckSuiteSender;
-      installation: WebhookPayloadCheckSuiteInstallation;
     };
-    type WebhookPayloadCheckRunInstallation = { id: number };
     type WebhookPayloadCheckRunSender = {
       login: string;
       id: number;
@@ -3266,20 +3814,6 @@ declare module "@octokit/webhooks" {
       received_events_url: string;
       type: string;
       site_admin: boolean;
-    };
-    type WebhookPayloadCheckRunOrganization = {
-      login: string;
-      id: number;
-      node_id: string;
-      url: string;
-      repos_url: string;
-      events_url: string;
-      hooks_url: string;
-      issues_url: string;
-      members_url: string;
-      public_members_url: string;
-      avatar_url: string;
-      description: string;
     };
     type PayloadRepositoryOwner = {
       login: string;
@@ -3308,10 +3842,10 @@ declare module "@octokit/webhooks" {
       node_id: string;
       name: string;
       full_name: string;
-      owner: PayloadRepositoryOwner;
       private: boolean;
+      owner: PayloadRepositoryOwner;
       html_url: string;
-      description: null;
+      description: null | string;
       fork: boolean;
       url: string;
       forks_url: string;
@@ -3357,11 +3891,11 @@ declare module "@octokit/webhooks" {
       ssh_url: string;
       clone_url: string;
       svn_url: string;
-      homepage: null;
+      homepage: null | string;
       size: number;
       stargazers_count: number;
       watchers_count: number;
-      language: null;
+      language: string | null;
       has_issues: boolean;
       has_projects: boolean;
       has_downloads: boolean;
@@ -3370,6 +3904,7 @@ declare module "@octokit/webhooks" {
       forks_count: number;
       mirror_url: null;
       archived: boolean;
+      disabled?: boolean;
       open_issues_count: number;
       license: null;
       forks: number;
@@ -3379,6 +3914,54 @@ declare module "@octokit/webhooks" {
       stargazers?: number;
       master_branch?: string;
       permissions?: PayloadRepositoryPermissions;
+    };
+    type WebhookPayloadCheckRunCheckRunPullRequestsItemBaseRepo = {
+      id: number;
+      url: string;
+      name: string;
+    };
+    type WebhookPayloadCheckRunCheckRunPullRequestsItemBase = {
+      ref: string;
+      sha: string;
+      repo: WebhookPayloadCheckRunCheckRunPullRequestsItemBaseRepo;
+    };
+    type WebhookPayloadCheckRunCheckRunPullRequestsItemHeadRepo = {
+      id: number;
+      url: string;
+      name: string;
+    };
+    type WebhookPayloadCheckRunCheckRunPullRequestsItemHead = {
+      ref: string;
+      sha: string;
+      repo: WebhookPayloadCheckRunCheckRunPullRequestsItemHeadRepo;
+    };
+    type WebhookPayloadCheckRunCheckRunPullRequestsItem = {
+      url: string;
+      id: number;
+      number: number;
+      head: WebhookPayloadCheckRunCheckRunPullRequestsItemHead;
+      base: WebhookPayloadCheckRunCheckRunPullRequestsItemBase;
+    };
+    type WebhookPayloadCheckRunCheckRunAppPermissions = {
+      administration: string;
+      checks: string;
+      contents: string;
+      deployments: string;
+      issues: string;
+      members: string;
+      metadata: string;
+      organization_administration: string;
+      organization_hooks: string;
+      organization_plan: string;
+      organization_projects: string;
+      organization_user_blocking: string;
+      pages: string;
+      pull_requests: string;
+      repository_hooks: string;
+      repository_projects: string;
+      statuses: string;
+      team_discussions: string;
+      vulnerability_alerts: string;
     };
     type WebhookPayloadCheckRunCheckRunAppOwner = {
       login: string;
@@ -3405,11 +3988,34 @@ declare module "@octokit/webhooks" {
       node_id: string;
       owner: WebhookPayloadCheckRunCheckRunAppOwner;
       name: string;
-      description: null;
+      description: string;
       external_url: string;
       html_url: string;
       created_at: string;
       updated_at: string;
+      permissions: WebhookPayloadCheckRunCheckRunAppPermissions;
+      events: Array<any>;
+    };
+    type WebhookPayloadCheckRunCheckRunCheckSuiteAppPermissions = {
+      administration: string;
+      checks: string;
+      contents: string;
+      deployments: string;
+      issues: string;
+      members: string;
+      metadata: string;
+      organization_administration: string;
+      organization_hooks: string;
+      organization_plan: string;
+      organization_projects: string;
+      organization_user_blocking: string;
+      pages: string;
+      pull_requests: string;
+      repository_hooks: string;
+      repository_projects: string;
+      statuses: string;
+      team_discussions: string;
+      vulnerability_alerts: string;
     };
     type WebhookPayloadCheckRunCheckRunCheckSuiteAppOwner = {
       login: string;
@@ -3436,56 +4042,88 @@ declare module "@octokit/webhooks" {
       node_id: string;
       owner: WebhookPayloadCheckRunCheckRunCheckSuiteAppOwner;
       name: string;
-      description: null;
+      description: string;
       external_url: string;
       html_url: string;
       created_at: string;
       updated_at: string;
+      permissions: WebhookPayloadCheckRunCheckRunCheckSuiteAppPermissions;
+      events: Array<any>;
+    };
+    type WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemBaseRepo = {
+      id: number;
+      url: string;
+      name: string;
+    };
+    type WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemBase = {
+      ref: string;
+      sha: string;
+      repo: WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemBaseRepo;
+    };
+    type WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemHeadRepo = {
+      id: number;
+      url: string;
+      name: string;
+    };
+    type WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemHead = {
+      ref: string;
+      sha: string;
+      repo: WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemHeadRepo;
+    };
+    type WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItem = {
+      url: string;
+      id: number;
+      number: number;
+      head: WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemHead;
+      base: WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItemBase;
     };
     type WebhookPayloadCheckRunCheckRunCheckSuite = {
       id: number;
+      node_id: string;
       head_branch: string;
       head_sha: string;
       status: string;
-      conclusion: string;
+      conclusion: null;
       url: string;
       before: string;
       after: string;
-      pull_requests: Array<any>;
+      pull_requests: Array<
+        WebhookPayloadCheckRunCheckRunCheckSuitePullRequestsItem
+      >;
       app: WebhookPayloadCheckRunCheckRunCheckSuiteApp;
       created_at: string;
       updated_at: string;
     };
     type WebhookPayloadCheckRunCheckRunOutput = {
-      title: string;
-      summary: string;
-      text: string;
+      title: null;
+      summary: null;
+      text: null;
       annotations_count: number;
       annotations_url: string;
     };
     type WebhookPayloadCheckRunCheckRun = {
       id: number;
+      node_id: string;
       head_sha: string;
       external_id: string;
       url: string;
       html_url: string;
+      details_url: string;
       status: string;
-      conclusion: string;
+      conclusion: null;
       started_at: string;
-      completed_at: string;
+      completed_at: null;
       output: WebhookPayloadCheckRunCheckRunOutput;
       name: string;
       check_suite: WebhookPayloadCheckRunCheckRunCheckSuite;
       app: WebhookPayloadCheckRunCheckRunApp;
-      pull_requests: Array<any>;
+      pull_requests: Array<WebhookPayloadCheckRunCheckRunPullRequestsItem>;
     };
     type WebhookPayloadCheckRun = {
       action: string;
       check_run: WebhookPayloadCheckRunCheckRun;
       repository: PayloadRepository;
-      organization: WebhookPayloadCheckRunOrganization;
       sender: WebhookPayloadCheckRunSender;
-      installation: WebhookPayloadCheckRunInstallation;
     };
 
     interface WebhookEvent<T> {
@@ -3538,6 +4176,13 @@ declare module "@octokit/webhooks" {
     ): void;
 
     public on(
+      event: "content_reference",
+      callback: (
+        event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadContentReference>
+      ) => Promise<void> | void
+    ): void;
+
+    public on(
       event: "create",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadCreate>
@@ -3548,6 +4193,13 @@ declare module "@octokit/webhooks" {
       event: "delete",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadDelete>
+      ) => Promise<void> | void
+    ): void;
+
+    public on(
+      event: "deploy_key" | "deploy_key.created" | "deploy_key.deleted",
+      callback: (
+        event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadDeployKey>
       ) => Promise<void> | void
     ): void;
 
@@ -3589,7 +4241,11 @@ declare module "@octokit/webhooks" {
     ): void;
 
     public on(
-      event: "installation" | "installation.created" | "installation.deleted",
+      event:
+        | "installation"
+        | "installation.created"
+        | "installation.deleted"
+        | "installation.new_permissions_accepted",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadInstallation>
       ) => Promise<void> | void
@@ -3627,12 +4283,16 @@ declare module "@octokit/webhooks" {
         | "issues.demilestoned"
         | "issues.edited"
         | "issues.labeled"
+        | "issues.locked"
         | "issues.milestoned"
         | "issues.opened"
+        | "issues.pinned"
         | "issues.reopened"
         | "issues.transferred"
         | "issues.unassigned"
-        | "issues.unlabeled",
+        | "issues.unlabeled"
+        | "issues.unlocked"
+        | "issues.unpinned",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadIssues>
       ) => Promise<void> | void
@@ -3673,6 +4333,13 @@ declare module "@octokit/webhooks" {
     ): void;
 
     public on(
+      event: "meta" | "meta.deleted",
+      callback: (
+        event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadMeta>
+      ) => Promise<void> | void
+    ): void;
+
+    public on(
       event:
         | "milestone"
         | "milestone.closed"
@@ -3688,9 +4355,11 @@ declare module "@octokit/webhooks" {
     public on(
       event:
         | "organization"
+        | "organization.deleted"
         | "organization.member_added"
         | "organization.member_invited"
-        | "organization.member_removed",
+        | "organization.member_removed"
+        | "organization.renamed",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadOrganization>
       ) => Promise<void> | void
@@ -3762,12 +4431,15 @@ declare module "@octokit/webhooks" {
         | "pull_request.closed"
         | "pull_request.edited"
         | "pull_request.labeled"
+        | "pull_request.locked"
         | "pull_request.opened"
+        | "pull_request.ready_for_review"
         | "pull_request.reopened"
         | "pull_request.review_request_removed"
         | "pull_request.review_requested"
         | "pull_request.unassigned"
         | "pull_request.unlabeled"
+        | "pull_request.unlocked"
         | "pull_request.synchronize",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadPullRequest>
@@ -3806,9 +4478,33 @@ declare module "@octokit/webhooks" {
     ): void;
 
     public on(
-      event: "release" | "release.published",
+      event:
+        | "registry_package"
+        | "registry_package.published"
+        | "registry_package.updated",
+      callback: (
+        event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadRegistryPackage>
+      ) => Promise<void> | void
+    ): void;
+
+    public on(
+      event:
+        | "release"
+        | "release.created"
+        | "release.deleted"
+        | "release.edited"
+        | "release.prereleased"
+        | "release.published"
+        | "release.unpublished",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadRelease>
+      ) => Promise<void> | void
+    ): void;
+
+    public on(
+      event: "repository_dispatch",
+      callback: (
+        event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadRepositoryDispatch>
       ) => Promise<void> | void
     ): void;
 
@@ -3818,8 +4514,11 @@ declare module "@octokit/webhooks" {
         | "repository.archived"
         | "repository.created"
         | "repository.deleted"
+        | "repository.edited"
         | "repository.privatized"
         | "repository.publicized"
+        | "repository.renamed"
+        | "repository.transferred"
         | "repository.unarchived",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadRepository>
@@ -3854,6 +4553,13 @@ declare module "@octokit/webhooks" {
         | "security_advisory.updated",
       callback: (
         event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadSecurityAdvisory>
+      ) => Promise<void> | void
+    ): void;
+
+    public on(
+      event: "star" | "star.created" | "star.deleted",
+      callback: (
+        event: Webhooks.WebhookEvent<Webhooks.WebhookPayloadStar>
       ) => Promise<void> | void
     ): void;
 
@@ -3913,10 +4619,10 @@ declare module "@octokit/webhooks" {
       callback: (event: Webhooks.WebhookEvent<any>) => Promise<void>
     ): void;
     public middleware(
-      request: http.ClientRequest,
+      request: http.IncomingMessage,
       response: http.ServerResponse,
-      next: (err?: any) => void
-    ): (request: http.IncomingMessage, response: http.ServerResponse) => void;
+      next?: (err?: any) => void
+    ): void | Promise<void>;
   }
 
   export = Webhooks;

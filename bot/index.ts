@@ -376,7 +376,7 @@ export = async (app: probot.Application) => {
       irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
       const repos: {[key: string]: {enabled: boolean}} = {};
 
-      for (let repo of payload.repositories.repositories_added) {
+      for (let repo of payload.repositories) {
         repos[repo.full_name] = {
           enabled: true
         };
