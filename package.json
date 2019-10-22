@@ -28,7 +28,7 @@
     "@hellomouse/session-pouchdb-store": "~0.3.3",
     "@octokit/rest": "~16.30.0",
     "express": "~4.17.1",
-    "express-session": "~1.16.2",
+    "express-session": "~1.17.0",
     "irc-stream-parser": "~0.1.0",
     "jsonwebtoken": "~8.5.0",
     "pouchdb": "~7.1.1",
