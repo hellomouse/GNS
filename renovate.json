@@ -3,7 +3,10 @@
     "config:base",
     ":preserveSemverRanges",
     ":semanticCommitType(chore)",
-    "group:monorepos"
+    "group:monorepos",
+    "schedule:weekly",
+    "packages:linters",
+    "group:typescript-eslintMonorepo"
   ],
   "statusCheckVerify": true,
   "prConcurrentLimit": 0,
