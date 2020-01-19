@@ -21,14 +21,6 @@
       "🛡️security🔒"
     ]
   },
-  "packageRules": [
-    {
-      "groupName": "definitelyTyped",
-      "packagePatterns": [
-        "^@types/"
-      ]
-    }
-  ],
   "automerge": true,
   "major": {
     "automerge": false
