@@ -373,7 +373,7 @@ export = async (app: probot.Application) => {
 
     if (action === 'created') {
       irc[org] = new IRC(app, org);
-      irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on {...}`);
+      irc.hellomouse.privmsg(`${att} | ${sender} ${action} a new instance on account ${org}`);
       const repos: {[key: string]: {enabled: boolean}} = {};
 
       for (let repo of payload.repositories) {
