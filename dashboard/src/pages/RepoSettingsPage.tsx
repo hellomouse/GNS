@@ -40,9 +40,9 @@ interface Props extends RouteComponentProps<{
 /** Repo settings page of the app */
 class RepoSettingsPage extends React.Component<Props> {
   /**
-   * @param {Event} event
+   * @param {React.FormEvent} event
    */
-  public onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  public onSubmit: React.EventHandler<React.FormEvent<HTMLFormElement>> = event => {
     event.preventDefault();
     // Placeholder funtion
   }
