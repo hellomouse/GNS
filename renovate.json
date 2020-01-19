@@ -3,7 +3,11 @@
     "config:base",
     ":preserveSemverRanges",
     ":semanticCommitType(chore)",
-    "group:monorepos"
+    "group:monorepos",
+    "schedule:weekly",
+    "packages:linters",
+    "group:typescript-eslintMonorepo",
+    "group:reactMonorepo"
   ],
   "statusCheckVerify": true,
   "prConcurrentLimit": 0,
@@ -17,14 +21,6 @@
       "🛡️security🔒"
     ]
   },
-  "packageRules": [
-    {
-      "groupName": "definitelyTyped",
-      "packagePatterns": [
-        "^@types/"
-      ]
-    }
-  ],
   "automerge": true,
   "major": {
     "automerge": false
