@@ -69,7 +69,7 @@
     "@types/terser-webpack-plugin": "^2.2.0",
     "@types/webpack": "^4.41.2",
     "@typescript-eslint/eslint-plugin": "^2.18.0",
-    "@typescript-eslint/parser": "^2.18.0",
+    "@typescript-eslint/parser": "^2.19.0",
     "babel-jest": "^25.0.0",
     "eslint-plugin-flowtype": "^4.6.0",
     "eslint-plugin-react": "^7.18.3",
