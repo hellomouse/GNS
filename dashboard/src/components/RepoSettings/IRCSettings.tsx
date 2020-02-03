@@ -15,6 +15,7 @@ class IRCSettings extends React.Component<{state: any}> {
   */
   public render(): React.ReactNode {
     this.setState(this.props.state);
+
     return (
       <React.Fragment>
         <div className='sameline'>

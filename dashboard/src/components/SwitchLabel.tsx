@@ -1,4 +1,5 @@
 // @ts-check
+/* eslint-disable max-len */
 import React from 'react';
 
 import PropTypes from 'prop-types';
@@ -33,7 +34,7 @@ class SwitchLabel extends React.Component<SwitchProps> {
   // tslint:disable-next-line:max-line-length
   public handleChange = (name: string): React.ChangeEventHandler<HTMLInputElement> => (event: React.ChangeEvent<HTMLInputElement>) => {
     return this.setState({ [name]: event.target.checked });
-  }
+  };
 
   /**
    * @return {React.ReactElement}

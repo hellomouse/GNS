@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 // @ts-check
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -23,7 +24,7 @@ interface Props {
 }
 
 /**
- * @param {*} props
+ * @param {Props} props
  * @return {React.ReactElement}
  */
 const Loading: React.FunctionComponent<Props> = props => {

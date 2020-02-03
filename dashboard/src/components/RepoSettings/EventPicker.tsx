@@ -37,7 +37,7 @@ class EventPicker extends React.Component<EventPickerProps, EventPickerState> {
       checkedGitHub: event.target.checked,
       checkedEvent: event.target.checked
     });
-  }
+  };
 
   public componentWillMount() {
     this.setState({

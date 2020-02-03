@@ -19,8 +19,8 @@ import './App.css';
  * @return {string}
  */
 export function getCookie(cname: string): string {
-  let name = `${cname}=`;
-  let cookies = document.cookie.split(';');
+  const name = `${cname}=`;
+  const cookies = document.cookie.split(';');
 
   for (let cookie of cookies) {
     while (cookie.charAt(0) === ' ') {

@@ -1,3 +1,3 @@
 interface Array<T> {
-  isEmpty: boolean
+  isEmpty: boolean;
 }

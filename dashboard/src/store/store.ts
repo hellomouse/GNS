@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 // @ts-check
 import Redux, { createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension';
@@ -6,8 +7,8 @@ import { apiGetRepos, apiGetRepoSettings } from './api';
 import { Config } from '../config';
 
 // tslint:disable:max-line-length
-/** @typedef {import('redux').Store<{repos:Array<string>,gotRepos:boolean,repoSettings:import('../config').Config}>} PassedStore */
-export type PassedStore = Redux.Store<{repos: string[], gotRepos: boolean, repoSettings: Config['repos']}>;
+/** @typedef {import('redux').Store<{repos:Array<string>;gotRepos;boolean;repoSettings:import('../config').Config}>} PassedStore */
+export type PassedStore = Redux.Store<{repos: string[]; gotRepos: boolean; repoSettings: Config['repos']}>;
 interface DefaultState {
   repos: string[];
   gotRepos: boolean;
@@ -21,11 +22,12 @@ const defaultState: DefaultState = {
   gotRepoSettings: false
 };
 
+// eslint-disable-next-line max-len
 const store: Redux.Store<DefaultState> = createStore<DefaultState, any, any, any>((state: any, action: Redux.AnyAction) => {
   if (action.type === 'setRepos') {
     return { ...state, repos: action.repos, gotRepos: true };
   } else if (action.type === 'setRepoSettings') {
-    // tslint:disable-next-line:max-line-length
+    // eslint-disable-next-line max-len
     return { ...state, repoSettings: { ...state.repoSettings, [action.repo!]: action.settings }, gotRepoSettings: true };
   }
 
@@ -36,12 +38,12 @@ const store: Redux.Store<DefaultState> = createStore<DefaultState, any, any, any
  * @param {passedStore} passedStore
  */
 export const storeGetRepos = async (passedStore: PassedStore) => {
-  let st = passedStore.getState();
+  const st = passedStore.getState();
 
   if (st.gotRepos) {
     return;
   }
-  let repos = await apiGetRepos('wolfy1339'); // Todo: Replace this with a variable that changes when the user logs in
+  const repos = await apiGetRepos('wolfy1339'); // Todo: Replace this with a variable that changes when the user logs in
 
   passedStore.dispatch({
     type: 'setRepos',
@@ -54,12 +56,12 @@ export const storeGetRepos = async (passedStore: PassedStore) => {
  * @param {String} repo
  */
 export const storeGetRepoSettings = async (passedStore: PassedStore, repo: string) => {
-  let st = passedStore.getState();
+  const st = passedStore.getState();
 
   if (st.repoSettings[repo]) {
     return;
   }
-  let rs = await apiGetRepoSettings(repo);
+  const rs = await apiGetRepoSettings(repo);
 
   passedStore.dispatch({
     type: 'setRepoSettings',

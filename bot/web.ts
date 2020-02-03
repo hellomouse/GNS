@@ -34,43 +34,43 @@ export = function web(app: probot.Application) {
       expires: string;
       httpOnly: boolean;
       path: string;
-    }
+    };
     $ts: number;
   }>(`${process.env.POUCH_REMOTE}_logins`);
 
   router.use(
-      express.static('public'),
-      session({
-        secret: randomstring.generate(),
-        cookie: { maxAge: 60000 },
-        resave: false,
-        saveUninitialized: true,
-        store: new PouchSesion(loginDB)
-      }),
-      (req, res, next) => { // Security headers to avoid and/or limit attacks
-        res.set({
-          'X-Content-Type-Options': 'nosniff',
-          'X-XSS-Protection': '1;mode=block',
-          'X-Frame-Options': 'sameorigin',
-          'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
-          'Referrer-Policy': 'strict-origin-when-cross-origin',
+    express.static('public'),
+    session({
+      secret: randomstring.generate(),
+      cookie: { maxAge: 60000 },
+      resave: false,
+      saveUninitialized: true,
+      store: new PouchSesion(loginDB)
+    }),
+    (req, res, next) => { // Security headers to avoid and/or limit attacks
+      res.set({
+        'X-Content-Type-Options': 'nosniff',
+        'X-XSS-Protection': '1;mode=block',
+        'X-Frame-Options': 'sameorigin',
+        'Strict-Transport-Security': 'max-age=31536000;includeSubDomains;preload',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
         // tslint:disable-next-line:quotemark
-          'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
-        });
-        next();
-      }
+        'Content-Security-Policy': `default-src 'self' https:;object-src 'none'` // TODO: Reduce it to only allow used origins
+      });
+      next();
+    }
   );
 
   router.get('/login', (req, res) => {
     req.session!.csrf_string = randomstring.generate();
     const githubAuthUrl =
       `https://github.com/login/oauth/authorize?${
-      querystring.stringify({
-        client_id: process.env.CLIENT_ID,
-        redirect_uri,
-        state: req.session!.csrf_string,
-        scope: 'user:email read:org'
-      })}`;
+        querystring.stringify({
+          client_id: process.env.CLIENT_ID,
+          redirect_uri,
+          state: req.session!.csrf_string,
+          scope: 'user:email read:org'
+        })}`;
 
     res.redirect(githubAuthUrl);
   });
@@ -84,20 +84,20 @@ export = function web(app: probot.Application) {
         {
           url:
             `https://github.com/login/oauth/access_token?${
-            querystring.stringify({
-              client_id: process.env.CLIENT_ID,
-              client_secret: process.env.CLIENT_SECRET,
-              code,
-              redirect_uri,
-              state: req.session!.csrf_string
-            })}`,
+              querystring.stringify({
+                client_id: process.env.CLIENT_ID,
+                client_secret: process.env.CLIENT_SECRET,
+                code,
+                redirect_uri,
+                state: req.session!.csrf_string
+              })}`,
           headers
         },
-          (error, response, body) => {
-            if (error) throw error;
-            req.session!.access_token = querystring.parse(body).access_token;
-            res.redirect('/user');
-          }
+        (error, response, body) => {
+          if (error) throw error;
+          req.session!.access_token = querystring.parse(body).access_token;
+          res.redirect('/user');
+        }
       );
     } else {
       app.log.error(`Expected ${req.session!.csrf_sring}, but got ${returnedState}`);
@@ -131,13 +131,13 @@ export = function web(app: probot.Application) {
       const { data: repos } = await octokit.repos.listForOrg({ org: org.login });
       const { data: members } = await octokit.orgs.listMembers({ org: org.login, role: 'admin' });
 
-      for (let { login: member } of members) {
+      for (const { login: member } of members) {
         if (!orgDB!.members.includes(member)) {
           orgDB!.members!.push(member);
         }
       }
 
-      for (let repo of repos) {
+      for (const repo of repos) {
         if (!orgDB!.repos[repo.full_name!]) {
           orgDB!.repos[repo.full_name!] = { enabled: true };
         }
@@ -146,7 +146,7 @@ export = function web(app: probot.Application) {
     }
 
     res.send(
-        `<p>You're logged in! Here's all your emails on GitHub: </p>${JSON.stringify(emails)}
+      `<p>You're logged in! Here's all your emails on GitHub: </p>${JSON.stringify(emails)}
             <p>Here are all your orgs that I have access to: </p>${JSON.stringify(orgs)}
             <p>Go back to <a href="./">log in page</a>.</p>`
     );

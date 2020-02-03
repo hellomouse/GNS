@@ -26,10 +26,10 @@ const db: PouchDB.Database<config.Config> = new PouchDB(process.env.POUCH_REMOTE
  */
 function strip_formatting(msg: string): string {
   /* eslint-disable no-control-regex */
-  let ccodes: string[] = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
+  const ccodes: string[] = ['\\x0f', '\\x16', '\\x1d', '\\x1f', '\\x02', '\\x03([0-9][0-6]?)?,?([0-9][0-6]?)?'];
   /* eslint-enable no-control-regex */
 
-  for (let cc of ccodes) {
+  for (const cc of ccodes) {
     msg = msg.replace(new RegExp(cc, 'g'), '');
   }
 
@@ -81,7 +81,7 @@ class IRC {
   async init(): Promise<void> {
     this.config = (await db.get(this.org)).config;
 
-    let { server, port, bindhost, sasl } = this.config!.irc;
+    const { server, port, sasl } = this.config!.irc;
 
     this.socket = tls.connect(port, server, {
       cert: sasl!.cert ? fs.readFileSync(sasl!.cert) : undefined,
@@ -91,10 +91,11 @@ class IRC {
 
     this.parser = new Parser();
     this.irc_events = new events.EventEmitter();
+    // eslint-disable-next-line new-cap
     Events(this);
 
     this.socket.on('connect', () => {
-      let { nickname, ident, realname } = this.config.irc;
+      const { nickname, ident, realname } = this.config.irc;
 
       this.app.log.info('Connected to IRC');
       this.write('CAP LS');
@@ -119,7 +120,7 @@ class IRC {
    * @param {string} text The text to send to the server
    */
   privmsg(text: string): void {
-    let method: string = this.config!.irc.notice ? 'NOTICE' : 'PRIVMSG';
+    const method: string = this.config!.irc.notice ? 'NOTICE' : 'PRIVMSG';
 
     this.write(`${method} ${this.config!.irc.channel} :${text}`);
   }

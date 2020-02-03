@@ -23,15 +23,12 @@ import store, { storeGetRepoSettings, PassedStore } from '../store/store';
 const theme = createMuiTheme({
   palette: {
     primary: green
-  },
-  typography: {
-    useNextVariants: true
   }
 });
 
 interface Props extends RouteComponentProps<{
   rUser: string;
-  rName: string
+  rName: string;
 }> {
   gotRepoSettings: boolean;
   repoSettings: any;
@@ -45,7 +42,7 @@ class RepoSettingsPage extends React.Component<Props> {
   public onSubmit: React.EventHandler<React.FormEvent<HTMLFormElement>> = event => {
     event.preventDefault();
     // Placeholder funtion
-  }
+  };
 
   /** Renders the component
    * @return {React.ReactNode}
@@ -100,7 +97,7 @@ class RepoSettingsPage extends React.Component<Props> {
 const mapStateToProps = (state: {
   repos: string[];
   gotRepos: boolean;
-  gotRepoSettings: boolean
+  gotRepoSettings: boolean;
   repoSettings: {
     [key: string]: {
       [key: string]: any;

@@ -17,10 +17,10 @@ export async function apiGetRepos(user: string): Promise<string[]> {
     console.error(e.message);
   }
   /** @type {Array<string>} */
-  let repos: string[] = [];
+  const repos: string[] = [];
 
   // @ts-ignore
-  for await (let { doc: { repos: orgRepos, members } } of docs) {
+  for await (const { doc: { repos: orgRepos, members } } of docs) {
     if (members.includes(user)) repos.push(...Object.keys(orgRepos));
   }
 
@@ -40,7 +40,7 @@ interface RepoSettings {
   ircRnam: string;
   ircChannel: string;
   events: {
-    [key: string]: boolean
+    [key: string]: boolean;
   };
 }
 /** Returns settings for the given repository
@@ -64,9 +64,9 @@ export const apiGetRepoSettings = async (repo: string): Promise<RepoSettings> =>
 
   // @ts-ignore
   return {
-    enabled: repoSettings.enabled,
+    enabled: repoSettings.enabled === undefined ? false : repoSettings.enabled,
     ircHost: orgSettings.config.irc.server || 'irc.freenode.net',
-    ircPort: orgSettings.config.irc.port || '6667',
+    ircPort: orgSettings.config.irc.port.toString() || '6667',
     ircNick: orgSettings.config.irc.nickname || 'GNS',
     ircUser: 'TotallyNotGNS',
     ircPass: 'APassword',

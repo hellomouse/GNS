@@ -13,13 +13,15 @@ import redux from 'redux';
 import store, { storeGetRepos, PassedStore } from '../store/store';
 
 import Loading from './Loading';
+import { WithRouterProps } from 'react-router';
 
 interface RepoListProps extends RouteComponentProps {
-  repos: string[];
-  gotRepos: boolean;
+  repos?: string[];
+  gotRepos?: boolean;
 }
+interface RepoListPropsWithComponentProps extends RepoListProps, RouteComponentProps {}
 /** Provides list of available repositories */
-class RepoList extends React.Component<RepoListProps> {
+class RepoList extends React.Component<RepoListPropsWithComponentProps> {
   /** Renders the component
    * @return {React.ReactNode}
    */
@@ -27,7 +29,7 @@ class RepoList extends React.Component<RepoListProps> {
     if (this.props.gotRepos) {
       return (
         <List>
-          {this.props.repos.map(repo =>
+          {this.props.repos!.map(repo =>
             <ListItem key={`repo-list-repo-${repo}`} button
               onClick={() => { this.props.history.push(`/repo/${repo}`); }}>
               <ListItemText primary={repo} />
@@ -53,11 +55,11 @@ class RepoList extends React.Component<RepoListProps> {
  * @return {Object<string, string[] | boolean}
  */
 // tslint:disable-next-line:ban-types
-const mapStateToProps = (state: any): {repos: string[], gotRepos: boolean} => {
+const mapStateToProps = (state: any): {repos: string[]; gotRepos: boolean} => {
   return {
     repos: state.repos,
     gotRepos: state.gotRepos
   };
 };
 
-export default withRouter(connect(mapStateToProps, null)(RepoList));
+export default withRouter<RepoListProps, React.ElementType<RepoListProps>>(connect(mapStateToProps, null)(RepoList));
