@@ -24,7 +24,8 @@ export interface Config {
   };
   repos: {
     [key: string]: {
-      enabled?: boolean;
+      [key: string]: any;
+      enabled: boolean;
     } | undefined;
   };
 }
