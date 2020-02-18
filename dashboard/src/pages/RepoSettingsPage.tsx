@@ -60,7 +60,7 @@ class RepoSettingsPage extends React.Component<Props> {
             <br/>
 
             <form onSubmit={this.onSubmit}>
-              <SwitchLabel id='enabled' label='Enable this repository' checked={true} />
+              <SwitchLabel id='enabled' label='Enable this repository' checked={this.props.repoSettings.enabled} />
               <IRCSettings state={this.props.repoSettings}/>
               <Divider style={{ margin: '20px 0 20px' }}/>
               <br /><br />

@@ -14,7 +14,7 @@ class IRCSettings extends React.Component<{state: any}> {
   * @return {React.ReactElement}
   */
   public render(): React.ReactNode {
-    this.setState(this.props.state);
+    // this.setState(this.props.state);
 
     return (
       <React.Fragment>
