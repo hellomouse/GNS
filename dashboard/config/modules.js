@@ -1,5 +1,4 @@
-// @ts-check
-
+/* eslint-disable max-len */
 const fs = require('fs');
 const path = require('path');
 const paths = require('./paths');
@@ -10,6 +9,7 @@ const resolve = require('resolve');
  * Get additional module paths based on the baseUrl of a compilerOptions object.
  *
  * @param {Object} options
+ * @return {string[]|null}
  */
 function getAdditionalModulePaths(options = {}) {
   const baseUrl = options.baseUrl;
@@ -51,7 +51,7 @@ function getAdditionalModulePaths(options = {}) {
   // Otherwise, throw an error.
   throw new Error(
     chalk.red.bold(
-      "Your project's `baseUrl` can only be set to `src` or `node_modules`." +
+      'Your project\'s `baseUrl` can only be set to `src` or `node_modules`.' +
         ' Create React App does not support other values at this time.'
     )
   );
@@ -61,6 +61,7 @@ function getAdditionalModulePaths(options = {}) {
  * Get webpack aliases based on the baseUrl of a compilerOptions object.
  *
  * @param {*} options
+ * @return {{src: string}|{}}
  */
 function getWebpackAliases(options = {}) {
   const baseUrl = options.baseUrl;
@@ -82,6 +83,7 @@ function getWebpackAliases(options = {}) {
  * Get jest aliases based on the baseUrl of a compilerOptions object.
  *
  * @param {*} options
+ * @return {{} | {'^src/(.*)$': '<rootDir>/src/$1'}}
  */
 function getJestAliases(options = {}) {
   const baseUrl = options.baseUrl;
@@ -99,6 +101,7 @@ function getJestAliases(options = {}) {
   }
 }
 
+// eslint-disable-next-line require-jsdoc
 function getModules() {
   // Check if TypeScript is setup
   const hasTsConfig = fs.existsSync(paths.appTsConfig);
@@ -110,14 +113,12 @@ function getModules() {
     );
   }
 
-  /** @type {*} */
   let config;
 
   // If there's a tsconfig.json we assume it's a
   // TypeScript project and set up the config
   // based on tsconfig.json
   if (hasTsConfig) {
-    /** @type {import('typescript')} */
     const ts = require(resolve.sync('typescript', {
       basedir: paths.appNodeModules
     }));
