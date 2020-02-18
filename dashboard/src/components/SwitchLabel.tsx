@@ -44,7 +44,7 @@ class SwitchLabel extends React.Component<SwitchProps> {
       <FormControlLabel
         control={
           <Switch
-            checked={this.props.checked}
+            checked={this.state.checked}
             onChange={
               this.props.onChange !== undefined ? this.props.onChange : this.handleChange('checked')
             }
