@@ -19,6 +19,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import store, { storeGetRepoSettings, PassedStore } from '../store/store';
+import { Config } from '../store/config';
 
 const theme = createMuiTheme({
   palette: {
@@ -31,7 +32,7 @@ interface Props extends RouteComponentProps<{
   rName: string;
 }> {
   gotRepoSettings: boolean;
-  repoSettings: any;
+  repoSettings: Config['repos'];
 }
 
 /** Repo settings page of the app */
@@ -49,18 +50,21 @@ class RepoSettingsPage extends React.Component<Props> {
    */
   public render(): React.ReactNode {
     if (this.props.gotRepoSettings) {
+      const repo = `${this.props.match.params.rUser}/${this.props.match.params.rName}`;
+      const repoSettings = this.props.repoSettings[repo]!;
+
       return (
         <React.Fragment>
           <BackButton/>
           <Paper className='app-paper'>
             <Typography variant='h6'>
-            Settings for {this.props.match.params.rUser}/{this.props.match.params.rName}
+            Settings for {repo}
             </Typography>
 
             <br/>
 
             <form onSubmit={this.onSubmit}>
-              <SwitchLabel id='enabled' label='Enable this repository' checked={this.props.repoSettings.enabled} />
+              <SwitchLabel id='enabled' label='Enable this repository' checked={repoSettings.enabled} />
               <IRCSettings state={this.props.repoSettings}/>
               <Divider style={{ margin: '20px 0 20px' }}/>
               <br /><br />
