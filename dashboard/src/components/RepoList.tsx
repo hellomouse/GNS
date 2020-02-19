@@ -10,7 +10,7 @@ import { withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import redux from 'redux';
 
-import store, { storeGetRepos, PassedStore } from '../store/store';
+import store, { storeGetRepos, DefaultState } from '../store/store';
 
 import Loading from './Loading';
 
@@ -53,7 +53,7 @@ class RepoList extends React.Component<RepoListProps> {
  * @param {Store} state
  * @return {Object<string, string[] | boolean}
  */
-const mapStateToProps = (state: any): {repos: string[]; gotRepos: boolean} => {
+const mapStateToProps = (state: DefaultState) => {
   return {
     repos: state.repos,
     gotRepos: state.gotRepos
