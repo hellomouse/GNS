@@ -13,15 +13,14 @@ import redux from 'redux';
 import store, { storeGetRepos, PassedStore } from '../store/store';
 
 import Loading from './Loading';
-import { WithRouterProps } from 'react-router';
 
 interface RepoListProps extends RouteComponentProps {
   repos?: string[];
   gotRepos?: boolean;
 }
-interface RepoListPropsWithComponentProps extends RepoListProps, RouteComponentProps {}
+
 /** Provides list of available repositories */
-class RepoList extends React.Component<RepoListPropsWithComponentProps> {
+class RepoList extends React.Component<RepoListProps> {
   /** Renders the component
    * @return {React.ReactNode}
    */
@@ -54,7 +53,6 @@ class RepoList extends React.Component<RepoListPropsWithComponentProps> {
  * @param {Store} state
  * @return {Object<string, string[] | boolean}
  */
-// tslint:disable-next-line:ban-types
 const mapStateToProps = (state: any): {repos: string[]; gotRepos: boolean} => {
   return {
     repos: state.repos,
