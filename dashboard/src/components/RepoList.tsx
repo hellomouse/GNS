@@ -24,7 +24,7 @@ class RepoList extends React.Component<RepoListProps> {
   /** Renders the component
    * @return {React.ReactNode}
    */
-  render(): React.ReactNode {
+  public render(): React.ReactNode {
     if (this.props.gotRepos) {
       return (
         <List>
@@ -44,14 +44,15 @@ class RepoList extends React.Component<RepoListProps> {
   }
 
   /** Gets executed when the component is mounted */
-  async componentDidMount() {
+  public async componentDidMount() {
     await storeGetRepos(store);
   }
 }
 
-/** Maps redux state to RepoList props
- * @param {Store} state
- * @return {Object<string, string[] | boolean}
+/**
+ * Maps redux state to RepoList props
+ * @param {DefaultState} state foo
+ * @return {Object<string, string[] | boolean>}
  */
 const mapStateToProps = (state: DefaultState) => {
   return {
