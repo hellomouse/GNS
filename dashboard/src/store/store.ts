@@ -3,16 +3,16 @@
 import Redux, { createStore } from 'redux';
 import { devToolsEnhancer } from 'redux-devtools-extension';
 
-import { apiGetRepos, apiGetRepoSettings } from './api';
+import { apiGetRepos, apiGetRepoSettings, RepoSettings } from './api';
 import { Config } from '../config';
 
 // tslint:disable:max-line-length
 /** @typedef {import('redux').Store<{repos:Array<string>;gotRepos;boolean;repoSettings:import('../config').Config}>} PassedStore */
-export type PassedStore = Redux.Store<{repos: string[]; gotRepos: boolean; repoSettings: Config['repos']}>;
-interface DefaultState {
+export type PassedStore = Redux.Store<DefaultState, Action>;
+export interface DefaultState {
   repos: string[];
   gotRepos: boolean;
-  repoSettings: any;
+  repoSettings: Config['repos'];
   gotRepoSettings: boolean;
 }
 const defaultState: DefaultState = {
@@ -22,28 +22,43 @@ const defaultState: DefaultState = {
   gotRepoSettings: false
 };
 
-// eslint-disable-next-line max-len
-const store: Redux.Store<DefaultState> = createStore<DefaultState, any, any, any>((state: any, action: Redux.AnyAction) => {
+
+interface Action extends Redux.Action<'setRepos' | 'setRepoSettings' | undefined> {
+  repo?: string;
+  repos?: string[];
+  settings?: RepoSettings;
+}
+
+/**
+ *
+ * @param {DefaultState|undefined} state
+ * @param {Action} action
+ * @return {DefaultState}
+ */
+function reducer(state: DefaultState | undefined, action: Action) {
   if (action.type === 'setRepos') {
-    return { ...state, repos: action.repos, gotRepos: true };
+    return { ...state!, repos: action.repos!, gotRepos: true };
   } else if (action.type === 'setRepoSettings') {
     // eslint-disable-next-line max-len
-    return { ...state, repoSettings: { ...state.repoSettings, [action.repo!]: action.settings }, gotRepoSettings: true };
+    return { ...state!, repoSettings: { ...state!.repoSettings, [action.repo!]: action.settings! }, gotRepoSettings: true };
   }
 
-  return state;
-}, defaultState, devToolsEnhancer({}));
+  return state!;
+}
+// eslint-disable-next-line max-len
+const store: Redux.Store<DefaultState, Action> = createStore(reducer, defaultState, devToolsEnhancer({}));
 
 /** Gets repository list
  * @param {passedStore} passedStore
+ * @param {string} [user="wolfy1339"]
  */
-export const storeGetRepos = async (passedStore: PassedStore) => {
+export const storeGetRepos = async (passedStore: PassedStore, user = 'wolfy1339') => {
   const st = passedStore.getState();
 
   if (st.gotRepos) {
     return;
   }
-  const repos = await apiGetRepos('wolfy1339'); // Todo: Replace this with a variable that changes when the user logs in
+  const repos = await apiGetRepos(user); // Todo: Replace this with a variable that changes when the user logs in
 
   passedStore.dispatch({
     type: 'setRepos',

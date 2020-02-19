@@ -1,3 +1,5 @@
+import { RepoSettings } from './api';
+
 export interface Config {
   members: string[];
   config: {
@@ -23,10 +25,7 @@ export interface Config {
     detailedDeletesAndCreates: boolean;
   };
   repos: {
-    [key: string]: {
-      [key: string]: any;
-      enabled: boolean;
-    } | undefined;
+    [key: string]: RepoSettings;
   };
 }
 
