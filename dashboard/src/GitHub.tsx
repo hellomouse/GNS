@@ -2,14 +2,14 @@
 
 import React from 'react';
 import SvgIcon from '@material-ui/core/SvgIcon';
-import Button from '@material-ui/core/Button';
+import Button, { ButtonProps } from '@material-ui/core/Button';
 
 /**
 * @param {Object} props
 * @param {React.ReactNode} [props.children]
 * @return {React.ReactNode}
 */
-const GitHub: React.FunctionComponent = props => {
+const GitHub: React.FunctionComponent<ButtonProps> = (props: ButtonProps) => {
   return (
     <a href='/login' className='login-button'>
       <Button className='login-button-btn' variant='contained' color='primary' {...props}>
