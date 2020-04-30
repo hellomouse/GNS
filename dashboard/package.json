@@ -55,7 +55,8 @@
     "webpack": "^4.41.6",
     "webpack-manifest-plugin": "^2.2.0",
     "webpack-subresource-integrity": "^1.4.0",
-    "workbox-webpack-plugin": "^5.0.0"
+    "workbox-webpack-plugin": "^5.0.0",
+    "snyk": "^1.316.1"
   },
   "devDependencies": {
     "@types/jest": "^25.1.2",
@@ -85,7 +86,9 @@
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "test": "node scripts/test.js",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -136,5 +139,6 @@
     "presets": [
       "react-app"
     ]
-  }
+  },
+  "snyk": true
 }
