@@ -75,10 +75,5 @@
     "env": [
       "jest"
     ]
-  },
-  "greenkeeper": {
-    "lockfiles": {
-      "outOfRangeUpdatesOnly": true
-    }
   }
 }
