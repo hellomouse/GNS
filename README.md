@@ -1,6 +1,6 @@
 <img src="assets/logo.svg" width="120" alt="GNS">
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/hellomouse/GNS.svg)](https://greenkeeper.io/)
+
 
 GNS is a GitHub App built with [Probot](https://github.com/probot/probot) that delivers notifications from GitHub to IRC.
 
