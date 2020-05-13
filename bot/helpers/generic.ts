@@ -46,7 +46,12 @@ async function shortenUrl(url: string, app: Application): Promise<string> {
 async function attFormat(fullname: string, event: string, db: PouchDB.Database<Config>): Promise<string> {
   // [user|org]/[name]
   let [org, name] = fullname.split('/'); // or user
-  const { config } = await db.get(org);
+  let config;
+  if (process.env.DEV) {
+    config = await db.get('hellomouse').config
+  } else {
+    config = await db.get(org).config
+  }
 
   return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
 }
