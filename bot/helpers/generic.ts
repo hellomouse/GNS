@@ -48,9 +48,9 @@ async function attFormat(fullname: string, event: string, db: PouchDB.Database<C
   let [org, name] = fullname.split('/'); // or user
   let config;
   if (process.env.DEV) {
-    config = await db.get('hellomouse').config
+    config = (await db.get('hellomouse')).config
   } else {
-    config = await db.get(org).config
+    config = (await db.get(org)).config
   }
 
   return config.attentionString.replace('{org}', org).replace('{name}', name || org).replace('{event}', event);
