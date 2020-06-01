@@ -46,7 +46,7 @@
     "@types/express-session": "~1.15.16",
     "@types/ioredis": "~4.14.4",
     "@types/jest": "~25.1.0",
-    "@types/jsonwebtoken": "~8.3.6",
+    "@types/jsonwebtoken": "~8.5.0",
     "@types/lru-cache": "~5.1.0",
     "@types/node": "~13.7.0",
     "@types/pouchdb": "~6.4.0",
