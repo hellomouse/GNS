@@ -45,7 +45,7 @@
     "@types/express": "~4.17.2",
     "@types/express-session": "~1.15.16",
     "@types/ioredis": "~4.14.4",
-    "@types/jest": "~25.1.0",
+    "@types/jest": "~26.0.0",
     "@types/jsonwebtoken": "~8.3.6",
     "@types/lru-cache": "~5.1.0",
     "@types/node": "~13.7.0",
