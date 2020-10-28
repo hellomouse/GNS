@@ -62,7 +62,7 @@
     "eslint-plugin-jsdoc": "~21.0.0",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.18.3",
-    "eslint-plugin-react-hooks": "^2.3.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
     "jest": "~25.1.0",
     "nodemon": "~2.0.2",
     "smee-client": "~1.1.0",
