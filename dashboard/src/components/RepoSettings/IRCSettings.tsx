@@ -20,7 +20,7 @@ class IRCSettings extends React.Component<{state: any}> {
       <React.Fragment>
         <div className='sameline'>
           <TextField className='rsp-entry input-margin extra-width' id='ircHost' label='IRC server host'
-            defaultValue='chat.freenode.net' />
+            defaultValue='irc.libera.chat' />
           <TextField className='rsp-entry input-margin' id='ircPort' label='IRC server port' type='number'
             defaultValue={6697} />
         </div>
