@@ -65,7 +65,7 @@ export const apiGetRepoSettings = async (repo: string): Promise<RepoSettings> =>
   // @ts-ignore
   return {
     enabled: repoSettings.enabled === undefined ? false : repoSettings.enabled,
-    ircHost: orgSettings.config.irc.server || 'irc.freenode.net',
+    ircHost: orgSettings.config.irc.server || 'irc.libera.chat',
     ircPort: orgSettings.config.irc.port.toString() || '6667',
     ircNick: orgSettings.config.irc.nickname || 'GNS',
     ircUser: 'TotallyNotGNS',
